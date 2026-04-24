@@ -1,0 +1,10 @@
+CREATE TYPE plan_type AS ENUM ('free_trial', 'basic', 'pro');
+CREATE TYPE subscription_status AS ENUM ('active', 'trialing', 'past_due', 'canceled', 'paused');
+CREATE TYPE member_role AS ENUM ('owner', 'admin', 'cashier');
+CREATE TYPE invoice_type AS ENUM ('A', 'B', 'C', 'ticket', 'non_fiscal');
+CREATE TYPE invoice_status AS ENUM ('draft', 'issued', 'canceled', 'voided');
+CREATE TYPE sale_status AS ENUM ('completed', 'on_hold', 'canceled', 'refunded');
+CREATE TYPE payment_method AS ENUM ('cash', 'debit', 'credit', 'transfer', 'mercadopago', 'current_account', 'mixed');
+CREATE TYPE cash_movement_type AS ENUM ('sale', 'expense', 'deposit', 'withdrawal', 'opening', 'closing');
+CREATE TYPE alert_type AS ENUM ('low_stock', 'out_of_stock', 'price_change', 'subscription');
+CREATE TYPE account_transaction_type AS ENUM ('charge', 'payment', 'adjustment');
