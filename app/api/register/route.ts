@@ -16,14 +16,10 @@ export async function POST(request: Request) {
     const body = await request.json()
     const data = registerSchema.parse(body)
 
-    // Validate env vars early
     if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
-      console.error('[register] Missing env vars:', {
-        hasUrl: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
-        hasServiceKey: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
-      })
+      console.error('[register] Missing env vars')
       return NextResponse.json(
-        { error: 'Error de configuración del servidor. Contactá al soporte.' },
+        { error: 'Error de configuración del servidor.' },
         { status: 500 }
       )
     }
@@ -38,7 +34,7 @@ export async function POST(request: Request) {
       .maybeSingle()
 
     if (slugCheckError) {
-      console.error('[register] Error checking slug:', slugCheckError)
+      console.error('[register] Slug check error:', slugCheckError)
       return NextResponse.json(
         { error: 'Error al verificar disponibilidad. Intentá de nuevo.' },
         { status: 500 }
@@ -52,7 +48,9 @@ export async function POST(request: Request) {
       )
     }
 
-    // 1. Create auth user (this will fail if email already exists)
+    // 1. Try to create auth user
+    let userId: string
+
     const { data: authData, error: authError } = await supabase.auth.admin.createUser({
       email: data.email,
       password: data.password,
@@ -60,22 +58,85 @@ export async function POST(request: Request) {
       email_confirm: true,
     })
 
-    if (authError || !authData.user) {
-      console.error('[register] Auth error:', authError)
-      const message = authError?.message?.toLowerCase() || ''
-      if (message.includes('already') || message.includes('exists') || message.includes('duplicate')) {
+    if (authError) {
+      console.error('[register] Auth error:', authError.message)
+
+      // If user already exists, check if they're orphaned (no organization)
+      const isAlreadyExists = authError.message?.toLowerCase().includes('already')
+        || authError.message?.toLowerCase().includes('exists')
+        || authError.message?.toLowerCase().includes('duplicate')
+
+      if (isAlreadyExists) {
+        // Find the existing user
+        const { data: listData } = await supabase.auth.admin.listUsers({
+          page: 1,
+          perPage: 1,
+        })
+
+        // Search by email through all users — use a targeted approach
+        const { data: usersData } = await supabase.auth.admin.listUsers()
+        const existingUser = usersData?.users?.find(
+          (u) => u.email?.toLowerCase() === data.email.toLowerCase()
+        )
+
+        if (existingUser) {
+          // Check if this user has any organization membership
+          const { data: membership } = await supabase
+            .from('organization_members')
+            .select('id')
+            .eq('user_id', existingUser.id)
+            .maybeSingle()
+
+          if (!membership) {
+            // Orphaned user — delete and recreate
+            console.log('[register] Found orphaned user, cleaning up:', existingUser.id)
+            await supabase.auth.admin.deleteUser(existingUser.id)
+
+            // Recreate the user
+            const { data: newAuthData, error: newAuthError } = await supabase.auth.admin.createUser({
+              email: data.email,
+              password: data.password,
+              user_metadata: { full_name: data.full_name },
+              email_confirm: true,
+            })
+
+            if (newAuthError || !newAuthData.user) {
+              console.error('[register] Recreate user error:', newAuthError)
+              return NextResponse.json(
+                { error: 'Error al crear la cuenta. Intentá de nuevo.' },
+                { status: 400 }
+              )
+            }
+
+            userId = newAuthData.user.id
+          } else {
+            // User exists AND has an organization — truly already registered
+            return NextResponse.json(
+              { error: 'Ese email ya está registrado con un negocio. Intentá ingresar desde el login.' },
+              { status: 409 }
+            )
+          }
+        } else {
+          return NextResponse.json(
+            { error: 'Error al verificar la cuenta. Intentá con otro email.' },
+            { status: 400 }
+          )
+        }
+      } else {
         return NextResponse.json(
-          { error: 'Ese email ya está registrado. ¿Querías ingresar?' },
-          { status: 409 }
+          { error: authError.message || 'Error al crear la cuenta' },
+          { status: 400 }
         )
       }
+    } else if (!authData?.user) {
       return NextResponse.json(
-        { error: authError?.message || 'Error al crear la cuenta' },
+        { error: 'Error al crear la cuenta' },
         { status: 400 }
       )
+    } else {
+      userId = authData.user.id
     }
 
-    const userId = authData.user.id
     const trialEnds = new Date()
     trialEnds.setDate(trialEnds.getDate() + 14)
 
@@ -137,7 +198,7 @@ export async function POST(request: Request) {
       )
     }
 
-    // 5. Create trial subscription (non-blocking — don't fail registration if this fails)
+    // 5. Create trial subscription (non-blocking)
     try {
       const { data: plan } = await supabase
         .from('subscription_plans')
@@ -155,7 +216,6 @@ export async function POST(request: Request) {
         })
       }
     } catch (subError) {
-      // Log but don't fail the registration
       console.error('[register] Subscription error (non-fatal):', subError)
     }
 
