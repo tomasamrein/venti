@@ -52,7 +52,7 @@ export default async function OrgLayout({ children, params }: Props) {
           userName={profile?.full_name ?? undefined}
           userAvatar={profile?.avatar_url ?? undefined}
         />
-        <main className="flex-1 overflow-y-auto bg-muted/30 p-4 md:p-6">
+        <main className="flex-1 overflow-y-auto bg-background p-4 md:p-6 scrollbar-thin">
           {children}
         </main>
       </div>
