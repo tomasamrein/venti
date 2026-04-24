@@ -52,8 +52,8 @@ function LoginForm() {
         {/* Header */}
         <div className="px-6 pt-6 pb-4">
           <div className="flex items-center gap-2.5 mb-1">
-            <div className="w-9 h-9 rounded-xl bg-emerald-500/10 flex items-center justify-center">
-              <LogIn className="h-5 w-5 text-emerald-500" />
+            <div className="w-9 h-9 rounded-xl bg-indigo-500/10 dark:bg-indigo-500/20 flex items-center justify-center">
+              <LogIn className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
             </div>
             <div>
               <h3 className="text-lg font-bold text-foreground">Bienvenido de vuelta</h3>
@@ -85,7 +85,7 @@ function LoginForm() {
                 <Label htmlFor="login_password" className="text-sm font-medium">Contraseña</Label>
                 <Link
                   href="/forgot-password"
-                  className="text-xs text-muted-foreground hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
+                  className="text-xs text-muted-foreground hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
                 >
                   ¿Olvidaste tu contraseña?
                 </Link>
@@ -106,7 +106,7 @@ function LoginForm() {
           <div className="px-6 pt-5 pb-6 space-y-3">
             <Button
               type="submit"
-              className="w-full h-11 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold shadow-lg shadow-emerald-600/25 hover:shadow-emerald-500/30 transition-all duration-200"
+              className="w-full h-11 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold shadow-lg shadow-indigo-600/25 hover:shadow-indigo-500/30 transition-all duration-200"
               disabled={loading}
             >
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
@@ -114,7 +114,7 @@ function LoginForm() {
             </Button>
             <p className="text-center text-sm text-muted-foreground">
               ¿No tenés cuenta?{' '}
-              <Link href="/registro" className="text-emerald-600 dark:text-emerald-400 hover:underline font-semibold">
+              <Link href="/registro" className="text-indigo-600 dark:text-indigo-400 hover:underline font-semibold">
                 Registrate gratis
               </Link>
             </p>

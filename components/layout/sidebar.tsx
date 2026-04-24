@@ -45,7 +45,7 @@ export function Sidebar({ orgSlug, className }: SidebarProps) {
     <aside className={cn('flex flex-col h-full bg-card border-r', className)}>
       {/* Logo */}
       <div className="h-14 flex items-center px-5 border-b shrink-0">
-        <span className="text-xl font-bold text-emerald-600 dark:text-emerald-400 tracking-tight">venti</span>
+        <span className="text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400 bg-clip-text text-transparent tracking-tight font-poppins">venti</span>
       </div>
 
       <ScrollArea className="flex-1 py-3">
@@ -59,7 +59,7 @@ export function Sidebar({ orgSlug, className }: SidebarProps) {
                 className={cn(
                   'flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors',
                   active
-                    ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300'
+                    ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-950/40 dark:text-indigo-300'
                     : 'text-muted-foreground hover:text-foreground hover:bg-muted'
                 )}
               >
@@ -81,7 +81,7 @@ export function Sidebar({ orgSlug, className }: SidebarProps) {
               className={cn(
                 'flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors',
                 active
-                  ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300'
+                  ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-950/40 dark:text-indigo-300'
                   : 'text-muted-foreground hover:text-foreground hover:bg-muted'
               )}
             >

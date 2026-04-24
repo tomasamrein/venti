@@ -69,33 +69,35 @@ export default async function DashboardPage({ params }: Props) {
   ]
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">¡Buen día! 👋</h1>
-        <p className="text-muted-foreground">Esto es lo que pasó hoy en {org?.name}.</p>
+    <div className="space-y-8">
+      <div className="space-y-2">
+        <h1 className="text-3xl font-bold tracking-tight font-poppins">¡Buen día! 👋</h1>
+        <p className="text-muted-foreground">Esto es lo que pasó hoy en <span className="font-semibold text-foreground">{org?.name}</span></p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {stats.map((stat) => (
-          <Card key={stat.title}>
+          <Card key={stat.title} className="border border-border/60 bg-gradient-to-br from-card to-card/80 dark:from-card dark:to-card/60 backdrop-blur-sm">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">{stat.title}</CardTitle>
-              {stat.icon}
+              <div className="p-2 bg-indigo-100/50 dark:bg-indigo-900/30 rounded-lg">
+                {stat.icon}
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stat.value}</div>
-              <p className="text-xs text-muted-foreground mt-1">{stat.description}</p>
+              <div className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400 bg-clip-text text-transparent font-poppins">{stat.value}</div>
+              <p className="text-xs text-muted-foreground mt-2">{stat.description}</p>
             </CardContent>
           </Card>
         ))}
       </div>
 
-      <Card>
+      <Card className="border border-border/60 bg-gradient-to-br from-card to-card/80 dark:from-card dark:to-card/60 backdrop-blur-sm">
         <CardHeader>
-          <CardTitle className="text-base">Ventas recientes</CardTitle>
+          <CardTitle className="text-lg font-poppins">Ventas recientes</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-muted-foreground text-center py-8">
+          <p className="text-sm text-muted-foreground text-center py-12">
             Los gráficos e historial de ventas estarán disponibles próximamente.
           </p>
         </CardContent>

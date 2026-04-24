@@ -67,7 +67,7 @@ export function TopNav({ orgSlug, userName, userAvatar }: TopNavProps) {
           <Button variant="ghost" className="relative h-9 w-9 rounded-full">
             <Avatar className="h-8 w-8">
               <AvatarImage src={userAvatar} alt={userName} />
-              <AvatarFallback className="bg-emerald-100 text-emerald-700 text-xs font-bold">
+              <AvatarFallback className="bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-300 text-xs font-bold">
                 {initials}
               </AvatarFallback>
             </Avatar>
