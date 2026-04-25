@@ -2,6 +2,7 @@ import { notFound, redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { Sidebar } from '@/components/layout/sidebar'
 import { TopNav } from '@/components/layout/top-nav'
+import { OfflineBanner } from '@/components/shared/offline-banner'
 
 interface Props {
   children: React.ReactNode
@@ -49,12 +50,14 @@ export default async function OrgLayout({ children, params }: Props) {
       <div className="flex flex-col flex-1 overflow-hidden">
         <TopNav
           orgSlug={orgSlug}
+          organizationId={org.id}
           userName={profile?.full_name ?? undefined}
           userAvatar={profile?.avatar_url ?? undefined}
         />
         <main className="flex-1 overflow-y-auto bg-background p-4 md:p-6 scrollbar-thin">
           {children}
         </main>
+        <OfflineBanner />
       </div>
     </div>
   )

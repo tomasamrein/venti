@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Moon, Sun, LogOut, Settings, Menu, Bell } from 'lucide-react'
+import { Moon, Sun, LogOut, Settings, Menu } from 'lucide-react'
 import { useTheme } from 'next-themes'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
@@ -13,15 +13,17 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { Sidebar } from './sidebar'
+import { NotificationBell } from '@/components/notifications/notification-bell'
 import { cn } from '@/lib/utils'
 
 interface TopNavProps {
   orgSlug: string
+  organizationId: string
   userName?: string
   userAvatar?: string
 }
 
-export function TopNav({ orgSlug, userName, userAvatar }: TopNavProps) {
+export function TopNav({ orgSlug, organizationId, userName, userAvatar }: TopNavProps) {
   const router = useRouter()
   const { theme, setTheme } = useTheme()
   const [mobileOpen, setMobileOpen] = useState(false)
@@ -69,14 +71,7 @@ export function TopNav({ orgSlug, userName, userAvatar }: TopNavProps) {
       {/* Actions */}
       <div className="flex items-center gap-1">
         {/* Notifications */}
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-8 w-8 text-[#5a6480] hover:text-white hover:bg-white/5 rounded-lg"
-          onClick={() => router.push(`/${orgSlug}/notificaciones`)}
-        >
-          <Bell className="h-4 w-4" />
-        </Button>
+        <NotificationBell orgSlug={orgSlug} organizationId={organizationId} />
 
         {/* Theme toggle */}
         <Button
