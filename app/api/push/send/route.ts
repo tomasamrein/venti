@@ -2,13 +2,12 @@ import { NextRequest, NextResponse } from 'next/server'
 import webpush from 'web-push'
 import { createAdminClient } from '@/lib/supabase/admin'
 
-webpush.setVapidDetails(
-  process.env.VAPID_SUBJECT ?? 'mailto:admin@venti.ar',
-  process.env.VAPID_PUBLIC_KEY ?? '',
-  process.env.VAPID_PRIVATE_KEY ?? '',
-)
-
 export async function POST(req: NextRequest) {
+  webpush.setVapidDetails(
+    process.env.VAPID_SUBJECT ?? 'mailto:admin@venti.ar',
+    process.env.VAPID_PUBLIC_KEY!,
+    process.env.VAPID_PRIVATE_KEY!,
+  )
   // Internal endpoint — validate with service role key header
   const authHeader = req.headers.get('authorization')
   if (authHeader !== `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`) {
