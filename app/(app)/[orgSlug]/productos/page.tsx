@@ -37,6 +37,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
 import { BulkPriceUpdate } from '@/components/products/bulk-price-update'
+import { ExcelPriceImport } from '@/components/products/excel-price-import'
 import { createClient } from '@/lib/supabase/client'
 import { formatARS } from '@/lib/utils/currency'
 import type { Database } from '@/types/database'
@@ -66,6 +67,7 @@ export default function ProductosPage({ params }: Props) {
   const [stockFilter, setStockFilter] = useState('all')
   const [deleteId, setDeleteId] = useState<string | null>(null)
   const [bulkOpen, setBulkOpen] = useState(false)
+  const [excelOpen, setExcelOpen] = useState(false)
 
   useEffect(() => {
     params.then(p => setOrgSlug(p.orgSlug))
@@ -163,6 +165,10 @@ export default function ProductosPage({ params }: Props) {
               Categorías
             </Button>
           </Link>
+          <Button variant="outline" size="sm" className="gap-2" onClick={() => setExcelOpen(true)}>
+            <Upload className="h-4 w-4" />
+            Importar Excel
+          </Button>
           <Button variant="outline" size="sm" className="gap-2" onClick={() => setBulkOpen(true)}>
             <TrendingUp className="h-4 w-4" />
             Actualizar precios
@@ -420,6 +426,14 @@ export default function ProductosPage({ params }: Props) {
         open={bulkOpen}
         onClose={() => setBulkOpen(false)}
         orgId={orgId}
+        onDone={loadData}
+      />
+
+      {/* Excel price import */}
+      <ExcelPriceImport
+        open={excelOpen}
+        onClose={() => setExcelOpen(false)}
+        products={products}
         onDone={loadData}
       />
     </div>

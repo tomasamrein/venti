@@ -70,24 +70,34 @@ export function BulkPriceUpdate({ open, onClose, orgId, onDone }: BulkPriceUpdat
         return
       }
 
-      for (const p of products) {
+      // Compute all new values first
+      const updates = products.map(p => {
         const current = field === 'price_sell' ? (p.price_sell || 0) : (p.price_cost || 0)
-        let newValue: number
-        if (type === 'pct') {
-          newValue = current * (1 + numVal / 100)
-        } else {
-          newValue = current + numVal
-        }
+        let newValue = type === 'pct'
+          ? current * (1 + numVal / 100)
+          : current + numVal
         newValue = Math.max(0, Math.round(newValue * 100) / 100)
+        return { id: p.id, newValue }
+      })
 
-        if (field === 'price_sell') {
-          await supabase.from('products').update({ price_sell: newValue }).eq('id', p.id)
-        } else {
-          await supabase.from('products').update({ price_cost: newValue }).eq('id', p.id)
-        }
+      // Batch in chunks of 50 (parallel within each chunk)
+      const chunks: typeof updates[] = []
+      for (let i = 0; i < updates.length; i += 50) chunks.push(updates.slice(i, i + 50))
+
+      let failed = 0
+      for (const chunk of chunks) {
+        const results = await Promise.all(
+          chunk.map(u =>
+            field === 'price_sell'
+              ? supabase.from('products').update({ price_sell: u.newValue }).eq('id', u.id)
+              : supabase.from('products').update({ price_cost: u.newValue }).eq('id', u.id)
+          )
+        )
+        failed += results.filter(r => r.error).length
       }
 
-      toast.success(`${products.length} productos actualizados`)
+      if (failed > 0) toast.error(`${failed} productos no se pudieron actualizar`)
+      else toast.success(`${products.length} productos actualizados`)
       onDone()
       onClose()
       setValue('')
