@@ -84,7 +84,7 @@ export default function PreciosPage() {
           <ul className="space-y-2.5 flex-1">
             {BASIC_FEATURES.map(f => (
               <li key={f} className="flex items-start gap-2.5 text-[13px] text-[#8891a8]">
-                <Check className="h-4 w-4 text-emerald-400 shrink-0 mt-0.5" />
+                <Check className="h-4 w-4 text-indigo-400 shrink-0 mt-0.5" />
                 {f}
               </li>
             ))}
@@ -100,7 +100,7 @@ export default function PreciosPage() {
             </button>
             <Link
               href="/registro?plan=basic"
-              className="w-full inline-flex items-center justify-center gap-1 h-9 rounded-xl text-[13px] text-emerald-400 hover:text-emerald-300 transition-colors"
+              className="w-full inline-flex items-center justify-center gap-1 h-9 rounded-xl text-[13px] text-indigo-400 hover:text-indigo-300 transition-colors"
             >
               Empezar gratis 14 días <ChevronRight className="h-3.5 w-3.5" />
             </Link>
@@ -108,9 +108,9 @@ export default function PreciosPage() {
         </div>
 
         {/* Pro */}
-        <div className="relative rounded-2xl border border-emerald-500/40 bg-gradient-to-b from-emerald-500/[0.07] to-transparent p-7 flex flex-col gap-6">
+        <div className="relative rounded-2xl border border-indigo-500/40 bg-gradient-to-b from-indigo-500/[0.08] to-transparent p-7 flex flex-col gap-6">
           <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
-            <span className="px-3 py-1 rounded-full text-[11px] font-bold bg-emerald-500 text-white flex items-center gap-1">
+            <span className="px-3 py-1 rounded-full text-[11px] font-bold bg-indigo-600 text-white flex items-center gap-1">
               <Zap className="h-3 w-3" /> Multi-sucursal
             </span>
           </div>
@@ -125,7 +125,7 @@ export default function PreciosPage() {
           <ul className="space-y-2.5 flex-1">
             {PRO_EXTRAS.map(f => (
               <li key={f} className="flex items-start gap-2.5 text-[13px] text-[#8891a8]">
-                <Check className="h-4 w-4 text-emerald-400 shrink-0 mt-0.5" />
+                <Check className="h-4 w-4 text-indigo-400 shrink-0 mt-0.5" />
                 {f}
               </li>
             ))}
@@ -135,14 +135,14 @@ export default function PreciosPage() {
               onClick={() => handleCheckout('pro')}
               disabled={loading === 'pro'}
               className="w-full inline-flex items-center justify-center gap-2 h-11 rounded-xl text-[14px] font-semibold text-white transition-all hover:scale-[1.01] disabled:opacity-60"
-              style={{ background: 'linear-gradient(135deg, oklch(0.55 0.22 160), oklch(0.48 0.25 145))' }}
+              style={{ background: 'linear-gradient(135deg, #4F46E5, #06B6D4)' }}
             >
               {loading === 'pro' ? <Loader2 className="h-4 w-4 animate-spin" /> : <CreditCard className="h-4 w-4" />}
               {loading === 'pro' ? 'Redirigiendo...' : 'Suscribirse con Mercado Pago'}
             </button>
             <Link
               href="/registro?plan=pro"
-              className="w-full inline-flex items-center justify-center gap-1 h-9 rounded-xl text-[13px] text-emerald-400 hover:text-emerald-300 transition-colors"
+              className="w-full inline-flex items-center justify-center gap-1 h-9 rounded-xl text-[13px] text-indigo-400 hover:text-indigo-300 transition-colors"
             >
               Empezar gratis 14 días <ChevronRight className="h-3.5 w-3.5" />
             </Link>
@@ -168,7 +168,7 @@ export default function PreciosPage() {
               <tr className="border-b border-white/[0.07]">
                 <th className="px-5 py-3 text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Funcionalidad</th>
                 <th className="px-5 py-3 text-center text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Basic</th>
-                <th className="px-5 py-3 text-center text-[11px] font-semibold text-emerald-400 uppercase tracking-wider">Pro</th>
+                <th className="px-5 py-3 text-center text-[11px] font-semibold text-indigo-400 uppercase tracking-wider">Pro</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-white/[0.04]">
@@ -189,10 +189,10 @@ export default function PreciosPage() {
                 <tr key={String(feat)} className="hover:bg-white/[0.02]">
                   <td className="px-5 py-3 text-[#8891a8]">{feat}</td>
                   <td className="px-5 py-3 text-center">
-                    {basic === true ? <Check className="h-4 w-4 text-emerald-400 mx-auto" /> : basic === false ? <span className="text-[#3d4560]">—</span> : <span className="text-white font-medium">{basic}</span>}
+                    {basic === true ? <Check className="h-4 w-4 text-indigo-400 mx-auto" /> : basic === false ? <span className="text-[#3d4560]">—</span> : <span className="text-white font-medium">{basic}</span>}
                   </td>
                   <td className="px-5 py-3 text-center">
-                    {pro === true ? <Check className="h-4 w-4 text-emerald-400 mx-auto" /> : pro === false ? <span className="text-[#3d4560]">—</span> : <span className="text-emerald-400 font-medium">{pro}</span>}
+                    {pro === true ? <Check className="h-4 w-4 text-indigo-400 mx-auto" /> : pro === false ? <span className="text-[#3d4560]">—</span> : <span className="text-indigo-400 font-medium">{pro}</span>}
                   </td>
                 </tr>
               ))}

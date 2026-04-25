@@ -3,8 +3,8 @@ import Link from 'next/link'
 import { MessageCircle } from 'lucide-react'
 
 export const metadata: Metadata = {
-  title: { default: 'Venti — POS y CRM para negocios argentinos', template: '%s | Venti' },
-  description: 'Sistema de punto de venta y CRM pensado para kioscos, almacenes y comercios minoristas de Argentina.',
+  title: { default: 'Venti — Software para negocios argentinos', template: '%s | Venti' },
+  description: 'Software de gestión pensado para kioscos, almacenes y comercios minoristas de Argentina.',
   openGraph: {
     siteName: 'Venti',
     locale: 'es_AR',
@@ -24,7 +24,7 @@ export default function LandingLayout({ children }: { children: React.ReactNode 
       <header className="fixed top-0 left-0 right-0 z-50 border-b border-white/[0.06] bg-[#070910]/90 backdrop-blur-xl">
         <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2 shrink-0">
-            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-emerald-400 to-green-600 flex items-center justify-center">
+            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-indigo-500 to-cyan-500 flex items-center justify-center">
               <span className="text-white text-[11px] font-black">V</span>
             </div>
             <span className="text-[15px] font-bold text-white">Venti</span>
@@ -47,7 +47,7 @@ export default function LandingLayout({ children }: { children: React.ReactNode 
             <Link
               href="/registro"
               className="inline-flex items-center h-8 px-4 rounded-lg text-[13px] font-semibold text-white transition-all hover:scale-[1.02]"
-              style={{ background: 'linear-gradient(135deg, oklch(0.55 0.22 160), oklch(0.50 0.24 145))' }}
+              style={{ background: 'linear-gradient(135deg, #4F46E5, #06B6D4)' }}
             >
               Probar gratis
             </Link>
@@ -77,7 +77,7 @@ export default function LandingLayout({ children }: { children: React.ReactNode 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-10">
             <div className="col-span-2 md:col-span-1">
               <div className="flex items-center gap-2 mb-3">
-                <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-emerald-400 to-green-600 flex items-center justify-center">
+                <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-indigo-500 to-cyan-500 flex items-center justify-center">
                   <span className="text-white text-[11px] font-black">V</span>
                 </div>
                 <span className="text-[15px] font-bold text-white">Venti</span>
@@ -86,10 +86,10 @@ export default function LandingLayout({ children }: { children: React.ReactNode 
                 POS y CRM para kioscos, almacenes y comercios argentinos. Con facturación ARCA y modo offline.
               </p>
               <a
-                href="https://wa.me/5492915000000?text=Hola%2C%20quiero%20saber%20más%20sobre%20Venti"
+                href="https://wa.me/5493437479134?text=Hola%2C%20quiero%20saber%20más%20sobre%20Venti"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 mt-4 text-[12px] text-emerald-400 hover:text-emerald-300 transition-colors"
+                className="inline-flex items-center gap-1.5 mt-4 text-[12px] text-indigo-400 hover:text-indigo-300 transition-colors"
               >
                 <MessageCircle className="h-3.5 w-3.5" />
                 Consultar por WhatsApp

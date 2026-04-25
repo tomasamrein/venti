@@ -7,7 +7,7 @@ export const metadata: Metadata = {
 }
 
 export default function ContactoPage() {
-  const PHONE = '5492915000000' // reemplazar con número real
+  const PHONE = '5493437479134'
   const EMAIL = 'hola@venti.ar'
 
   return (
@@ -26,10 +26,10 @@ export default function ContactoPage() {
           href={`https://wa.me/${PHONE}?text=Hola%2C%20quiero%20saber%20m%C3%A1s%20sobre%20Venti`}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-5 rounded-2xl border border-emerald-500/25 bg-emerald-500/[0.04] p-6 hover:bg-emerald-500/[0.07] hover:border-emerald-500/40 transition-all group"
+          className="flex items-center gap-5 rounded-2xl border border-indigo-500/25 bg-indigo-500/[0.04] p-6 hover:bg-indigo-500/[0.07] hover:border-indigo-500/40 transition-all group"
         >
-          <div className="w-12 h-12 rounded-xl bg-emerald-500/15 flex items-center justify-center shrink-0">
-            <MessageCircle className="h-6 w-6 text-emerald-400" />
+          <div className="w-12 h-12 rounded-xl bg-indigo-500/15 flex items-center justify-center shrink-0">
+            <MessageCircle className="h-6 w-6 text-indigo-400" />
           </div>
           <div className="flex-1">
             <p className="text-[15px] font-bold text-white">WhatsApp</p>
@@ -37,7 +37,7 @@ export default function ContactoPage() {
               La forma más rápida. Respondemos en minutos en horario de atención.
             </p>
           </div>
-          <span className="text-[13px] font-semibold text-emerald-400 group-hover:text-emerald-300 transition-colors">
+          <span className="text-[13px] font-semibold text-indigo-400 group-hover:text-indigo-300 transition-colors">
             Escribir →
           </span>
         </a>
@@ -77,7 +77,7 @@ export default function ContactoPage() {
             href={`https://wa.me/${PHONE}?text=Quiero%20una%20demo%20de%20Venti`}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-emerald-400 hover:text-emerald-300 underline underline-offset-2"
+            className="text-indigo-400 hover:text-indigo-300 underline underline-offset-2"
           >
             pedinos una demo por WhatsApp
           </a>

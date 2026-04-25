@@ -7,10 +7,10 @@ import {
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Venti — POS y CRM para negocios argentinos',
-  description: 'Dejá de perder plata por no controlar el stock. POS con facturación ARCA, gestión de clientes y reportes para kioscos, almacenes y comercios de Argentina.',
+  title: 'Venti — Software para negocios argentinos',
+  description: 'Dejá de perder plata por no controlar el stock. Software con facturación ARCA, gestión de clientes y reportes para kioscos, almacenes y comercios de Argentina.',
   openGraph: {
-    title: 'Venti — POS y CRM para negocios argentinos',
+    title: 'Venti — Software para negocios argentinos',
     description: 'Dejá de perder plata por no controlar el stock.',
     images: [{ url: '/og-image.png', width: 1200, height: 630 }],
   },
@@ -26,14 +26,14 @@ const PAINS = [
 const FEATURES = [
   {
     icon: ShoppingCart,
-    title: 'POS que no te frena',
+    title: 'Ventas que no te frenan',
     desc: 'Escaneás con lector USB o cámara del celular. Cobrás en segundos. El stock se descuenta solo.',
     badge: null,
   },
   {
     icon: Receipt,
-    title: 'Factura A, B y C sin salir de la caja',
-    desc: 'Conectás tu CUIT una sola vez y emitís facturas con CAE directamente desde el POS.',
+    title: 'Factura A, B y C sin salir del software',
+    desc: 'Conectás tu CUIT una sola vez y emitís facturas con CAE directamente desde la caja.',
     badge: 'ARCA',
   },
   {
@@ -140,25 +140,25 @@ export default function LandingPage() {
     <>
       {/* Hero */}
       <section className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_60%_at_50%_-10%,oklch(0.40_0.18_160_/_0.20),transparent)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_40%_40%_at_80%_20%,oklch(0.45_0.22_278_/_0.10),transparent)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_60%_at_50%_-10%,#4F46E5_/_0.18,transparent)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_40%_40%_at_80%_20%,#06B6D4_/_0.08,transparent)]" />
         <div className="max-w-6xl mx-auto px-4 pt-28 pb-24 text-center relative">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-emerald-500/20 bg-emerald-500/10 mb-8">
-            <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="text-[12px] font-medium text-emerald-300">14 días gratis · Sin tarjeta de crédito</span>
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-indigo-500/25 bg-indigo-500/10 mb-8">
+            <div className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse" />
+            <span className="text-[12px] font-medium text-indigo-300">14 días gratis · Sin tarjeta de crédito</span>
           </div>
 
           <h1 className="text-[46px] md:text-[68px] font-extrabold tracking-[-0.04em] text-white leading-[1.02] max-w-4xl mx-auto">
             ¿Cuánto perdés por no{' '}
             <span className="relative">
-              <span className="bg-gradient-to-r from-emerald-400 via-green-400 to-emerald-500 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-indigo-400 via-cyan-400 to-indigo-500 bg-clip-text text-transparent">
                 controlar tu negocio?
               </span>
             </span>
           </h1>
 
           <p className="mt-6 text-[17px] md:text-[19px] text-[#8891a8] max-w-2xl mx-auto leading-relaxed">
-            Venti es el POS para kioscos, almacenes y comercios argentinos que cierra la caja sola,
+            Venti es el software para kioscos, almacenes y comercios argentinos que cierra la caja sola,
             factura con ARCA y te avisa cuando te quedás sin stock.
           </p>
 
@@ -166,7 +166,7 @@ export default function LandingPage() {
             <Link
               href="/registro"
               className="inline-flex items-center gap-2 h-13 px-7 rounded-xl text-[15px] font-semibold text-white transition-all hover:scale-[1.02] active:scale-[0.98]"
-              style={{ background: 'linear-gradient(135deg, oklch(0.55 0.22 160), oklch(0.48 0.25 145))', boxShadow: '0 0 32px oklch(0.55 0.22 160 / 0.35)' }}
+              style={{ background: 'linear-gradient(135deg, #4F46E5, #06B6D4)', boxShadow: '0 0 32px #4F46E5_44' }}
             >
               Probarlo gratis <ChevronRight className="h-4 w-4" />
             </Link>
@@ -202,7 +202,7 @@ export default function LandingPage() {
           </div>
           <p className="text-center mt-6 text-[14px] text-[#5a6480]">
             Con Venti, todo eso desaparece.{' '}
-            <Link href="/registro" className="text-emerald-400 hover:text-emerald-300 font-medium underline underline-offset-2">
+            <Link href="/registro" className="text-indigo-400 hover:text-indigo-300 font-medium underline underline-offset-2">
               Probalo gratis 14 días →
             </Link>
           </p>
@@ -226,11 +226,11 @@ export default function LandingPage() {
               <div key={f.title}
                 className="rounded-xl border border-white/[0.07] bg-white/[0.02] p-6 space-y-3 hover:bg-white/[0.04] hover:border-white/[0.10] transition-all group">
                 <div className="flex items-center justify-between">
-                  <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center group-hover:bg-emerald-500/15 transition-colors">
-                    <Icon className="h-5 w-5 text-emerald-400" />
+                  <div className="w-10 h-10 rounded-xl bg-indigo-500/10 flex items-center justify-center group-hover:bg-indigo-500/15 transition-colors">
+                    <Icon className="h-5 w-5 text-indigo-400" />
                   </div>
                   {f.badge && (
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-violet-500/15 text-violet-400 border border-violet-500/20">
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-cyan-500/15 text-cyan-400 border border-cyan-500/20">
                       {f.badge}
                     </span>
                   )}
@@ -254,7 +254,7 @@ export default function LandingPage() {
               { n: '0', label: 'instalaciones requeridas' },
             ].map(s => (
               <div key={s.label}>
-                <p className="text-[32px] font-extrabold tracking-tight bg-gradient-to-r from-emerald-400 to-green-500 bg-clip-text text-transparent">
+                <p className="text-[32px] font-extrabold tracking-tight bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">
                   {s.n}
                 </p>
                 <p className="text-[12px] text-[#5a6480] mt-1">{s.label}</p>
@@ -278,7 +278,7 @@ export default function LandingPage() {
             { step: '03', title: 'Vendés y controlás', desc: 'El stock se actualiza solo. Los reportes se generan solos. Las facturas salen solas.' },
           ].map((s, i) => (
             <div key={s.step} className="flex gap-5 items-start">
-              <div className="w-10 h-10 rounded-xl shrink-0 flex items-center justify-center text-[13px] font-black text-emerald-400 border border-emerald-500/20 bg-emerald-500/5">
+              <div className="w-10 h-10 rounded-xl shrink-0 flex items-center justify-center text-[13px] font-black text-indigo-400 border border-indigo-500/20 bg-indigo-500/5">
                 {s.step}
               </div>
               <div className="flex-1 pb-4 border-b border-white/[0.05] last:border-0">
@@ -310,13 +310,13 @@ export default function LandingPage() {
               key={plan.name}
               className={`relative rounded-2xl border p-7 flex flex-col gap-6 ${
                 plan.highlight
-                  ? 'border-emerald-500/40 bg-gradient-to-b from-emerald-500/[0.07] to-transparent'
+                  ? 'border-indigo-500/40 bg-gradient-to-b from-indigo-500/[0.08] to-transparent'
                   : 'border-white/[0.08] bg-white/[0.02]'
               }`}
             >
               {plan.highlight && (
                 <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
-                  <span className="px-3 py-1 rounded-full text-[11px] font-bold bg-emerald-500 text-white flex items-center gap-1">
+                  <span className="px-3 py-1 rounded-full text-[11px] font-bold bg-indigo-600 text-white flex items-center gap-1">
                     <Zap className="h-3 w-3" /> Multi-sucursal
                   </span>
                 </div>
@@ -333,7 +333,7 @@ export default function LandingPage() {
               <ul className="space-y-2.5 flex-1">
                 {plan.features.map(feat => (
                   <li key={feat} className="flex items-start gap-2.5 text-[13px] text-[#8891a8]">
-                    <Check className="h-4 w-4 text-emerald-400 shrink-0 mt-0.5" />
+                    <Check className="h-4 w-4 text-indigo-400 shrink-0 mt-0.5" />
                     {feat}
                   </li>
                 ))}
@@ -346,7 +346,7 @@ export default function LandingPage() {
                     ? 'text-white'
                     : 'border border-white/[0.12] text-white hover:bg-white/5'
                 }`}
-                style={plan.highlight ? { background: 'linear-gradient(135deg, oklch(0.55 0.22 160), oklch(0.48 0.25 145))' } : {}}
+                style={plan.highlight ? { background: 'linear-gradient(135deg, #4F46E5, #06B6D4)' } : {}}
               >
                 {plan.cta} <ChevronRight className="h-4 w-4" />
               </Link>
@@ -382,9 +382,9 @@ export default function LandingPage() {
 
       {/* Final CTA */}
       <section className="max-w-6xl mx-auto px-4 py-16">
-        <div className="relative rounded-2xl overflow-hidden border border-emerald-500/20 p-12 text-center"
-          style={{ background: 'radial-gradient(ellipse 80% 80% at 50% 50%, oklch(0.35 0.12 160 / 0.15), transparent), oklch(0.08 0.01 264 / 1)' }}>
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_60%_at_50%_0%,oklch(0.55_0.22_160_/_0.08),transparent)]" />
+        <div className="relative rounded-2xl overflow-hidden border border-indigo-500/25 p-12 text-center"
+          style={{ background: 'radial-gradient(ellipse 80% 80% at 50% 50%, #4F46E5 / 0.12, transparent), #080C14' }}>
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_60%_at_50%_0%,#4F46E5_/_0.08,transparent)]" />
           <div className="relative">
             <h2 className="text-[36px] md:text-[48px] font-extrabold tracking-[-0.03em] text-white">
               Empezá hoy, gratis
@@ -395,7 +395,7 @@ export default function LandingPage() {
             <Link
               href="/registro"
               className="inline-flex items-center gap-2 mt-8 h-13 px-8 rounded-xl text-[15px] font-semibold text-white transition-all hover:scale-[1.02]"
-              style={{ background: 'linear-gradient(135deg, oklch(0.55 0.22 160), oklch(0.48 0.25 145))', boxShadow: '0 0 40px oklch(0.55 0.22 160 / 0.30)' }}
+              style={{ background: 'linear-gradient(135deg, #4F46E5, #06B6D4)', boxShadow: '0 0 40px #4F46E5 / 0.30' }}
             >
               Crear cuenta gratis <ChevronRight className="h-4 w-4" />
             </Link>

@@ -47,7 +47,7 @@ export default async function DashboardPage({ params }: Props) {
       value: formatARS(totalHoy),
       description: `${cantidadHoy} venta${cantidadHoy !== 1 ? 's' : ''} completada${cantidadHoy !== 1 ? 's' : ''}`,
       icon: DollarSign,
-      color: 'from-emerald-500/20 to-emerald-500/5',
+      color: 'from-emerald-500/15 to-emerald-500/5',
       iconColor: 'text-emerald-400',
       iconBg: 'bg-emerald-500/10',
       trend: '+12% vs ayer',
@@ -58,9 +58,9 @@ export default async function DashboardPage({ params }: Props) {
       value: cantidadHoy.toString(),
       description: 'Ventas del día',
       icon: ShoppingCart,
-      color: 'from-violet-500/20 to-violet-500/5',
-      iconColor: 'text-violet-400',
-      iconBg: 'bg-violet-500/10',
+      color: 'from-indigo-500/15 to-indigo-500/5',
+      iconColor: 'text-indigo-400',
+      iconBg: 'bg-indigo-500/10',
       trend: null,
       trendUp: true,
     },
@@ -69,9 +69,9 @@ export default async function DashboardPage({ params }: Props) {
       value: (totalProducts ?? 0).toString(),
       description: 'En catálogo',
       icon: Package,
-      color: 'from-blue-500/20 to-blue-500/5',
-      iconColor: 'text-blue-400',
-      iconBg: 'bg-blue-500/10',
+      color: 'from-cyan-500/15 to-cyan-500/5',
+      iconColor: 'text-cyan-400',
+      iconBg: 'bg-cyan-500/10',
       trend: null,
       trendUp: true,
     },
@@ -151,8 +151,8 @@ export default async function DashboardPage({ params }: Props) {
           </div>
         </div>
         <div className="p-12 text-center">
-          <div className="mx-auto w-12 h-12 rounded-xl bg-violet-500/10 flex items-center justify-center mb-4">
-            <TrendingUp className="h-6 w-6 text-violet-400" />
+          <div className="mx-auto w-12 h-12 rounded-xl bg-indigo-500/10 flex items-center justify-center mb-4">
+            <TrendingUp className="h-6 w-6 text-indigo-400" />
           </div>
           <p className="text-[14px] font-medium text-foreground mb-1">Dashboard en construcción</p>
           <p className="text-[13px] text-muted-foreground">

@@ -208,13 +208,13 @@ export default function FuncionalidadesPage() {
         })}
       </div>
 
-      <div className="mt-14 rounded-2xl border border-emerald-500/20 bg-emerald-500/[0.04] p-10 text-center">
+      <div className="mt-14 rounded-2xl border border-indigo-500/20 bg-indigo-500/[0.04] p-10 text-center">
         <h2 className="text-[28px] font-extrabold text-white">Probalo gratis 14 días</h2>
         <p className="mt-2 text-[14px] text-[#5a6480]">Sin tarjeta de crédito. Sin compromiso.</p>
         <Link
           href="/registro"
           className="inline-flex items-center gap-2 mt-6 h-11 px-7 rounded-xl text-[14px] font-semibold text-white"
-          style={{ background: 'linear-gradient(135deg, oklch(0.55 0.22 160), oklch(0.48 0.25 145))' }}
+          style={{ background: 'linear-gradient(135deg, #4F46E5, #06B6D4)' }}
         >
           Crear cuenta gratis <ChevronRight className="h-4 w-4" />
         </Link>
