@@ -40,11 +40,8 @@ import { BulkPriceUpdate } from '@/components/products/bulk-price-update'
 import { ExcelPriceImport } from '@/components/products/excel-price-import'
 import { createClient } from '@/lib/supabase/client'
 import { formatARS } from '@/lib/utils/currency'
+import { useOrg } from '@/hooks/use-org'
 import type { Database } from '@/types/database'
-
-interface Props {
-  params: Promise<{ orgSlug: string }>
-}
 
 type Product = Database['public']['Tables']['products']['Row'] & {
   product_categories: { name: string; color: string | null } | null
@@ -55,10 +52,12 @@ interface Category {
   name: string
 }
 
-export default function ProductosPage({ params }: Props) {
+export default function ProductosPage() {
   const router = useRouter()
-  const [orgSlug, setOrgSlug] = useState('')
-  const [orgId, setOrgId] = useState('')
+  const { org } = useOrg()
+  const orgSlug = org.slug
+  const orgId = org.id
+
   const [products, setProducts] = useState<Product[]>([])
   const [categories, setCategories] = useState<Category[]>([])
   const [loading, setLoading] = useState(true)
@@ -69,40 +68,24 @@ export default function ProductosPage({ params }: Props) {
   const [bulkOpen, setBulkOpen] = useState(false)
   const [excelOpen, setExcelOpen] = useState(false)
 
-  useEffect(() => {
-    params.then(p => setOrgSlug(p.orgSlug))
-  }, [params])
-
   const loadData = useCallback(async () => {
-    if (!orgSlug) return
     const supabase = createClient()
-
-    const { data: org } = await supabase
-      .from('organizations')
-      .select('id')
-      .eq('slug', orgSlug)
-      .single()
-    if (!org) return
-
-    setOrgId(org.id)
-
     const [{ data: prods }, { data: cats }] = await Promise.all([
       supabase
         .from('products')
         .select('*, product_categories(name, color)')
-        .eq('organization_id', org.id)
+        .eq('organization_id', orgId)
         .order('name'),
       supabase
         .from('product_categories')
         .select('id, name')
-        .eq('organization_id', org.id)
+        .eq('organization_id', orgId)
         .order('name'),
     ])
-
     setProducts((prods as Product[]) || [])
     setCategories(cats || [])
     setLoading(false)
-  }, [orgSlug])
+  }, [orgId])
 
   useEffect(() => {
     loadData()

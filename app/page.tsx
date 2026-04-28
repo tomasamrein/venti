@@ -26,7 +26,6 @@ export default async function RootPage() {
     if (error && typeof error === 'object' && 'digest' in error) throw error
   }
 
-  // Not authenticated — show landing
   return (
     <LandingLayout>
       <LandingPage />

@@ -64,7 +64,7 @@ const FEATURES = [
 
 const PLANS = [
   {
-    name: 'Basic',
+    name: 'Single',
     price: 49999,
     period: '/mes',
     desc: 'Para negocios con una sola sucursal.',
@@ -81,26 +81,26 @@ const PLANS = [
       'Funciona offline',
       'Soporte por WhatsApp',
     ],
-    cta: 'Empezar gratis 14 días',
+    cta: 'Empezar gratis 7 días',
     href: '/registro?plan=basic',
     highlight: false,
   },
   {
-    name: 'Pro',
-    price: 49999,
-    priceNote: 'por sucursal / mes',
-    period: '/sucursal/mes',
+    name: 'Enterprise',
+    price: null,
+    period: '',
     desc: 'Para cadenas y negocios con múltiples puntos de venta.',
     features: [
-      'Todo lo de Basic',
+      'Todo lo de Single',
       'Sucursales ilimitadas',
       'Dashboard consolidado multi-sucursal',
       'Reportes comparativos por sucursal',
       'Notificaciones push',
-      'Soporte prioritario',
+      'Soporte prioritario + onboarding',
+      'Implementación asistida',
     ],
-    cta: 'Empezar gratis 14 días',
-    href: '/registro?plan=pro',
+    cta: 'Consultar precio',
+    href: 'https://wa.me/5492604000000?text=Hola%2C+quiero+info+sobre+el+plan+Enterprise+de+Venti',
     highlight: true,
   },
 ]
@@ -127,8 +127,8 @@ const FAQS = [
     a: 'Vía Mercado Pago. Podés pagar con tarjeta de débito, crédito o transferencia. Se renueva cada mes y podés cancelar cuando quieras.',
   },
   {
-    q: '¿Los 14 días de prueba son gratis de verdad?',
-    a: 'Sí. Sin tarjeta de crédito. Accedés a todas las funcionalidades del plan que elegiste. Al terminar el trial, elegís si seguís o no.',
+    q: '¿Los 7 días de prueba son gratis de verdad?',
+    a: 'Sí. Sin tarjeta de crédito. Accedés a todas las funcionalidades del plan Single. Al terminar el trial, te avisamos para que elijas si seguís o no.',
   },
 ]
 
@@ -145,7 +145,7 @@ export default function LandingPage() {
         <div className="max-w-6xl mx-auto px-4 pt-28 pb-24 text-center relative">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-indigo-500/25 bg-indigo-500/10 mb-8">
             <div className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse" />
-            <span className="text-[12px] font-medium text-indigo-300">14 días gratis · Sin tarjeta de crédito</span>
+            <span className="text-[12px] font-medium text-indigo-300">7 días gratis · Sin tarjeta de crédito</span>
           </div>
 
           <h1 className="text-[46px] md:text-[68px] font-extrabold tracking-[-0.04em] text-white leading-[1.02] max-w-4xl mx-auto">
@@ -177,7 +177,7 @@ export default function LandingPage() {
               Ver planes
             </Link>
           </div>
-          <p className="mt-4 text-[12px] text-[#3d4560]">Sin permanencia · Cancelás cuando querés</p>
+          <p className="mt-4 text-[12px] text-[#3d4560]">7 días gratis · Sin permanencia · Cancelás cuando querés</p>
         </div>
       </section>
 
@@ -203,7 +203,7 @@ export default function LandingPage() {
           <p className="text-center mt-6 text-[14px] text-[#5a6480]">
             Con Venti, todo eso desaparece.{' '}
             <Link href="/registro" className="text-indigo-400 hover:text-indigo-300 font-medium underline underline-offset-2">
-              Probalo gratis 14 días →
+              Probalo gratis 7 días →
             </Link>
           </p>
         </div>
@@ -249,7 +249,7 @@ export default function LandingPage() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             {[
               { n: '< 3s', label: 'para completar una venta' },
-              { n: '14 días', label: 'de prueba gratuita' },
+              { n: '7 días', label: 'de prueba gratuita' },
               { n: '100%', label: 'hecho para Argentina' },
               { n: '0', label: 'instalaciones requeridas' },
             ].map(s => (
@@ -301,7 +301,7 @@ export default function LandingPage() {
           <h2 className="text-[34px] md:text-[44px] font-extrabold tracking-[-0.03em] text-white">
             Un precio claro, sin sorpresas
           </h2>
-          <p className="mt-3 text-[15px] text-[#5a6480]">14 días gratis en cualquier plan. Sin tarjeta de crédito.</p>
+          <p className="mt-3 text-[15px] text-[#5a6480]">7 días gratis en el plan Single. Sin tarjeta de crédito.</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5 max-w-3xl mx-auto">
@@ -325,9 +325,15 @@ export default function LandingPage() {
                 <p className="text-[14px] font-bold text-white">{plan.name}</p>
                 <p className="text-[13px] text-[#5a6480] mt-0.5">{plan.desc}</p>
                 <div className="flex items-baseline gap-1.5 mt-4">
-                  <span className="text-[42px] font-extrabold tracking-tight text-white">{fmt(plan.price)}</span>
+                  {plan.price !== null ? (
+                    <span className="text-[42px] font-extrabold tracking-tight text-white">{fmt(plan.price)}</span>
+                  ) : (
+                    <span className="text-[28px] font-extrabold tracking-tight text-indigo-300">A consultar</span>
+                  )}
                 </div>
-                <p className="text-[12px] text-[#5a6480] mt-0.5">{plan.priceNote ?? 'por mes'}</p>
+                <p className="text-[12px] text-[#5a6480] mt-0.5">
+                  {plan.price !== null ? 'por mes' : 'precio por sucursal según escala'}
+                </p>
               </div>
 
               <ul className="space-y-2.5 flex-1">
@@ -339,8 +345,10 @@ export default function LandingPage() {
                 ))}
               </ul>
 
-              <Link
+              <a
                 href={plan.href}
+                target={plan.highlight ? '_blank' : undefined}
+                rel={plan.highlight ? 'noopener noreferrer' : undefined}
                 className={`inline-flex items-center justify-center gap-2 h-11 rounded-xl text-[14px] font-semibold transition-all hover:scale-[1.01] ${
                   plan.highlight
                     ? 'text-white'
@@ -349,7 +357,7 @@ export default function LandingPage() {
                 style={plan.highlight ? { background: 'linear-gradient(135deg, #4F46E5, #06B6D4)' } : {}}
               >
                 {plan.cta} <ChevronRight className="h-4 w-4" />
-              </Link>
+              </a>
             </div>
           ))}
         </div>
@@ -390,7 +398,7 @@ export default function LandingPage() {
               Empezá hoy, gratis
             </h2>
             <p className="mt-3 text-[16px] text-[#8891a8] max-w-md mx-auto">
-              14 días con todas las funcionalidades. Sin tarjeta. Sin compromiso.
+              7 días con todas las funcionalidades. Sin tarjeta. Sin compromiso.
             </p>
             <Link
               href="/registro"

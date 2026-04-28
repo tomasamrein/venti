@@ -8,7 +8,7 @@ import { toast } from 'sonner'
 const fmt = (n: number) =>
   new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 }).format(n)
 
-const BASIC_FEATURES = [
+const SINGLE_FEATURES = [
   '1 sucursal',
   'Usuarios ilimitados',
   'POS con escáner de barras',
@@ -23,31 +23,34 @@ const BASIC_FEATURES = [
   'Soporte por WhatsApp',
 ]
 
-const PRO_EXTRAS = [
-  'Todo lo de Basic',
+const ENTERPRISE_EXTRAS = [
+  'Todo lo de Single',
   'Sucursales ilimitadas',
   'Dashboard consolidado multi-sucursal',
   'Reportes comparativos por sucursal',
   'Notificaciones push',
   'Soporte prioritario',
+  'Onboarding e implementación asistida',
 ]
 
-export default function PreciosPage() {
-  const [loading, setLoading] = useState<'basic' | 'pro' | null>(null)
+const WHATSAPP_URL = 'https://wa.me/5492604000000?text=Hola%2C+quiero+info+sobre+el+plan+Enterprise+de+Venti'
 
-  async function handleCheckout(plan: 'basic' | 'pro') {
+export default function PreciosPage() {
+  const [loading, setLoading] = useState<'basic' | null>(null)
+
+  async function handleCheckout() {
     const email = window.prompt('Ingresá tu email para continuar con el pago:')
     if (!email?.includes('@')) {
       if (email !== null) toast.error('Email inválido')
       return
     }
 
-    setLoading(plan)
+    setLoading('basic')
     try {
       const res = await fetch('/api/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ plan_type: plan, email }),
+        body: JSON.stringify({ plan_type: 'basic', email }),
       })
       const json = await res.json()
       if (!res.ok) { toast.error(json.error ?? 'Error al iniciar el pago'); return }
@@ -66,15 +69,15 @@ export default function PreciosPage() {
           Planes y precios
         </h1>
         <p className="mt-4 text-[16px] text-[#5a6480] max-w-xl mx-auto">
-          14 días de prueba gratis en cualquier plan. Sin tarjeta de crédito. Cancelás cuando querés.
+          7 días de prueba gratis en el plan Single. Sin tarjeta de crédito. Cancelás cuando querés.
         </p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5 max-w-3xl mx-auto">
-        {/* Basic */}
+        {/* Single */}
         <div className="rounded-2xl border border-white/[0.08] bg-white/[0.02] p-7 flex flex-col gap-6">
           <div>
-            <p className="text-[14px] font-bold text-white">Basic</p>
+            <p className="text-[14px] font-bold text-white">Single</p>
             <p className="text-[13px] text-[#5a6480] mt-0.5">Para negocios con una sola sucursal.</p>
             <div className="flex items-baseline gap-1.5 mt-5">
               <span className="text-[44px] font-extrabold tracking-tight text-white">{fmt(49999)}</span>
@@ -82,7 +85,7 @@ export default function PreciosPage() {
             <p className="text-[12px] text-[#5a6480] mt-0.5">por mes</p>
           </div>
           <ul className="space-y-2.5 flex-1">
-            {BASIC_FEATURES.map(f => (
+            {SINGLE_FEATURES.map(f => (
               <li key={f} className="flex items-start gap-2.5 text-[13px] text-[#8891a8]">
                 <Check className="h-4 w-4 text-indigo-400 shrink-0 mt-0.5" />
                 {f}
@@ -91,7 +94,7 @@ export default function PreciosPage() {
           </ul>
           <div className="space-y-2">
             <button
-              onClick={() => handleCheckout('basic')}
+              onClick={handleCheckout}
               disabled={loading === 'basic'}
               className="w-full inline-flex items-center justify-center gap-2 h-11 rounded-xl text-[14px] font-semibold border border-white/[0.12] text-white hover:bg-white/5 transition-colors disabled:opacity-60"
             >
@@ -102,12 +105,12 @@ export default function PreciosPage() {
               href="/registro?plan=basic"
               className="w-full inline-flex items-center justify-center gap-1 h-9 rounded-xl text-[13px] text-indigo-400 hover:text-indigo-300 transition-colors"
             >
-              Empezar gratis 14 días <ChevronRight className="h-3.5 w-3.5" />
+              Empezar gratis 7 días <ChevronRight className="h-3.5 w-3.5" />
             </Link>
           </div>
         </div>
 
-        {/* Pro */}
+        {/* Enterprise */}
         <div className="relative rounded-2xl border border-indigo-500/40 bg-gradient-to-b from-indigo-500/[0.08] to-transparent p-7 flex flex-col gap-6">
           <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
             <span className="px-3 py-1 rounded-full text-[11px] font-bold bg-indigo-600 text-white flex items-center gap-1">
@@ -115,15 +118,15 @@ export default function PreciosPage() {
             </span>
           </div>
           <div>
-            <p className="text-[14px] font-bold text-white">Pro</p>
+            <p className="text-[14px] font-bold text-white">Enterprise</p>
             <p className="text-[13px] text-[#5a6480] mt-0.5">Para cadenas y múltiples puntos de venta.</p>
             <div className="flex items-baseline gap-1.5 mt-5">
-              <span className="text-[44px] font-extrabold tracking-tight text-white">{fmt(49999)}</span>
+              <span className="text-[32px] font-extrabold tracking-tight text-indigo-300">A consultar</span>
             </div>
-            <p className="text-[12px] text-[#5a6480] mt-0.5">por sucursal / mes</p>
+            <p className="text-[12px] text-[#5a6480] mt-0.5">precio por sucursal según escala</p>
           </div>
           <ul className="space-y-2.5 flex-1">
-            {PRO_EXTRAS.map(f => (
+            {ENTERPRISE_EXTRAS.map(f => (
               <li key={f} className="flex items-start gap-2.5 text-[13px] text-[#8891a8]">
                 <Check className="h-4 w-4 text-indigo-400 shrink-0 mt-0.5" />
                 {f}
@@ -131,31 +134,30 @@ export default function PreciosPage() {
             ))}
           </ul>
           <div className="space-y-2">
-            <button
-              onClick={() => handleCheckout('pro')}
-              disabled={loading === 'pro'}
-              className="w-full inline-flex items-center justify-center gap-2 h-11 rounded-xl text-[14px] font-semibold text-white transition-all hover:scale-[1.01] disabled:opacity-60"
+            <a
+              href={WHATSAPP_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full inline-flex items-center justify-center gap-2 h-11 rounded-xl text-[14px] font-semibold text-white transition-all hover:scale-[1.01]"
               style={{ background: 'linear-gradient(135deg, #4F46E5, #06B6D4)' }}
             >
-              {loading === 'pro' ? <Loader2 className="h-4 w-4 animate-spin" /> : <CreditCard className="h-4 w-4" />}
-              {loading === 'pro' ? 'Redirigiendo...' : 'Suscribirse con Mercado Pago'}
-            </button>
-            <Link
-              href="/registro?plan=pro"
-              className="w-full inline-flex items-center justify-center gap-1 h-9 rounded-xl text-[13px] text-indigo-400 hover:text-indigo-300 transition-colors"
-            >
-              Empezar gratis 14 días <ChevronRight className="h-3.5 w-3.5" />
-            </Link>
+              <CreditCard className="h-4 w-4" />
+              Consultar por WhatsApp
+            </a>
+            <p className="text-center text-[12px] text-[#5a6480] pt-1">
+              Te respondemos en menos de 24 horas hábiles
+            </p>
           </div>
         </div>
       </div>
 
       {/* MP note */}
       <div className="mt-8 rounded-xl border border-white/[0.06] bg-white/[0.015] p-5 max-w-3xl mx-auto">
-        <p className="text-[13px] font-semibold text-white mb-1">Pagás con Mercado Pago</p>
+        <p className="text-[13px] font-semibold text-white mb-1">Plan Single: pagás con Mercado Pago</p>
         <p className="text-[12px] text-[#5a6480] leading-relaxed">
           Tarjeta de débito, crédito o transferencia bancaria. Se cobra mensual de forma automática.
           Podés cancelar desde tu cuenta en Venti en cualquier momento, sin permanencia ni penalidades.
+          El plan Enterprise se cotiza a medida según cantidad de sucursales.
         </p>
       </div>
 
@@ -167,8 +169,8 @@ export default function PreciosPage() {
             <thead>
               <tr className="border-b border-white/[0.07]">
                 <th className="px-5 py-3 text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Funcionalidad</th>
-                <th className="px-5 py-3 text-center text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Basic</th>
-                <th className="px-5 py-3 text-center text-[11px] font-semibold text-indigo-400 uppercase tracking-wider">Pro</th>
+                <th className="px-5 py-3 text-center text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Single</th>
+                <th className="px-5 py-3 text-center text-[11px] font-semibold text-indigo-400 uppercase tracking-wider">Enterprise</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-white/[0.04]">
@@ -185,14 +187,15 @@ export default function PreciosPage() {
                 ['Reportes comparativos', false, true],
                 ['Notificaciones push', false, true],
                 ['Soporte prioritario', false, true],
-              ].map(([feat, basic, pro]) => (
+                ['Onboarding asistido', false, true],
+              ].map(([feat, single, enterprise]) => (
                 <tr key={String(feat)} className="hover:bg-white/[0.02]">
                   <td className="px-5 py-3 text-[#8891a8]">{feat}</td>
                   <td className="px-5 py-3 text-center">
-                    {basic === true ? <Check className="h-4 w-4 text-indigo-400 mx-auto" /> : basic === false ? <span className="text-[#3d4560]">—</span> : <span className="text-white font-medium">{basic}</span>}
+                    {single === true ? <Check className="h-4 w-4 text-indigo-400 mx-auto" /> : single === false ? <span className="text-[#3d4560]">—</span> : <span className="text-white font-medium">{single}</span>}
                   </td>
                   <td className="px-5 py-3 text-center">
-                    {pro === true ? <Check className="h-4 w-4 text-indigo-400 mx-auto" /> : pro === false ? <span className="text-[#3d4560]">—</span> : <span className="text-indigo-400 font-medium">{pro}</span>}
+                    {enterprise === true ? <Check className="h-4 w-4 text-indigo-400 mx-auto" /> : enterprise === false ? <span className="text-[#3d4560]">—</span> : <span className="text-indigo-400 font-medium">{enterprise}</span>}
                   </td>
                 </tr>
               ))}

@@ -11,6 +11,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
 import { formatARS } from '@/lib/utils/currency'
+import { useOrg } from '@/hooks/use-org'
 
 interface Transaction {
   id: string
@@ -33,8 +34,10 @@ interface Account {
 export default function CuentaCorrientePage() {
   const router = useRouter()
   const params = useParams()
-  const orgSlug = params.orgSlug as string
   const accountId = params.id as string
+  const { org, userId } = useOrg()
+  const orgSlug = org.slug
+  const orgId = org.id
 
   const [account, setAccount] = useState<Account | null>(null)
   const [transactions, setTransactions] = useState<Transaction[]>([])
@@ -43,13 +46,9 @@ export default function CuentaCorrientePage() {
   const [showForm, setShowForm] = useState<'charge' | 'payment' | null>(null)
   const [amount, setAmount] = useState('')
   const [description, setDescription] = useState('')
-  const [orgId, setOrgId] = useState('')
 
   async function loadData() {
     const supabase = createClient()
-    const { data: org } = await supabase.from('organizations').select('id').eq('slug', orgSlug).single()
-    if (!org) { router.replace(`/${orgSlug}/cuentas-corrientes`); return }
-    setOrgId(org.id)
 
     const { data: acc } = await supabase
       .from('current_accounts')
@@ -88,6 +87,7 @@ export default function CuentaCorrientePage() {
       amount: signedAmount,
       balance_after: newBalance,
       description: description || (type === 'charge' ? 'Cargo manual' : 'Pago recibido'),
+      created_by: userId,
     })
 
     if (error) { toast.error('Error al registrar'); setLoading(false); return }

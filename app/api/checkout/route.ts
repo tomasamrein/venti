@@ -1,27 +1,54 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
 import { getPreApproval } from '@/lib/mercadopago/client'
 import { createAdminClient } from '@/lib/supabase/admin'
 
+const checkoutSchema = z.object({
+  plan_type: z.enum(['basic', 'pro']),
+  email: z.string().email(),
+  org_id: z.string().uuid().optional(),
+})
+
 export async function POST(req: NextRequest) {
   try {
-    const { plan_type, email, org_id } = await req.json() as {
-      plan_type: 'basic' | 'pro'
-      email: string
-      org_id?: string
+    const json = await req.json()
+    const parsed = checkoutSchema.safeParse(json)
+    if (!parsed.success) {
+      return NextResponse.json({ error: 'Datos inválidos', details: parsed.error.format() }, { status: 400 })
     }
 
-    if (!plan_type || !email) {
-      return NextResponse.json({ error: 'plan_type y email son requeridos' }, { status: 400 })
-    }
-
+    const { plan_type, email, org_id } = parsed.data
     const admin = createAdminClient()
+
     const { data: plan } = await admin
       .from('subscription_plans')
-      .select('id, name, price_ars, mp_plan_id')
+      .select('id, name, price_ars, mp_plan_id, is_active')
       .eq('type', plan_type)
       .single()
 
-    if (!plan) return NextResponse.json({ error: 'Plan no encontrado' }, { status: 404 })
+    if (!plan || !plan.is_active) {
+      return NextResponse.json({ error: 'Plan no disponible' }, { status: 404 })
+    }
+
+    if (plan.price_ars <= 0) {
+      return NextResponse.json({ error: 'Plan no requiere suscripción paga' }, { status: 400 })
+    }
+
+    // If org_id provided, validate it has no active subscription already
+    if (org_id) {
+      const { data: existing } = await admin
+        .from('subscriptions')
+        .select('status, mp_subscription_id')
+        .eq('organization_id', org_id)
+        .maybeSingle()
+
+      if (existing?.status === 'active') {
+        return NextResponse.json(
+          { error: 'Esta organización ya tiene una suscripción activa' },
+          { status: 409 }
+        )
+      }
+    }
 
     const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://app.venti.ar'
     const preApproval = getPreApproval()
@@ -43,9 +70,14 @@ export async function POST(req: NextRequest) {
       },
     })
 
+    if (!result.id || !result.init_point) {
+      return NextResponse.json({ error: 'Mercado Pago no devolvió init_point' }, { status: 502 })
+    }
+
     return NextResponse.json({ init_point: result.init_point, id: result.id })
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Error desconocido'
+    console.error('[checkout] Error:', err)
     return NextResponse.json({ error: message }, { status: 500 })
   }
 }

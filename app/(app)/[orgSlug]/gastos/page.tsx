@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useParams } from 'next/navigation'
 import { toast } from 'sonner'
 import { Plus, Loader2, Receipt, X } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
@@ -11,6 +10,7 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { formatARS } from '@/lib/utils/currency'
 import { Badge } from '@/components/ui/badge'
+import { useOrg } from '@/hooks/use-org'
 
 const EXPENSE_CATEGORIES = [
   'Servicios', 'Alquiler', 'Insumos', 'Mantenimiento',
@@ -30,11 +30,10 @@ interface FormState {
 }
 
 export default function GastosPage() {
-  const params = useParams()
-  const orgSlug = params.orgSlug as string
+  const { org, branch, userId } = useOrg()
+  const orgId = org.id
+  const branchId = branch.id
 
-  const [orgId, setOrgId] = useState('')
-  const [branchId, setBranchId] = useState('')
   const [expenses, setExpenses] = useState<Expense[]>([])
   const [fetching, setFetching] = useState(true)
   const [loading, setLoading] = useState(false)
@@ -45,35 +44,22 @@ export default function GastosPage() {
     setForm(f => ({ ...f, [k]: v }))
   }
 
-  async function loadExpenses(oId: string) {
+  async function loadExpenses() {
     const supabase = createClient()
     const today = new Date()
     today.setHours(0, 0, 0, 0)
     const { data } = await supabase
       .from('expenses')
       .select('*')
-      .eq('organization_id', oId)
+      .eq('organization_id', orgId)
       .gte('created_at', today.toISOString())
       .order('created_at', { ascending: false })
     setExpenses(data ?? [])
   }
 
   useEffect(() => {
-    async function init() {
-      const supabase = createClient()
-      const { data: org } = await supabase.from('organizations').select('id').eq('slug', orgSlug).single()
-      if (!org) return
-      setOrgId(org.id)
-
-      const { data: branch } = await supabase
-        .from('branches').select('id').eq('organization_id', org.id).eq('is_active', true).limit(1).single()
-      if (branch) setBranchId(branch.id)
-
-      await loadExpenses(org.id)
-      setFetching(false)
-    }
-    init()
-  }, [orgSlug])  // eslint-disable-line react-hooks/exhaustive-deps
+    loadExpenses().then(() => setFetching(false))
+  }, [orgId])  // eslint-disable-line react-hooks/exhaustive-deps
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -84,7 +70,6 @@ export default function GastosPage() {
     setLoading(true)
 
     const supabase = createClient()
-    const { data: { user } } = await supabase.auth.getUser()
 
     const { error } = await supabase.from('expenses').insert({
       organization_id: orgId,
@@ -92,7 +77,7 @@ export default function GastosPage() {
       category: form.category,
       description: form.description.trim(),
       amount: amt,
-      created_by: user?.id,
+      created_by: userId,
     })
 
     if (error) { toast.error('Error al guardar el gasto'); setLoading(false); return }
@@ -101,7 +86,7 @@ export default function GastosPage() {
     setForm({ category: 'Otro', description: '', amount: '' })
     setShowForm(false)
     setLoading(false)
-    loadExpenses(orgId)
+    loadExpenses()
   }
 
   const totalHoy = expenses.reduce((s, e) => s + e.amount, 0)

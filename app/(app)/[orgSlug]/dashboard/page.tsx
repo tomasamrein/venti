@@ -1,10 +1,16 @@
 import { createClient } from '@/lib/supabase/server'
-import { ShoppingCart, DollarSign, Package, AlertTriangle, TrendingUp, ArrowUpRight } from 'lucide-react'
+import { ShoppingCart, DollarSign, Package, AlertTriangle, TrendingUp } from 'lucide-react'
 import { formatARS } from '@/lib/utils/currency'
+import { SalesChart } from '@/components/dashboard/sales-chart'
+import { TopProductsTable } from '@/components/dashboard/top-products-table'
+import { RecentSales } from '@/components/dashboard/recent-sales'
+import { toZonedTime, format as tzFormat } from 'date-fns-tz'
 
 interface Props {
   params: Promise<{ orgSlug: string }>
 }
+
+const TZ = 'America/Argentina/Buenos_Aires'
 
 export default async function DashboardPage({ params }: Props) {
   const { orgSlug } = await params
@@ -16,42 +22,101 @@ export default async function DashboardPage({ params }: Props) {
     .eq('slug', orgSlug)
     .single()
 
-  const today = new Date()
-  today.setHours(0, 0, 0, 0)
+  if (!org) return null
 
-  const { data: todaySales } = await supabase
-    .from('sales')
-    .select('total')
-    .eq('organization_id', org?.id ?? '')
-    .eq('status', 'completed')
-    .gte('created_at', today.toISOString())
+  // Start of today in Argentina timezone
+  const nowUtc = new Date()
+  const nowAR = toZonedTime(nowUtc, TZ)
+  const startOfTodayAR = new Date(nowAR)
+  startOfTodayAR.setHours(0, 0, 0, 0)
+  // Convert back to UTC for the query
+  const todayStart = new Date(startOfTodayAR.getTime() - startOfTodayAR.getTimezoneOffset() * 60000).toISOString()
+
+  const [
+    { data: todaySales },
+    { count: totalProducts },
+    { count: lowStockCount },
+    { data: openSession },
+    { data: saleItemsToday },
+  ] = await Promise.all([
+    supabase
+      .from('sales')
+      .select('id, total, payment_method, completed_at, created_at, customer_id, sale_number, customers(full_name)')
+      .eq('organization_id', org.id)
+      .eq('status', 'completed')
+      .gte('created_at', todayStart)
+      .order('created_at', { ascending: false }),
+    supabase
+      .from('products')
+      .select('*', { count: 'exact', head: true })
+      .eq('organization_id', org.id)
+      .eq('is_active', true),
+    supabase
+      .from('stock_alerts')
+      .select('*', { count: 'exact', head: true })
+      .eq('organization_id', org.id)
+      .eq('is_resolved', false),
+    supabase
+      .from('cash_sessions')
+      .select('opening_amount')
+      .eq('organization_id', org.id)
+      .eq('status', 'open')
+      .maybeSingle(),
+    supabase
+      .from('sale_items')
+      .select('product_id, name, quantity, subtotal')
+      .eq('organization_id', org.id)
+      .gte('created_at', todayStart),
+  ])
 
   const totalHoy = todaySales?.reduce((sum, s) => sum + s.total, 0) ?? 0
   const cantidadHoy = todaySales?.length ?? 0
 
-  const { count: totalProducts } = await supabase
-    .from('products')
-    .select('*', { count: 'exact', head: true })
-    .eq('organization_id', org?.id ?? '')
-    .eq('is_active', true)
+  // Sales by hour for chart
+  const hourMap: Record<string, number> = {}
+  for (let h = 8; h <= 22; h++) {
+    hourMap[`${h}hs`] = 0
+  }
+  todaySales?.forEach(sale => {
+    const saleAR = toZonedTime(new Date(sale.created_at), TZ)
+    const h = saleAR.getHours()
+    const label = `${h}hs`
+    if (label in hourMap) hourMap[label] = (hourMap[label] ?? 0) + sale.total
+  })
+  const chartData = Object.entries(hourMap).map(([hour, total]) => ({ hour, total }))
 
-  const { count: lowStockCount } = await supabase
-    .from('stock_alerts')
-    .select('*', { count: 'exact', head: true })
-    .eq('organization_id', org?.id ?? '')
-    .eq('is_resolved', false)
+  // Top 5 products by quantity
+  const productTotals: Record<string, { name: string; quantity: number; total: number }> = {}
+  saleItemsToday?.forEach(item => {
+    const key = item.product_id ?? item.name
+    if (!productTotals[key]) productTotals[key] = { name: item.name, quantity: 0, total: 0 }
+    productTotals[key].quantity += item.quantity
+    productTotals[key].total += item.subtotal
+  })
+  const topProducts = Object.values(productTotals)
+    .sort((a, b) => b.quantity - a.quantity)
+    .slice(0, 5)
+
+  // Recent sales (last 8)
+  const recentSales = (todaySales ?? []).slice(0, 8).map(s => ({
+    id: s.id,
+    sale_number: s.sale_number,
+    total: s.total,
+    payment_method: s.payment_method,
+    completed_at: s.completed_at,
+    created_at: s.created_at,
+    customer_name: (s.customers as any)?.full_name ?? null,
+  }))
 
   const stats = [
     {
       title: 'Facturado hoy',
       value: formatARS(totalHoy),
-      description: `${cantidadHoy} venta${cantidadHoy !== 1 ? 's' : ''} completada${cantidadHoy !== 1 ? 's' : ''}`,
+      description: `${cantidadHoy} venta${cantidadHoy !== 1 ? 's' : ''}`,
       icon: DollarSign,
       color: 'from-emerald-500/15 to-emerald-500/5',
       iconColor: 'text-emerald-400',
       iconBg: 'bg-emerald-500/10',
-      trend: '+12% vs ayer',
-      trendUp: true,
     },
     {
       title: 'Transacciones',
@@ -61,8 +126,6 @@ export default async function DashboardPage({ params }: Props) {
       color: 'from-indigo-500/15 to-indigo-500/5',
       iconColor: 'text-indigo-400',
       iconBg: 'bg-indigo-500/10',
-      trend: null,
-      trendUp: true,
     },
     {
       title: 'Productos activos',
@@ -72,33 +135,31 @@ export default async function DashboardPage({ params }: Props) {
       color: 'from-cyan-500/15 to-cyan-500/5',
       iconColor: 'text-cyan-400',
       iconBg: 'bg-cyan-500/10',
-      trend: null,
-      trendUp: true,
     },
     {
       title: 'Alertas de stock',
       value: (lowStockCount ?? 0).toString(),
-      description: 'Requieren atención',
+      description: lowStockCount ? 'Requieren atención' : 'Todo en orden',
       icon: AlertTriangle,
       color: (lowStockCount ?? 0) > 0 ? 'from-amber-500/20 to-amber-500/5' : 'from-slate-500/10 to-slate-500/5',
       iconColor: (lowStockCount ?? 0) > 0 ? 'text-amber-400' : 'text-slate-400',
       iconBg: (lowStockCount ?? 0) > 0 ? 'bg-amber-500/10' : 'bg-slate-500/10',
-      trend: null,
-      trendUp: false,
     },
   ]
 
+  const dateLabel = new Intl.DateTimeFormat('es-AR', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    timeZone: TZ,
+  }).format(nowUtc)
+
   return (
-    <div className="space-y-8 max-w-6xl">
-      {/* Header */}
+    <div className="space-y-6 max-w-6xl">
       <div className="space-y-1">
-        <h1 className="text-[28px] font-extrabold tracking-[-0.03em] text-foreground">
-          Buen día 👋
-        </h1>
-        <p className="text-[14px] text-muted-foreground">
-          Resumen de{' '}
-          <span className="text-foreground font-medium">{org?.name}</span>
-          {' '}— {new Date().toLocaleDateString('es-AR', { weekday: 'long', day: 'numeric', month: 'long' })}
+        <h1 className="text-2xl font-extrabold tracking-tight">Buen día 👋</h1>
+        <p className="text-sm text-muted-foreground">
+          Resumen de <span className="text-foreground font-medium">{org.name}</span> — {dateLabel}
         </p>
       </div>
 
@@ -109,56 +170,60 @@ export default async function DashboardPage({ params }: Props) {
           return (
             <div
               key={stat.title}
-              className="relative overflow-hidden rounded-xl border border-white/[0.07] bg-card card-shadow p-5 group transition-colors hover:border-white/[0.12]"
+              className="relative overflow-hidden rounded-xl border border-border/60 bg-card p-5"
             >
-              {/* Gradient blob */}
               <div className={`absolute inset-0 bg-gradient-to-br ${stat.color} opacity-60`} />
-
               <div className="relative z-10">
-                <div className="flex items-start justify-between mb-4">
-                  <div className={`p-2 rounded-lg ${stat.iconBg}`}>
-                    <Icon className={`h-4 w-4 ${stat.iconColor}`} />
-                  </div>
-                  {stat.trend && (
-                    <span className={`flex items-center gap-0.5 text-[11px] font-medium ${stat.trendUp ? 'text-emerald-400' : 'text-red-400'}`}>
-                      <ArrowUpRight className="h-3 w-3" />
-                      {stat.trend}
-                    </span>
-                  )}
+                <div className={`w-8 h-8 rounded-lg ${stat.iconBg} flex items-center justify-center mb-3`}>
+                  <Icon className={`h-4 w-4 ${stat.iconColor}`} />
                 </div>
-
-                <div className="space-y-1">
-                  <p className="text-[12px] font-medium text-muted-foreground tracking-wide">{stat.title}</p>
-                  <p className="text-[26px] font-extrabold tracking-[-0.03em] text-foreground leading-none">{stat.value}</p>
-                  <p className="text-[12px] text-muted-foreground">{stat.description}</p>
-                </div>
+                <p className="text-xs font-medium text-muted-foreground tracking-wide">{stat.title}</p>
+                <p className="text-2xl font-extrabold tracking-tight mt-1">{stat.value}</p>
+                <p className="text-xs text-muted-foreground mt-0.5">{stat.description}</p>
               </div>
             </div>
           )
         })}
       </div>
 
-      {/* Placeholder chart area */}
-      <div className="rounded-xl border border-white/[0.07] bg-card card-shadow overflow-hidden">
-        <div className="px-6 py-4 border-b border-white/[0.05] flex items-center justify-between">
+      {/* Chart + top products */}
+      <div className="grid lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2 rounded-xl border border-border/60 bg-card overflow-hidden">
+          <div className="px-5 py-4 border-b border-border/40">
+            <h2 className="text-sm font-semibold">Ventas por hora</h2>
+            <p className="text-xs text-muted-foreground mt-0.5">Facturación acumulada del día</p>
+          </div>
+          <div className="p-4">
+            <SalesChart data={chartData} />
+          </div>
+        </div>
+
+        <div className="rounded-xl border border-border/60 bg-card overflow-hidden">
+          <div className="px-5 py-4 border-b border-border/40">
+            <h2 className="text-sm font-semibold">Top productos hoy</h2>
+            <p className="text-xs text-muted-foreground mt-0.5">Por unidades vendidas</p>
+          </div>
+          <div className="p-4">
+            <TopProductsTable products={topProducts} />
+          </div>
+        </div>
+      </div>
+
+      {/* Recent sales */}
+      <div className="rounded-xl border border-border/60 bg-card overflow-hidden">
+        <div className="px-5 py-4 border-b border-border/40 flex items-center justify-between">
           <div>
-            <h2 className="text-[15px] font-semibold tracking-[-0.02em]">Ventas recientes</h2>
-            <p className="text-[12px] text-muted-foreground mt-0.5">Últimas transacciones del día</p>
+            <h2 className="text-sm font-semibold">Últimas ventas</h2>
+            <p className="text-xs text-muted-foreground mt-0.5">Ventas de hoy</p>
           </div>
-          <div className="flex items-center gap-1.5 text-[12px] text-muted-foreground">
-            <TrendingUp className="h-3.5 w-3.5" />
-            Gráficos en próxima versión
-          </div>
+          {openSession && (
+            <div className="flex items-center gap-1.5 text-xs text-emerald-500">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              Caja abierta · {formatARS(openSession.opening_amount)} inicial
+            </div>
+          )}
         </div>
-        <div className="p-12 text-center">
-          <div className="mx-auto w-12 h-12 rounded-xl bg-indigo-500/10 flex items-center justify-center mb-4">
-            <TrendingUp className="h-6 w-6 text-indigo-400" />
-          </div>
-          <p className="text-[14px] font-medium text-foreground mb-1">Dashboard en construcción</p>
-          <p className="text-[13px] text-muted-foreground">
-            Los gráficos de ventas por hora estarán disponibles en la Fase 6.
-          </p>
-        </div>
+        <RecentSales sales={recentSales} />
       </div>
     </div>
   )

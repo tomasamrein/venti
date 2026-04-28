@@ -1,11 +1,10 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import {
   DollarSign, Clock, TrendingUp, TrendingDown,
-  ArrowUpRight, ArrowDownRight, Plus, X, History
+  ArrowUpRight, ArrowDownRight, Plus, History
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -34,10 +33,7 @@ import { createClient } from '@/lib/supabase/client'
 import { formatARS } from '@/lib/utils/currency'
 import { format } from 'date-fns'
 import { es } from 'date-fns/locale'
-
-interface Props {
-  params: Promise<{ orgSlug: string }>
-}
+import { useOrg } from '@/hooks/use-org'
 
 interface CashSession {
   id: string
@@ -58,19 +54,14 @@ interface CashMovement {
   created_at: string
 }
 
-interface Branch {
-  id: string
-  name: string
-}
+export default function CajaPage() {
+  const { org, branch, userId } = useOrg()
+  const orgId = org.id
+  const orgSlug = org.slug
+  const selectedBranch = branch
 
-export default function CajaPage({ params }: Props) {
-  const router = useRouter()
-  const [orgSlug, setOrgSlug] = useState('')
-  const [orgId, setOrgId] = useState('')
   const [session, setSession] = useState<CashSession | null>(null)
   const [movements, setMovements] = useState<CashMovement[]>([])
-  const [branches, setBranches] = useState<Branch[]>([])
-  const [selectedBranch, setSelectedBranch] = useState<Branch | null>(null)
   const [loading, setLoading] = useState(true)
 
   // Dialog states
@@ -87,46 +78,20 @@ export default function CajaPage({ params }: Props) {
   const [movementDescription, setMovementDescription] = useState('')
   const [submitting, setSubmitting] = useState(false)
 
-  useEffect(() => {
-    params.then(p => setOrgSlug(p.orgSlug))
-  }, [params])
-
   const loadData = useCallback(async () => {
-    if (!orgSlug) return
     const supabase = createClient()
-
-    const { data: org } = await supabase
-      .from('organizations')
-      .select('id')
-      .eq('slug', orgSlug)
-      .single()
-    if (!org) return
-
-    setOrgId(org.id)
-
-    const { data: branchList } = await supabase
-      .from('branches')
-      .select('id, name')
-      .eq('organization_id', org.id)
-      .eq('is_active', true)
-      .order('is_main', { ascending: false })
-
-    setBranches(branchList || [])
 
     const { data: openSession } = await supabase
       .from('cash_sessions')
       .select('*')
-      .eq('organization_id', org.id)
+      .eq('organization_id', orgId)
+      .eq('branch_id', branch.id)
       .eq('status', 'open')
-      .limit(1)
       .maybeSingle()
 
     setSession(openSession)
 
     if (openSession) {
-      const branch = branchList?.find(b => b.id === openSession.branch_id) ?? null
-      setSelectedBranch(branch)
-
       const { data: movs } = await supabase
         .from('cash_movements')
         .select('id, type, amount, description, created_at')
@@ -135,36 +100,27 @@ export default function CajaPage({ params }: Props) {
         .limit(50)
 
       setMovements(movs || [])
-    } else if (branchList && branchList.length > 0) {
-      setSelectedBranch(branchList[0])
     }
 
     setLoading(false)
-  }, [orgSlug])
+  }, [orgId, branch.id])
 
   useEffect(() => {
     loadData()
   }, [loadData])
 
   async function handleOpenSession() {
-    if (!selectedBranch) {
-      toast.error('Seleccioná una sucursal')
-      return
-    }
     setSubmitting(true)
     try {
       const supabase = createClient()
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) throw new Error('No auth')
-
       const amount = parseFloat(openingAmount) || 0
 
       const { data: newSession, error } = await supabase
         .from('cash_sessions')
         .insert({
           organization_id: orgId,
-          branch_id: selectedBranch.id,
-          opened_by: user.id,
+          branch_id: branch.id,
+          opened_by: userId,
           opening_amount: amount,
           status: 'open',
           notes: sessionNotes || null,
@@ -174,15 +130,14 @@ export default function CajaPage({ params }: Props) {
 
       if (error) throw error
 
-      // Register opening movement
       await supabase.from('cash_movements').insert({
         session_id: newSession.id,
         organization_id: orgId,
-        branch_id: selectedBranch.id,
+        branch_id: branch.id,
         type: 'opening',
         amount,
         description: 'Apertura de caja',
-        created_by: user.id,
+        created_by: userId,
       })
 
       toast.success('Caja abierta')
@@ -202,9 +157,6 @@ export default function CajaPage({ params }: Props) {
     setSubmitting(true)
     try {
       const supabase = createClient()
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) throw new Error('No auth')
-
       const closingAmt = parseFloat(closingAmount) || 0
       const expectedAmt = getExpectedAmount()
       const diff = closingAmt - expectedAmt
@@ -213,7 +165,7 @@ export default function CajaPage({ params }: Props) {
         .from('cash_sessions')
         .update({
           status: 'closed',
-          closed_by: user.id,
+          closed_by: userId,
           closed_at: new Date().toISOString(),
           closing_amount: closingAmt,
           expected_amount: expectedAmt,
@@ -221,7 +173,6 @@ export default function CajaPage({ params }: Props) {
         })
         .eq('id', session.id)
 
-      // Register closing movement
       await supabase.from('cash_movements').insert({
         session_id: session.id,
         organization_id: orgId,
@@ -229,7 +180,7 @@ export default function CajaPage({ params }: Props) {
         type: 'closing',
         amount: closingAmt,
         description: `Cierre de caja. Diferencia: ${formatARS(diff)}`,
-        created_by: user.id,
+        created_by: userId,
       })
 
       toast.success('Caja cerrada')
@@ -250,9 +201,6 @@ export default function CajaPage({ params }: Props) {
     setSubmitting(true)
     try {
       const supabase = createClient()
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) throw new Error('No auth')
-
       const amount = parseFloat(movementAmount)
       const signedAmount = movementType === 'withdrawal' || movementType === 'expense'
         ? -Math.abs(amount)
@@ -265,7 +213,7 @@ export default function CajaPage({ params }: Props) {
         type: movementType,
         amount: signedAmount,
         description: movementDescription || null,
-        created_by: user.id,
+        created_by: userId,
       })
 
       toast.success('Movimiento registrado')
@@ -552,24 +500,6 @@ export default function CajaPage({ params }: Props) {
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
-            {branches.length > 1 && (
-              <div>
-                <Label className="mb-2 block">Sucursal</Label>
-                <select
-                  value={selectedBranch?.id ?? ''}
-                  onChange={e => setBranches(prev => {
-                    const b = prev.find(x => x.id === e.target.value)
-                    if (b) setSelectedBranch(b)
-                    return prev
-                  })}
-                  className="w-full border rounded-xl h-10 px-3 text-sm bg-background"
-                >
-                  {branches.map(b => (
-                    <option key={b.id} value={b.id}>{b.name}</option>
-                  ))}
-                </select>
-              </div>
-            )}
             <div>
               <Label htmlFor="opening-amount" className="mb-2 block">
                 Monto inicial en caja

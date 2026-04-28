@@ -138,7 +138,7 @@ export async function POST(request: Request) {
     }
 
     const trialEnds = new Date()
-    trialEnds.setDate(trialEnds.getDate() + 14)
+    trialEnds.setDate(trialEnds.getDate() + 7)
 
     // 2. Create organization
     const { data: org, error: orgError } = await supabase

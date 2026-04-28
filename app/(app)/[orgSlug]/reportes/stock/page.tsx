@@ -24,7 +24,7 @@ export default async function ReportesStockPage({ params, searchParams }: Props)
     .order('stock_current', { ascending: true })
 
   if (q) query = query.ilike('name', `%${q}%`)
-  if (filter === 'low') query = query.lte('stock_current', supabase.rpc as never)
+  // low/out filtering is done client-side below
 
   const { data: products } = await query
 
