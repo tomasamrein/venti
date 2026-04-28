@@ -149,10 +149,10 @@ export default function LandingPage() {
           </div>
 
           <h1 className="text-[46px] md:text-[68px] font-extrabold tracking-[-0.04em] text-white leading-[1.02] max-w-4xl mx-auto">
-            ¿Cuánto perdés por no{' '}
+            Dejá de perder tiempo{' '}
             <span className="relative">
               <span className="bg-gradient-to-r from-indigo-400 via-cyan-400 to-indigo-500 bg-clip-text text-transparent">
-                controlar tu negocio?
+                gestionando tu negocio
               </span>
             </span>
           </h1>
