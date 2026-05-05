@@ -93,35 +93,35 @@ export default function AdminOrgDetailPage() {
   )
 
   const STATUS_COLOR: Record<string, string> = {
-    active: 'bg-emerald-500/15 text-emerald-400',
-    trialing: 'bg-blue-500/15 text-blue-400',
-    past_due: 'bg-red-500/15 text-red-400',
-    canceled: 'bg-[#3d4560]/40 text-[#5a6480]',
-    paused: 'bg-amber-500/15 text-amber-400',
+    active: 'bg-emerald-100 text-emerald-700',
+    trialing: 'bg-blue-100 text-blue-700',
+    past_due: 'bg-red-100 text-red-700',
+    canceled: 'bg-[#3d4560]/40 text-muted-foreground',
+    paused: 'bg-amber-100 text-amber-700',
   }
 
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4">
-        <Link href="/admin/organizaciones" className="h-8 w-8 rounded-lg flex items-center justify-center text-[#5a6480] hover:text-white hover:bg-white/5 transition-colors">
+        <Link href="/admin/organizaciones" className="h-8 w-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/40 transition-colors">
           <ArrowLeft className="h-4 w-4" />
         </Link>
         <div className="flex-1">
-          <h1 className="text-[22px] font-bold tracking-tight text-white">{org.name}</h1>
-          <p className="text-[13px] text-[#5a6480] font-mono">{org.slug}</p>
+          <h1 className="text-[22px] font-bold tracking-tight text-foreground">{org.name}</h1>
+          <p className="text-[13px] text-muted-foreground font-mono">{org.slug}</p>
         </div>
         <div className="flex items-center gap-2">
           <button
             onClick={extendTrial}
             disabled={saving}
-            className="h-8 px-3 rounded-lg text-[12px] font-medium text-[#8891a8] hover:text-white hover:bg-white/5 transition-colors border border-border disabled:opacity-50"
+            className="h-8 px-3 rounded-lg text-[12px] font-medium text-muted-foreground hover:text-foreground hover:bg-muted/40 transition-colors border border-border disabled:opacity-50"
           >
             Extender trial +14d
           </button>
           <button
             onClick={toggleActive}
             disabled={saving}
-            className={`h-8 px-3 rounded-lg text-[12px] font-medium transition-colors disabled:opacity-50 ${org.is_active ? 'bg-red-500/15 text-red-400 hover:bg-red-500/25' : 'bg-emerald-500/15 text-emerald-400 hover:bg-emerald-500/25'}`}
+            className={`h-8 px-3 rounded-lg text-[12px] font-medium transition-colors disabled:opacity-50 ${org.is_active ? 'bg-red-100 text-red-700 hover:bg-red-500/25' : 'bg-emerald-100 text-emerald-700 hover:bg-emerald-500/25'}`}
           >
             {org.is_active ? 'Desactivar' : 'Activar'}
           </button>
@@ -132,8 +132,8 @@ export default function AdminOrgDetailPage() {
         {/* Info */}
         <div className="md:col-span-2 rounded-xl border border-border bg-white p-5 space-y-4">
           <div className="flex items-center gap-2">
-            <Building2 className="h-4 w-4 text-[#5a6480]" />
-            <h2 className="text-[14px] font-semibold text-white">Información</h2>
+            <Building2 className="h-4 w-4 text-muted-foreground" />
+            <h2 className="text-[14px] font-semibold text-foreground">Información</h2>
           </div>
           <div className="grid grid-cols-2 gap-4">
             {[
@@ -145,8 +145,8 @@ export default function AdminOrgDetailPage() {
               ['Trial hasta', org.trial_ends_at ? new Date(org.trial_ends_at).toLocaleDateString('es-AR') : '—'],
             ].map(([label, value]) => (
               <div key={label}>
-                <p className="text-[11px] text-[#5a6480] uppercase tracking-wider mb-0.5">{label}</p>
-                <p className="text-[13px] text-white">{value}</p>
+                <p className="text-[11px] text-muted-foreground uppercase tracking-wider mb-0.5">{label}</p>
+                <p className="text-[13px] text-foreground">{value}</p>
               </div>
             ))}
           </div>
@@ -155,33 +155,33 @@ export default function AdminOrgDetailPage() {
         {/* Suscripción */}
         <div className="rounded-xl border border-border bg-white p-5 space-y-4">
           <div className="flex items-center gap-2">
-            <CreditCard className="h-4 w-4 text-[#5a6480]" />
-            <h2 className="text-[14px] font-semibold text-white">Suscripción</h2>
+            <CreditCard className="h-4 w-4 text-muted-foreground" />
+            <h2 className="text-[14px] font-semibold text-foreground">Suscripción</h2>
           </div>
           {sub ? (
             <div className="space-y-3">
-              <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[12px] font-medium ${STATUS_COLOR[sub.status] ?? 'bg-white/10 text-white'}`}>
+              <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[12px] font-medium ${STATUS_COLOR[sub.status] ?? 'bg-slate-100 text-slate-700'}`}>
                 {sub.status}
               </span>
               <div>
-                <p className="text-[11px] text-[#5a6480] uppercase tracking-wider mb-0.5">Plan</p>
-                <p className="text-[13px] text-white">{sub.subscription_plans?.name ?? '—'}</p>
+                <p className="text-[11px] text-muted-foreground uppercase tracking-wider mb-0.5">Plan</p>
+                <p className="text-[13px] text-foreground">{sub.subscription_plans?.name ?? '—'}</p>
               </div>
               <div>
-                <p className="text-[11px] text-[#5a6480] uppercase tracking-wider mb-0.5">Precio</p>
-                <p className="text-[13px] text-white">
+                <p className="text-[11px] text-muted-foreground uppercase tracking-wider mb-0.5">Precio</p>
+                <p className="text-[13px] text-foreground">
                   {sub.subscription_plans ? new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 }).format(sub.subscription_plans.price_ars) + '/mes' : '—'}
                 </p>
               </div>
               {sub.current_period_end && (
                 <div>
-                  <p className="text-[11px] text-[#5a6480] uppercase tracking-wider mb-0.5">Vence</p>
-                  <p className="text-[13px] text-white">{new Date(sub.current_period_end).toLocaleDateString('es-AR')}</p>
+                  <p className="text-[11px] text-muted-foreground uppercase tracking-wider mb-0.5">Vence</p>
+                  <p className="text-[13px] text-foreground">{new Date(sub.current_period_end).toLocaleDateString('es-AR')}</p>
                 </div>
               )}
             </div>
           ) : (
-            <p className="text-[13px] text-[#5a6480]">Sin suscripción</p>
+            <p className="text-[13px] text-muted-foreground">Sin suscripción</p>
           )}
         </div>
       </div>
@@ -189,31 +189,31 @@ export default function AdminOrgDetailPage() {
       {/* Miembros */}
       <div className="rounded-xl border border-border bg-white overflow-hidden">
         <div className="px-5 py-4 border-b border-border flex items-center gap-2">
-          <Users className="h-4 w-4 text-[#5a6480]" />
-          <h2 className="text-[14px] font-semibold text-white">Equipo ({members.length})</h2>
+          <Users className="h-4 w-4 text-muted-foreground" />
+          <h2 className="text-[14px] font-semibold text-foreground">Equipo ({members.length})</h2>
         </div>
         <table className="w-full">
           <thead>
             <tr className="border-b border-border">
-              <th className="text-left px-5 py-3 text-[11px] font-medium text-[#5a6480] uppercase tracking-wider">Nombre</th>
-              <th className="text-left px-5 py-3 text-[11px] font-medium text-[#5a6480] uppercase tracking-wider">Rol</th>
-              <th className="text-left px-5 py-3 text-[11px] font-medium text-[#5a6480] uppercase tracking-wider">Estado</th>
+              <th className="text-left px-5 py-3 text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Nombre</th>
+              <th className="text-left px-5 py-3 text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Rol</th>
+              <th className="text-left px-5 py-3 text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Estado</th>
             </tr>
           </thead>
           <tbody>
             {members.map(m => (
               <tr key={m.id} className="border-b border-border">
-                <td className="px-5 py-3 text-[13px] text-white">{m.profiles?.full_name ?? 'Sin nombre'}</td>
-                <td className="px-5 py-3 text-[13px] text-[#8891a8] capitalize">{m.role}</td>
+                <td className="px-5 py-3 text-[13px] text-foreground">{m.profiles?.full_name ?? 'Sin nombre'}</td>
+                <td className="px-5 py-3 text-[13px] text-muted-foreground capitalize">{m.role}</td>
                 <td className="px-5 py-3">
-                  <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium ${m.is_active ? 'bg-emerald-500/15 text-emerald-400' : 'bg-[#3d4560]/40 text-[#5a6480]'}`}>
+                  <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium ${m.is_active ? 'bg-emerald-100 text-emerald-700' : 'bg-[#3d4560]/40 text-muted-foreground'}`}>
                     {m.is_active ? 'Activo' : 'Inactivo'}
                   </span>
                 </td>
               </tr>
             ))}
             {!members.length && (
-              <tr><td colSpan={3} className="px-5 py-8 text-center text-[13px] text-[#5a6480]">Sin miembros</td></tr>
+              <tr><td colSpan={3} className="px-5 py-8 text-center text-[13px] text-muted-foreground">Sin miembros</td></tr>
             )}
           </tbody>
         </table>

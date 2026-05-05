@@ -22,7 +22,7 @@ export default async function AdminUsersPage({ searchParams }: Props) {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-[22px] font-bold tracking-tight text-white">Usuarios</h1>
+          <h1 className="text-[22px] font-bold tracking-tight text-foreground">Usuarios</h1>
           <p className="text-[13px] text-muted-foreground mt-0.5">{profiles?.length ?? 0} resultados</p>
         </div>
       </div>
@@ -36,7 +36,7 @@ export default async function AdminUsersPage({ searchParams }: Props) {
         />
         <button
           type="submit"
-          className="h-9 px-4 rounded-lg text-[13px] font-semibold text-white"
+          className="h-9 px-4 rounded-lg text-[13px] font-semibold text-foreground"
           style={{ background: 'linear-gradient(135deg, oklch(0.55 0.16 155), oklch(0.50 0.16 158))' }}
         >
           Buscar
@@ -59,12 +59,12 @@ export default async function AdminUsersPage({ searchParams }: Props) {
                 <td className="px-5 py-3">
                   <div className="flex items-center gap-3">
                     <div className="w-7 h-7 rounded-full bg-muted/40 flex items-center justify-center shrink-0">
-                      <span className="text-[11px] font-bold text-white">
+                      <span className="text-[11px] font-bold text-foreground">
                         {(p.full_name?.[0] ?? '?').toUpperCase()}
                       </span>
                     </div>
                     <div>
-                      <p className="text-[13px] font-medium text-white">{p.full_name ?? 'Sin nombre'}</p>
+                      <p className="text-[13px] font-medium text-foreground">{p.full_name ?? 'Sin nombre'}</p>
                       <p className="text-[11px] text-muted-foreground font-mono truncate max-w-[160px]">{p.id.slice(0, 8)}…</p>
                     </div>
                   </div>
@@ -72,7 +72,7 @@ export default async function AdminUsersPage({ searchParams }: Props) {
                 <td className="px-5 py-3 text-[13px] text-muted-foreground">{p.phone ?? '—'}</td>
                 <td className="px-5 py-3">
                   {p.is_super_admin ? (
-                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-red-500/15 text-red-400">
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-red-100 text-red-700">
                       Super Admin
                     </span>
                   ) : (

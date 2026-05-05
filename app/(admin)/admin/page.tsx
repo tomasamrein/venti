@@ -45,7 +45,7 @@ export default async function AdminDashboardPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-[22px] font-bold tracking-tight text-white">Dashboard</h1>
+        <h1 className="text-[22px] font-bold tracking-tight text-foreground">Dashboard</h1>
         <p className="text-[13px] text-muted-foreground mt-0.5">Resumen global del sistema</p>
       </div>
 
@@ -58,7 +58,7 @@ export default async function AdminDashboardPage() {
                 <Icon className={`h-4.5 w-4.5 ${s.color}`} />
               </div>
               <div>
-                <p className="text-[22px] font-bold text-white tracking-tight">{s.value}</p>
+                <p className="text-[22px] font-bold text-foreground tracking-tight">{s.value}</p>
                 <p className="text-[12px] text-muted-foreground mt-0.5">{s.label}</p>
                 <p className="text-[11px] text-muted-foreground mt-0.5">{s.sub}</p>
               </div>
@@ -69,7 +69,7 @@ export default async function AdminDashboardPage() {
 
       <div className="rounded-xl border border-border bg-white overflow-hidden">
         <div className="px-5 py-4 border-b border-border">
-          <h2 className="text-[14px] font-semibold text-white">Organizaciones recientes</h2>
+          <h2 className="text-[14px] font-semibold text-foreground">Organizaciones recientes</h2>
         </div>
         <table className="w-full">
           <thead>
@@ -86,7 +86,7 @@ export default async function AdminDashboardPage() {
                 <td className="px-5 py-3 text-[13px] text-foreground font-medium">{org.name}</td>
                 <td className="px-5 py-3 text-[13px] text-muted-foreground font-mono">{org.slug}</td>
                 <td className="px-5 py-3">
-                  <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium ${org.is_active ? 'bg-emerald-500/15 text-emerald-400' : 'bg-red-500/15 text-red-400'}`}>
+                  <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium ${org.is_active ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'}`}>
                     {org.is_active ? 'Activa' : 'Inactiva'}
                   </span>
                 </td>

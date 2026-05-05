@@ -14,11 +14,11 @@ const STATUS_LABEL: Record<string, string> = {
 }
 
 const STATUS_COLOR: Record<string, string> = {
-  active: 'bg-emerald-500/15 text-emerald-400',
-  trialing: 'bg-blue-500/15 text-blue-400',
-  past_due: 'bg-red-500/15 text-red-400',
-  canceled: 'bg-[#3d4560]/40 text-muted-foreground',
-  paused: 'bg-amber-500/15 text-amber-400',
+  active: 'bg-emerald-100 text-emerald-700',
+  trialing: 'bg-blue-100 text-blue-700',
+  past_due: 'bg-red-100 text-red-700',
+  canceled: 'bg-slate-100 text-slate-500',
+  paused: 'bg-amber-100 text-amber-700',
 }
 
 export default async function AdminSubscriptionsPage({ searchParams }: Props) {
@@ -42,7 +42,7 @@ export default async function AdminSubscriptionsPage({ searchParams }: Props) {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-[22px] font-bold tracking-tight text-white">Suscripciones</h1>
+        <h1 className="text-[22px] font-bold tracking-tight text-foreground">Suscripciones</h1>
         <p className="text-[13px] text-muted-foreground mt-0.5">{subs?.length ?? 0} resultados</p>
       </div>
 
@@ -83,7 +83,7 @@ export default async function AdminSubscriptionsPage({ searchParams }: Props) {
                 <tr key={sub.id} className="border-b border-border hover:bg-muted/40 transition-colors">
                   <td className="px-5 py-3">
                     {org ? (
-                      <Link href={`/admin/organizaciones/${org.id}`} className="text-[13px] font-medium text-white hover:text-blue-400 transition-colors">
+                      <Link href={`/admin/organizaciones/${org.id}`} className="text-[13px] font-medium text-foreground hover:text-blue-600 transition-colors">
                         {org.name}
                       </Link>
                     ) : <span className="text-[13px] text-muted-foreground">—</span>}
@@ -97,7 +97,7 @@ export default async function AdminSubscriptionsPage({ searchParams }: Props) {
                   <td className="px-5 py-3 text-[12px] text-muted-foreground">
                     {sub.current_period_end ? new Date(sub.current_period_end).toLocaleDateString('es-AR') : '—'}
                   </td>
-                  <td className="px-5 py-3 text-[13px] text-white">
+                  <td className="px-5 py-3 text-[13px] text-foreground">
                     {plan ? new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 }).format(plan.price_ars) : '—'}
                   </td>
                 </tr>

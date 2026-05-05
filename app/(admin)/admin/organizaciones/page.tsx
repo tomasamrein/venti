@@ -25,8 +25,8 @@ export default async function AdminOrgsPage({ searchParams }: Props) {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-[22px] font-bold tracking-tight text-white">Organizaciones</h1>
-          <p className="text-[13px] text-[#5a6480] mt-0.5">{orgs?.length ?? 0} resultados</p>
+          <h1 className="text-[22px] font-bold tracking-tight text-foreground">Organizaciones</h1>
+          <p className="text-[13px] text-muted-foreground mt-0.5">{orgs?.length ?? 0} resultados</p>
         </div>
       </div>
 
@@ -48,7 +48,7 @@ export default async function AdminOrgsPage({ searchParams }: Props) {
         </select>
         <button
           type="submit"
-          className="h-9 px-4 rounded-lg text-[13px] font-semibold text-white"
+          className="h-9 px-4 rounded-lg text-[13px] font-semibold text-foreground"
           style={{ background: 'linear-gradient(135deg, oklch(0.55 0.16 155), oklch(0.50 0.16 158))' }}
         >
           Filtrar
@@ -59,10 +59,10 @@ export default async function AdminOrgsPage({ searchParams }: Props) {
         <table className="w-full">
           <thead>
             <tr className="border-b border-border">
-              <th className="text-left px-5 py-3 text-[11px] font-medium text-[#5a6480] uppercase tracking-wider">Organización</th>
-              <th className="text-left px-5 py-3 text-[11px] font-medium text-[#5a6480] uppercase tracking-wider">Contacto</th>
-              <th className="text-left px-5 py-3 text-[11px] font-medium text-[#5a6480] uppercase tracking-wider">Estado</th>
-              <th className="text-left px-5 py-3 text-[11px] font-medium text-[#5a6480] uppercase tracking-wider">Creada</th>
+              <th className="text-left px-5 py-3 text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Organización</th>
+              <th className="text-left px-5 py-3 text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Contacto</th>
+              <th className="text-left px-5 py-3 text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Estado</th>
+              <th className="text-left px-5 py-3 text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Creada</th>
               <th className="px-5 py-3" />
             </tr>
           </thead>
@@ -72,30 +72,30 @@ export default async function AdminOrgsPage({ searchParams }: Props) {
                 <td className="px-5 py-3">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-lg bg-muted/50 flex items-center justify-center shrink-0">
-                      <Building2 className="h-4 w-4 text-[#5a6480]" />
+                      <Building2 className="h-4 w-4 text-muted-foreground" />
                     </div>
                     <div>
-                      <p className="text-[13px] font-semibold text-white">{org.name}</p>
-                      <p className="text-[11px] text-[#5a6480] font-mono">{org.slug}</p>
+                      <p className="text-[13px] font-semibold text-foreground">{org.name}</p>
+                      <p className="text-[11px] text-muted-foreground font-mono">{org.slug}</p>
                     </div>
                   </div>
                 </td>
                 <td className="px-5 py-3">
-                  <p className="text-[13px] text-[#8891a8]">{org.email ?? '—'}</p>
-                  <p className="text-[11px] text-[#5a6480]">{org.phone ?? ''}</p>
+                  <p className="text-[13px] text-muted-foreground">{org.email ?? '—'}</p>
+                  <p className="text-[11px] text-muted-foreground">{org.phone ?? ''}</p>
                 </td>
                 <td className="px-5 py-3">
-                  <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium ${org.is_active ? 'bg-emerald-500/15 text-emerald-400' : 'bg-red-500/15 text-red-400'}`}>
+                  <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium ${org.is_active ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'}`}>
                     {org.is_active ? 'Activa' : 'Inactiva'}
                   </span>
                 </td>
-                <td className="px-5 py-3 text-[13px] text-[#5a6480]">
+                <td className="px-5 py-3 text-[13px] text-muted-foreground">
                   {new Date(org.created_at).toLocaleDateString('es-AR')}
                 </td>
                 <td className="px-5 py-3">
                   <Link
                     href={`/admin/organizaciones/${org.id}`}
-                    className="inline-flex items-center gap-1 text-[12px] text-[#5a6480] hover:text-white transition-colors"
+                    className="inline-flex items-center gap-1 text-[12px] text-muted-foreground hover:text-foreground transition-colors"
                   >
                     Ver <ChevronRight className="h-3.5 w-3.5" />
                   </Link>
@@ -103,7 +103,7 @@ export default async function AdminOrgsPage({ searchParams }: Props) {
               </tr>
             ))}
             {!orgs?.length && (
-              <tr><td colSpan={5} className="px-5 py-10 text-center text-[13px] text-[#5a6480]">Sin resultados</td></tr>
+              <tr><td colSpan={5} className="px-5 py-10 text-center text-[13px] text-muted-foreground">Sin resultados</td></tr>
             )}
           </tbody>
         </table>
