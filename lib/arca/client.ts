@@ -121,6 +121,8 @@ export interface FECAEDetRequest {
   MonId: string
   MonCotiz: number
   Iva: Array<{ Id: number; BaseImp: number; Importe: number }>
+  // RG 5616 — obligatorio desde 2024
+  CondicionIVAReceptorId: number
 }
 
 export interface FECAEDetResponse {
@@ -177,6 +179,7 @@ export async function fecaeSolicitar(
           <ar:ImpIVA>${req.ImpIVA.toFixed(2)}</ar:ImpIVA>
           <ar:MonId>${req.MonId}</ar:MonId>
           <ar:MonCotiz>${req.MonCotiz}</ar:MonCotiz>
+          <ar:CondicionIVAReceptorId>${req.CondicionIVAReceptorId}</ar:CondicionIVAReceptorId>
           ${ivaXml}
         </ar:FECAEDetRequest>
       </ar:FeDetReq>

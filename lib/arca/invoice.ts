@@ -107,6 +107,18 @@ export async function emitInvoice(
   const { impNeto, impIva, ivaArray } = calculateAmounts(req, req.invoice_type)
   const { docTipo, docNro } = resolveDoc(req.invoice_type, req.customer_cuit)
 
+  // RG 5616: CondicionIVAReceptorId
+  // 1=Responsable Inscripto, 4=Exento, 5=Consumidor Final, 6=Monotributo, 7=No categorizado
+  let condicionIVAReceptorId: number
+  if (req.invoice_type === 'A') {
+    condicionIVAReceptorId = 1 // RI — factura A solo se emite a RI
+  } else if (req.invoice_type === 'C') {
+    condicionIVAReceptorId = 6 // Monotributista
+  } else {
+    // B: consumidor final si no hay doc, RI si tiene CUIT
+    condicionIVAReceptorId = docTipo === 80 ? 1 : 5
+  }
+
   // Get next invoice number. Note: this is NOT atomic with FECAESolicitar — if two
   // requests come at the same time we'd both get N+1. ARCA rejects the second with
   // "El comprobante ya fue informado". The retry loop handles this.
@@ -136,6 +148,7 @@ export async function emitInvoice(
       MonId: 'PES',
       MonCotiz: 1,
       Iva: ivaArray,
+      CondicionIVAReceptorId: condicionIVAReceptorId,
     }
 
     const response = await fecaeSolicitar(opts, fecaeReq)
