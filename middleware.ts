@@ -73,7 +73,7 @@ export async function middleware(request: NextRequest) {
   // Check org membership
   const { data: org } = await supabase
     .from('organizations')
-    .select('id, is_active')
+    .select('id, is_active, trial_ends_at')
     .eq('slug', orgSlug)
     .single()
 
@@ -89,7 +89,7 @@ export async function middleware(request: NextRequest) {
 
   if (!member) return NextResponse.redirect(new URL('/login', request.url))
 
-  // Block past_due orgs — allow only configuracion/suscripcion
+  // Block past_due / canceled / expired-trial orgs
   const { data: sub } = await supabase
     .from('subscriptions')
     .select('status')
@@ -98,7 +98,13 @@ export async function middleware(request: NextRequest) {
     .limit(1)
     .single()
 
-  if (sub?.status === 'past_due' || sub?.status === 'canceled') {
+  const trialExpired = org.trial_ends_at && new Date(org.trial_ends_at) < new Date()
+  const blocked =
+    sub?.status === 'past_due' ||
+    sub?.status === 'canceled' ||
+    (trialExpired && (!sub || sub.status === 'trialing'))
+
+  if (blocked) {
     const allowedPath = `/${orgSlug}/configuracion/suscripcion`
     if (!pathname.startsWith(allowedPath)) {
       return NextResponse.redirect(new URL(allowedPath, request.url))
