@@ -1,9 +1,9 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useParams } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import { toast } from 'sonner'
-import { Loader2, Building2, User, Globe } from 'lucide-react'
+import { Loader2, Building2, User, Globe, FileText, CreditCard, Users, GitBranch, ChevronRight } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -25,6 +25,7 @@ const TIMEZONES = [
 
 export default function ConfiguracionPage() {
   const params = useParams()
+  const router = useRouter()
   const orgSlug = params.orgSlug as string
 
   const [orgId, setOrgId] = useState('')
@@ -110,11 +111,38 @@ export default function ConfiguracionPage() {
     )
   }
 
+  const subPages = [
+    { label: 'Facturación ARCA', description: 'Certificado, CUIT, punto de venta', href: `/${orgSlug}/configuracion/facturacion`, icon: FileText, color: 'text-blue-600 bg-blue-50' },
+    { label: 'Suscripción', description: 'Plan actual y facturación', href: `/${orgSlug}/configuracion/suscripcion`, icon: CreditCard, color: 'text-emerald-600 bg-emerald-50' },
+    { label: 'Equipo', description: 'Usuarios y roles', href: `/${orgSlug}/configuracion/equipo`, icon: Users, color: 'text-violet-600 bg-violet-50' },
+    { label: 'Sucursales', description: 'Gestión de locales', href: `/${orgSlug}/configuracion/sucursales`, icon: GitBranch, color: 'text-amber-600 bg-amber-50' },
+  ]
+
   return (
     <div className="space-y-6 max-w-xl">
       <div>
         <h1 className="text-[28px] font-extrabold tracking-[-0.03em]">Configuración</h1>
         <p className="text-[14px] text-muted-foreground mt-1">Ajustá los datos de tu negocio y perfil</p>
+      </div>
+
+      {/* Sub-pages */}
+      <div className="grid grid-cols-2 gap-3">
+        {subPages.map(p => {
+          const Icon = p.icon
+          return (
+            <button key={p.href} onClick={() => router.push(p.href)}
+              className="rounded-xl border border-border bg-card p-4 text-left hover:border-slate-300 hover:bg-muted/30 transition-colors flex items-start gap-3 group">
+              <div className={`w-9 h-9 rounded-lg ${p.color} flex items-center justify-center shrink-0`}>
+                <Icon className="h-4 w-4" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-[13px] font-semibold text-foreground">{p.label}</p>
+                <p className="text-[11px] text-muted-foreground mt-0.5">{p.description}</p>
+              </div>
+              <ChevronRight className="h-4 w-4 text-muted-foreground/50 group-hover:text-muted-foreground mt-0.5 shrink-0" />
+            </button>
+          )
+        })}
       </div>
 
       <form onSubmit={saveOrg} className="rounded-xl border border-border bg-card overflow-hidden">
