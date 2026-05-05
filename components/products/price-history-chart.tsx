@@ -61,7 +61,7 @@ export function PriceHistoryChart({ history }: PriceHistoryChartProps) {
             <Line
               type="stepAfter"
               dataKey="venta"
-              stroke="#6366f1"
+              stroke="#059669"
               strokeWidth={2}
               dot={{ r: 3 }}
               activeDot={{ r: 5 }}

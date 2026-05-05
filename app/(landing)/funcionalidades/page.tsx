@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import {
   ShoppingCart, Receipt, Package, Users, BarChart3, Wifi,
-  CreditCard, Bell, Building2, Printer, FileSpreadsheet,
+  CreditCard, Bell, Building2,
   Smartphone, ChevronRight, Check,
 } from 'lucide-react'
 
@@ -14,9 +14,8 @@ export const metadata: Metadata = {
 const SECTIONS = [
   {
     icon: ShoppingCart,
-    color: 'text-emerald-400',
-    bg: 'bg-emerald-500/10',
-    border: 'border-emerald-500/20',
+    iconColor: 'text-emerald-600',
+    iconBg: 'bg-emerald-100',
     title: 'Punto de Venta (POS)',
     desc: 'Diseñado para vender rápido, incluso en las horas pico.',
     features: [
@@ -34,9 +33,8 @@ const SECTIONS = [
   },
   {
     icon: Receipt,
-    color: 'text-emerald-600',
-    bg: 'bg-emerald-600/10',
-    border: 'border-emerald-300/20',
+    iconColor: 'text-emerald-700',
+    iconBg: 'bg-emerald-100',
     title: 'Facturación ARCA (ex-AFIP)',
     desc: 'Facturás legalmente sin salir de la caja.',
     features: [
@@ -52,9 +50,8 @@ const SECTIONS = [
   },
   {
     icon: Package,
-    color: 'text-blue-400',
-    bg: 'bg-blue-500/10',
-    border: 'border-blue-500/20',
+    iconColor: 'text-blue-600',
+    iconBg: 'bg-blue-100',
     title: 'Gestión de productos y stock',
     desc: 'Sabés exactamente qué tenés y qué te falta.',
     features: [
@@ -72,9 +69,8 @@ const SECTIONS = [
   },
   {
     icon: Users,
-    color: 'text-pink-400',
-    bg: 'bg-pink-500/10',
-    border: 'border-pink-500/20',
+    iconColor: 'text-pink-600',
+    iconBg: 'bg-pink-100',
     title: 'Clientes y cuentas corrientes',
     desc: 'Controlás las deudas sin papel ni cuaderno.',
     features: [
@@ -89,9 +85,8 @@ const SECTIONS = [
   },
   {
     icon: BarChart3,
-    color: 'text-amber-400',
-    bg: 'bg-amber-500/10',
-    border: 'border-amber-500/20',
+    iconColor: 'text-amber-600',
+    iconBg: 'bg-amber-100',
     title: 'Reportes y dashboard',
     desc: 'Los números de tu negocio en tiempo real.',
     features: [
@@ -107,9 +102,8 @@ const SECTIONS = [
   },
   {
     icon: CreditCard,
-    color: 'text-teal-400',
-    bg: 'bg-teal-500/10',
-    border: 'border-teal-500/20',
+    iconColor: 'text-teal-600',
+    iconBg: 'bg-teal-100',
     title: 'Caja',
     desc: 'Apertura, cierre y control completo de cada turno.',
     features: [
@@ -124,10 +118,9 @@ const SECTIONS = [
   },
   {
     icon: Building2,
-    color: 'text-emerald-600',
-    bg: 'bg-emerald-600/10',
-    border: 'border-emerald-300/20',
-    title: 'Multi-sucursal (Plan Pro)',
+    iconColor: 'text-emerald-700',
+    iconBg: 'bg-emerald-100',
+    title: 'Multi-sucursal (Plan Enterprise)',
     desc: 'Manejás toda la cadena desde un solo lugar.',
     features: [
       'Sucursales ilimitadas',
@@ -140,9 +133,8 @@ const SECTIONS = [
   },
   {
     icon: Bell,
-    color: 'text-orange-400',
-    bg: 'bg-orange-500/10',
-    border: 'border-orange-500/20',
+    iconColor: 'text-orange-600',
+    iconBg: 'bg-orange-100',
     title: 'Notificaciones',
     desc: 'Te avisamos antes de que sea un problema.',
     features: [
@@ -154,9 +146,8 @@ const SECTIONS = [
   },
   {
     icon: Wifi,
-    color: 'text-teal-600',
-    bg: 'bg-teal-100/10',
-    border: 'border-cyan-500/20',
+    iconColor: 'text-teal-700',
+    iconBg: 'bg-teal-100',
     title: 'Modo offline y PWA',
     desc: 'Seguís vendiendo aunque se corte internet.',
     features: [
@@ -172,34 +163,33 @@ export default function FuncionalidadesPage() {
   return (
     <div className="max-w-6xl mx-auto px-4 py-20">
       <div className="text-center mb-16">
-        <h1 className="text-[42px] md:text-[56px] font-extrabold tracking-[-0.04em] text-white">
+        <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-slate-900">
           Todo lo que incluye Venti
         </h1>
-        <p className="mt-4 text-[16px] text-[#5a6480] max-w-xl mx-auto">
+        <p className="mt-4 text-base text-slate-600 max-w-xl mx-auto">
           Sin módulos separados, sin addons. Todo en un solo precio.
         </p>
       </div>
 
-      <div className="space-y-5">
+      <div className="space-y-4">
         {SECTIONS.map(s => {
           const Icon = s.icon
           return (
-            <div key={s.title}
-              className={`rounded-2xl border ${s.border} bg-white/[0.02] overflow-hidden`}>
-              <div className="px-6 py-5 flex items-center gap-4 border-b border-white/[0.05]">
-                <div className={`w-10 h-10 rounded-xl ${s.bg} flex items-center justify-center shrink-0`}>
-                  <Icon className={`h-5 w-5 ${s.color}`} />
+            <div key={s.title} className="rounded-xl border border-slate-200 bg-white overflow-hidden">
+              <div className="px-6 py-5 flex items-center gap-4 border-b border-slate-100">
+                <div className={`w-10 h-10 rounded-lg ${s.iconBg} flex items-center justify-center shrink-0`}>
+                  <Icon className={`h-5 w-5 ${s.iconColor}`} />
                 </div>
                 <div>
-                  <h2 className="text-[16px] font-bold text-white">{s.title}</h2>
-                  <p className="text-[13px] text-[#5a6480]">{s.desc}</p>
+                  <h2 className="text-base font-bold text-slate-900">{s.title}</h2>
+                  <p className="text-sm text-slate-500">{s.desc}</p>
                 </div>
               </div>
-              <div className="px-6 py-5 grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <div className="px-6 py-5 grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                 {s.features.map(f => (
                   <div key={f} className="flex items-start gap-2.5">
-                    <Check className={`h-4 w-4 ${s.color} shrink-0 mt-0.5`} />
-                    <span className="text-[13px] text-[#8891a8]">{f}</span>
+                    <Check className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
+                    <span className="text-sm text-slate-700">{f}</span>
                   </div>
                 ))}
               </div>
@@ -208,13 +198,12 @@ export default function FuncionalidadesPage() {
         })}
       </div>
 
-      <div className="mt-14 rounded-2xl border border-emerald-300/20 bg-emerald-600/[0.04] p-10 text-center">
-        <h2 className="text-[28px] font-extrabold text-white">Probalo gratis 14 días</h2>
-        <p className="mt-2 text-[14px] text-[#5a6480]">Sin tarjeta de crédito. Sin compromiso.</p>
+      <div className="mt-14 rounded-xl border border-emerald-200 bg-emerald-50 p-10 text-center">
+        <h2 className="text-2xl font-bold text-slate-900">Probalo gratis 7 días</h2>
+        <p className="mt-2 text-sm text-slate-600">Sin tarjeta de crédito. Sin compromiso.</p>
         <Link
           href="/registro"
-          className="inline-flex items-center gap-2 mt-6 h-11 px-7 rounded-xl text-[14px] font-semibold text-white"
-          style={{ background: 'linear-gradient(135deg, #4F46E5, #06B6D4)' }}
+          className="inline-flex items-center gap-2 mt-6 h-11 px-7 rounded-lg text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 transition-colors"
         >
           Crear cuenta gratis <ChevronRight className="h-4 w-4" />
         </Link>
