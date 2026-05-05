@@ -50,9 +50,9 @@ export default async function ReportesStockPage({ params, searchParams }: Props)
         </div>
         <form className="flex gap-2" method="GET">
           <input type="search" name="q" placeholder="Buscar producto..." defaultValue={q ?? ''}
-            className="h-9 px-3 rounded-xl bg-white/[0.04] border border-white/[0.08] text-[13px] text-foreground w-48" />
+            className="h-9 px-3 rounded-xl bg-muted/30 border border-border text-[13px] text-foreground w-48" />
           <select name="filter" defaultValue={filter ?? ''}
-            className="h-9 px-3 rounded-xl bg-white/[0.04] border border-white/[0.08] text-[13px] text-foreground">
+            className="h-9 px-3 rounded-xl bg-muted/30 border border-border text-[13px] text-foreground">
             <option value="">Todo el stock</option>
             <option value="low">Stock bajo</option>
             <option value="out">Sin stock</option>
@@ -73,7 +73,7 @@ export default async function ReportesStockPage({ params, searchParams }: Props)
         ].map(s => {
           const Icon = s.icon
           return (
-            <div key={s.label} className="rounded-xl border border-white/[0.07] bg-card card-shadow p-5">
+            <div key={s.label} className="rounded-xl border border-border bg-card p-5">
               <div className="flex items-center gap-2 mb-3">
                 <div className={`w-8 h-8 rounded-lg ${s.bg} flex items-center justify-center`}>
                   <Icon className={`h-4 w-4 ${s.color}`} />
@@ -86,8 +86,8 @@ export default async function ReportesStockPage({ params, searchParams }: Props)
         })}
       </div>
 
-      <div className="rounded-xl border border-white/[0.07] bg-card card-shadow overflow-hidden">
-        <div className="px-5 py-4 border-b border-white/[0.05] flex items-center justify-between">
+      <div className="rounded-xl border border-border bg-card overflow-hidden">
+        <div className="px-5 py-4 border-b border-border flex items-center justify-between">
           <h2 className="text-[14px] font-semibold">Inventario</h2>
           <span className="text-[12px] text-muted-foreground">{filtered.length} productos</span>
         </div>
@@ -97,18 +97,18 @@ export default async function ReportesStockPage({ params, searchParams }: Props)
             <div className="overflow-x-auto">
               <table className="w-full text-[13px]">
                 <thead>
-                  <tr className="border-b border-white/[0.05]">
+                  <tr className="border-b border-border">
                     {['Producto', 'Categoría', 'Stock', 'Mínimo', 'Precio costo', 'Precio venta', 'Valor stock'].map(h => (
                       <th key={h} className="px-5 py-3 text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">{h}</th>
                     ))}
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-white/[0.04]">
+                <tbody className="divide-y divide-border">
                   {filtered.map(p => {
                     const isOut = p.track_stock && p.stock_current <= 0
                     const isLow = p.track_stock && !isOut && p.stock_current <= p.stock_min
                     return (
-                      <tr key={p.id} className="hover:bg-white/[0.02]">
+                      <tr key={p.id} className="hover:bg-muted/30">
                         <td className="px-5 py-3">
                           <p className="font-medium">{p.name}</p>
                           {p.barcode && <p className="text-[11px] text-muted-foreground font-mono">{p.barcode}</p>}

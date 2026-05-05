@@ -63,7 +63,7 @@ export default async function VentaDetailPage({ params }: Props) {
       </div>
 
       <div className="grid grid-cols-2 gap-4">
-        <div className="rounded-xl border border-white/[0.07] bg-card card-shadow p-4">
+        <div className="rounded-xl border border-border bg-card p-4">
           <div className="flex items-center gap-2 mb-2">
             <User className="h-4 w-4 text-emerald-600" />
             <p className="text-[12px] font-semibold text-muted-foreground uppercase tracking-wider">Cliente</p>
@@ -77,7 +77,7 @@ export default async function VentaDetailPage({ params }: Props) {
             <p className="text-[14px] text-muted-foreground">Sin cliente</p>
           )}
         </div>
-        <div className="rounded-xl border border-white/[0.07] bg-card card-shadow p-4">
+        <div className="rounded-xl border border-border bg-card p-4">
           <div className="flex items-center gap-2 mb-2">
             <CreditCard className="h-4 w-4 text-emerald-600" />
             <p className="text-[12px] font-semibold text-muted-foreground uppercase tracking-wider">Pago</p>
@@ -91,12 +91,12 @@ export default async function VentaDetailPage({ params }: Props) {
         </div>
       </div>
 
-      <div className="rounded-xl border border-white/[0.07] bg-card card-shadow overflow-hidden">
-        <div className="px-5 py-4 border-b border-white/[0.05] flex items-center gap-2">
+      <div className="rounded-xl border border-border bg-card overflow-hidden">
+        <div className="px-5 py-4 border-b border-border flex items-center gap-2">
           <Package className="h-4 w-4 text-muted-foreground" />
           <h2 className="text-[14px] font-semibold">Productos ({items.length})</h2>
         </div>
-        <div className="divide-y divide-white/[0.04]">
+        <div className="divide-y divide-border">
           {items.map((item: { id: string; name: string; quantity: number; unit_price: number; discount_pct: number; subtotal: number; barcode: string | null }) => (
             <div key={item.id} className="px-5 py-3.5 flex items-center justify-between">
               <div>
@@ -110,7 +110,7 @@ export default async function VentaDetailPage({ params }: Props) {
             </div>
           ))}
         </div>
-        <div className="px-5 py-4 border-t border-white/[0.05] bg-white/[0.01] space-y-2">
+        <div className="px-5 py-4 border-t border-border bg-muted/30 space-y-2">
           <div className="flex justify-between text-[13px] text-muted-foreground">
             <span>Subtotal</span><span>{formatARS(sale.subtotal)}</span>
           </div>
@@ -124,14 +124,14 @@ export default async function VentaDetailPage({ params }: Props) {
               <span>IVA</span><span>{formatARS(sale.tax_amount)}</span>
             </div>
           )}
-          <div className="flex justify-between text-[16px] font-extrabold pt-2 border-t border-white/[0.05]">
+          <div className="flex justify-between text-[16px] font-extrabold pt-2 border-t border-border">
             <span>Total</span><span>{formatARS(sale.total)}</span>
           </div>
         </div>
       </div>
 
       {sale.notes && (
-        <div className="rounded-xl border border-white/[0.07] bg-card p-4">
+        <div className="rounded-xl border border-border bg-card p-4">
           <p className="text-[12px] font-semibold text-muted-foreground uppercase tracking-wider mb-1">Notas</p>
           <p className="text-[14px]">{sale.notes}</p>
         </div>

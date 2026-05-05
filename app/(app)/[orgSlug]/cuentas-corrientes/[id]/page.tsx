@@ -105,8 +105,8 @@ export default function CuentaCorrientePage() {
   if (fetching) {
     return (
       <div className="max-w-2xl">
-        <div className="h-8 w-48 rounded-lg bg-white/[0.05] animate-pulse mb-4" />
-        <div className="rounded-xl border border-white/[0.07] bg-card h-64 animate-pulse" />
+        <div className="h-8 w-48 rounded-lg bg-muted/40 animate-pulse mb-4" />
+        <div className="rounded-xl border border-border bg-card h-64 animate-pulse" />
       </div>
     )
   }
@@ -126,7 +126,7 @@ export default function CuentaCorrientePage() {
         </div>
       </div>
 
-      <div className="rounded-xl border border-white/[0.07] bg-card card-shadow p-6">
+      <div className="rounded-xl border border-border bg-card p-6">
         <div className="flex items-end justify-between mb-6">
           <div>
             <p className="text-[12px] font-semibold text-muted-foreground uppercase tracking-wider mb-1">Saldo actual</p>
@@ -158,7 +158,7 @@ export default function CuentaCorrientePage() {
         </div>
 
         {showForm && (
-          <div className="rounded-xl bg-white/[0.03] border border-white/[0.06] p-4 space-y-3">
+          <div className="rounded-xl bg-muted/30 border border-border p-4 space-y-3">
             <p className="text-[13px] font-semibold text-foreground">
               {showForm === 'charge' ? 'Registrar cargo' : 'Registrar pago'}
             </p>
@@ -171,7 +171,7 @@ export default function CuentaCorrientePage() {
                     type="number" min="0" step="0.01"
                     value={amount} onChange={e => setAmount(e.target.value)}
                     placeholder="0.00"
-                    className="h-10 pl-6 bg-white/[0.04] border-white/[0.08] rounded-xl text-[14px]"
+                    className="h-10 pl-6 bg-muted/30 border-border rounded-xl text-[14px]"
                   />
                 </div>
               </div>
@@ -180,7 +180,7 @@ export default function CuentaCorrientePage() {
                 <Input
                   value={description} onChange={e => setDescription(e.target.value)}
                   placeholder={showForm === 'charge' ? 'Motivo del cargo' : 'Motivo del pago'}
-                  className="h-10 bg-white/[0.04] border-white/[0.08] rounded-xl text-[14px]"
+                  className="h-10 bg-muted/30 border-border rounded-xl text-[14px]"
                 />
               </div>
             </div>
@@ -200,11 +200,11 @@ export default function CuentaCorrientePage() {
         )}
       </div>
 
-      <div className="rounded-xl border border-white/[0.07] bg-card card-shadow overflow-hidden">
-        <div className="px-5 py-4 border-b border-white/[0.05]">
+      <div className="rounded-xl border border-border bg-card overflow-hidden">
+        <div className="px-5 py-4 border-b border-border">
           <h2 className="text-[14px] font-semibold">Movimientos</h2>
         </div>
-        <div className="divide-y divide-white/[0.04]">
+        <div className="divide-y divide-border">
           {!transactions.length && (
             <p className="text-center py-10 text-[14px] text-muted-foreground">Sin movimientos registrados</p>
           )}
@@ -220,7 +220,7 @@ export default function CuentaCorrientePage() {
                   <p className="text-[13px] font-medium">{tx.description}</p>
                   <p className="text-[11px] text-muted-foreground">
                     {new Date(tx.created_at).toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
-                    {tx.sale_id && <span className="ml-2"><Badge variant="outline" className="text-[10px] border-white/10">Venta</Badge></span>}
+                    {tx.sale_id && <span className="ml-2"><Badge variant="outline" className="text-[10px] border-border">Venta</Badge></span>}
                   </p>
                 </div>
               </div>

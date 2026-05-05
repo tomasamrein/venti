@@ -64,10 +64,10 @@ export default async function AdminSubscriptionsPage({ searchParams }: Props) {
         ))}
       </div>
 
-      <div className="rounded-xl border border-white/[0.07] bg-white/[0.03] overflow-hidden">
+      <div className="rounded-xl border border-border bg-white overflow-hidden">
         <table className="w-full">
           <thead>
-            <tr className="border-b border-white/[0.06]">
+            <tr className="border-b border-border">
               <th className="text-left px-5 py-3 text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Organización</th>
               <th className="text-left px-5 py-3 text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Plan</th>
               <th className="text-left px-5 py-3 text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Estado</th>
@@ -80,7 +80,7 @@ export default async function AdminSubscriptionsPage({ searchParams }: Props) {
               const org = sub.organizations as { id: string; name: string; slug: string } | null
               const plan = sub.subscription_plans as { name: string; price_ars: number; type: string } | null
               return (
-                <tr key={sub.id} className="border-b border-white/[0.03] hover:bg-white/[0.02] transition-colors">
+                <tr key={sub.id} className="border-b border-border hover:bg-muted/40 transition-colors">
                   <td className="px-5 py-3">
                     {org ? (
                       <Link href={`/admin/organizaciones/${org.id}`} className="text-[13px] font-medium text-white hover:text-blue-400 transition-colors">

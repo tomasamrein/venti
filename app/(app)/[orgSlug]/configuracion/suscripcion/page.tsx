@@ -79,7 +79,7 @@ export default function SuscripcionPage() {
   if (fetching) {
     return (
       <div className="max-w-2xl space-y-4">
-        {[1, 2].map(i => <div key={i} className="h-40 rounded-xl border border-white/[0.07] bg-card animate-pulse" />)}
+        {[1, 2].map(i => <div key={i} className="h-40 rounded-xl border border-border bg-card animate-pulse" />)}
       </div>
     )
   }
@@ -92,8 +92,8 @@ export default function SuscripcionPage() {
       </div>
 
       {/* Current status */}
-      <div className="rounded-xl border border-white/[0.07] bg-card card-shadow overflow-hidden">
-        <div className="px-5 py-4 border-b border-white/[0.05] flex items-center gap-2">
+      <div className="rounded-xl border border-border bg-card overflow-hidden">
+        <div className="px-5 py-4 border-b border-border flex items-center gap-2">
           <CreditCard className="h-4 w-4 text-muted-foreground" />
           <h2 className="text-[14px] font-semibold">Estado actual</h2>
         </div>
@@ -145,7 +145,7 @@ export default function SuscripcionPage() {
               const isPro = plan.type === 'pro'
               return (
                 <div key={plan.id}
-                  className={`rounded-xl border p-5 flex items-center justify-between gap-4 transition-colors ${isCurrent ? 'border-emerald-300/40 bg-emerald-600/5' : 'border-white/[0.07] bg-card hover:border-white/[0.12]'}`}>
+                  className={`rounded-xl border p-5 flex items-center justify-between gap-4 transition-colors ${isCurrent ? 'border-emerald-300/40 bg-emerald-600/5' : 'border-border bg-card hover:border-slate-300'}`}>
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
                       {isPro && <Zap className="h-3.5 w-3.5 text-amber-400" />}

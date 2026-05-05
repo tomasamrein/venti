@@ -75,17 +75,17 @@ export default async function VentasPage({ params, searchParams }: Props) {
         <div className="space-y-1">
           <label className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Desde</label>
           <input type="date" name="from" defaultValue={fromDate}
-            className="h-9 px-3 rounded-xl bg-card border border-white/[0.08] text-[13px] text-foreground focus:outline-none focus:border-emerald-300/50" />
+            className="h-9 px-3 rounded-xl bg-card border border-border text-[13px] text-foreground focus:outline-none focus:border-emerald-300/50" />
         </div>
         <div className="space-y-1">
           <label className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Hasta</label>
           <input type="date" name="to" defaultValue={toDate}
-            className="h-9 px-3 rounded-xl bg-card border border-white/[0.08] text-[13px] text-foreground focus:outline-none focus:border-emerald-300/50" />
+            className="h-9 px-3 rounded-xl bg-card border border-border text-[13px] text-foreground focus:outline-none focus:border-emerald-300/50" />
         </div>
         <div className="space-y-1">
           <label className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Estado</label>
           <select name="status" defaultValue={status ?? ''}
-            className="h-9 px-3 rounded-xl bg-card border border-white/[0.08] text-[13px] text-foreground focus:outline-none focus:border-emerald-300/50">
+            className="h-9 px-3 rounded-xl bg-card border border-border text-[13px] text-foreground focus:outline-none focus:border-emerald-300/50">
             <option value="">Todos</option>
             {Object.entries(STATUS_LABELS).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
           </select>
@@ -93,7 +93,7 @@ export default async function VentasPage({ params, searchParams }: Props) {
         <div className="space-y-1">
           <label className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Método</label>
           <select name="method" defaultValue={method ?? ''}
-            className="h-9 px-3 rounded-xl bg-card border border-white/[0.08] text-[13px] text-foreground focus:outline-none focus:border-emerald-300/50">
+            className="h-9 px-3 rounded-xl bg-card border border-border text-[13px] text-foreground focus:outline-none focus:border-emerald-300/50">
             <option value="">Todos</option>
             {Object.entries(METHOD_LABELS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
           </select>
@@ -101,10 +101,10 @@ export default async function VentasPage({ params, searchParams }: Props) {
         <Button type="submit" variant="secondary" size="sm" className="h-9 rounded-xl text-[13px]">Filtrar</Button>
       </form>
 
-      <div className="rounded-xl border border-white/[0.07] bg-card card-shadow overflow-hidden">
+      <div className="rounded-xl border border-border bg-card overflow-hidden">
         <table className="w-full">
           <thead>
-            <tr className="border-b border-white/[0.05]">
+            <tr className="border-b border-border">
               <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-5 py-3">#</th>
               <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-5 py-3">Fecha</th>
               <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-5 py-3 hidden md:table-cell">Cliente</th>
@@ -114,7 +114,7 @@ export default async function VentasPage({ params, searchParams }: Props) {
               <th className="px-5 py-3" />
             </tr>
           </thead>
-          <tbody className="divide-y divide-white/[0.04]">
+          <tbody className="divide-y divide-border">
             {!sales?.length && (
               <tr>
                 <td colSpan={7} className="text-center py-14 text-[14px] text-muted-foreground">
@@ -126,7 +126,7 @@ export default async function VentasPage({ params, searchParams }: Props) {
               const statusInfo = STATUS_LABELS[s.status] ?? { label: s.status, color: 'text-muted-foreground' }
               const customer = Array.isArray(s.customers) ? s.customers[0] : s.customers as { full_name: string } | null
               return (
-                <tr key={s.id} className="hover:bg-white/[0.02] transition-colors">
+                <tr key={s.id} className="hover:bg-muted/30 transition-colors">
                   <td className="px-5 py-3.5">
                     <span className="text-[13px] text-muted-foreground font-mono">
                       {s.sale_number ? `#${s.sale_number}` : s.id.slice(0, 6)}

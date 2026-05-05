@@ -56,7 +56,7 @@ export default async function ClientesPage({ params, searchParams }: Props) {
             name="q"
             defaultValue={q}
             placeholder="Buscar por nombre, teléfono, DNI..."
-            className="w-full h-10 pl-9 pr-4 rounded-xl bg-card border border-white/[0.08] text-[14px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-emerald-300/50"
+            className="w-full h-10 pl-9 pr-4 rounded-xl bg-card border border-border text-[14px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-emerald-300/50"
           />
           {account && <input type="hidden" name="account" value="1" />}
         </form>
@@ -70,10 +70,10 @@ export default async function ClientesPage({ params, searchParams }: Props) {
         </div>
       </div>
 
-      <div className="rounded-xl border border-white/[0.07] bg-card card-shadow overflow-hidden">
+      <div className="rounded-xl border border-border bg-card overflow-hidden">
         <table className="w-full">
           <thead>
-            <tr className="border-b border-white/[0.05]">
+            <tr className="border-b border-border">
               <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-5 py-3">Cliente</th>
               <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-5 py-3 hidden sm:table-cell">Teléfono</th>
               <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-5 py-3 hidden md:table-cell">DNI / CUIT</th>
@@ -81,7 +81,7 @@ export default async function ClientesPage({ params, searchParams }: Props) {
               <th className="px-5 py-3" />
             </tr>
           </thead>
-          <tbody className="divide-y divide-white/[0.04]">
+          <tbody className="divide-y divide-border">
             {!customers?.length && (
               <tr>
                 <td colSpan={5} className="text-center py-14 text-[14px] text-muted-foreground">
@@ -93,7 +93,7 @@ export default async function ClientesPage({ params, searchParams }: Props) {
               const account = Array.isArray(c.current_accounts) ? c.current_accounts[0] : null
               const balance = account?.balance ?? null
               return (
-                <tr key={c.id} className="hover:bg-white/[0.02] transition-colors">
+                <tr key={c.id} className="hover:bg-muted/30 transition-colors">
                   <td className="px-5 py-3.5">
                     <div className="flex items-center gap-3">
                       <div className="w-8 h-8 rounded-full bg-emerald-600/10 flex items-center justify-center shrink-0">
@@ -119,7 +119,7 @@ export default async function ClientesPage({ params, searchParams }: Props) {
                         {formatARS(balance)}
                       </span>
                     ) : (
-                      <Badge variant="outline" className="text-[11px] border-white/[0.08] text-muted-foreground">Sin cuenta</Badge>
+                      <Badge variant="outline" className="text-[11px] border-border text-muted-foreground">Sin cuenta</Badge>
                     )}
                   </td>
                   <td className="px-5 py-3.5 text-right">

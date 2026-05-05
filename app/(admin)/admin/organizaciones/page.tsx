@@ -35,12 +35,12 @@ export default async function AdminOrgsPage({ searchParams }: Props) {
           name="q"
           defaultValue={q}
           placeholder="Buscar por nombre..."
-          className="flex-1 h-9 px-3 rounded-lg bg-white/[0.04] border border-white/[0.08] text-[13px] text-white placeholder:text-[#5a6480] focus:outline-none focus:border-white/20"
+          className="flex-1 h-9 px-3 rounded-lg bg-muted/30 border border-border text-[13px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-emerald-300"
         />
         <select
           name="status"
           defaultValue={status ?? ''}
-          className="h-9 px-3 rounded-lg bg-white/[0.04] border border-white/[0.08] text-[13px] text-white focus:outline-none focus:border-white/20"
+          className="h-9 px-3 rounded-lg bg-muted/30 border border-border text-[13px] text-foreground focus:outline-none focus:border-emerald-300"
         >
           <option value="">Todos</option>
           <option value="active">Activas</option>
@@ -55,10 +55,10 @@ export default async function AdminOrgsPage({ searchParams }: Props) {
         </button>
       </form>
 
-      <div className="rounded-xl border border-white/[0.07] bg-white/[0.03] overflow-hidden">
+      <div className="rounded-xl border border-border bg-white overflow-hidden">
         <table className="w-full">
           <thead>
-            <tr className="border-b border-white/[0.06]">
+            <tr className="border-b border-border">
               <th className="text-left px-5 py-3 text-[11px] font-medium text-[#5a6480] uppercase tracking-wider">Organización</th>
               <th className="text-left px-5 py-3 text-[11px] font-medium text-[#5a6480] uppercase tracking-wider">Contacto</th>
               <th className="text-left px-5 py-3 text-[11px] font-medium text-[#5a6480] uppercase tracking-wider">Estado</th>
@@ -68,10 +68,10 @@ export default async function AdminOrgsPage({ searchParams }: Props) {
           </thead>
           <tbody>
             {orgs?.map(org => (
-              <tr key={org.id} className="border-b border-white/[0.03] hover:bg-white/[0.02] transition-colors">
+              <tr key={org.id} className="border-b border-border hover:bg-muted/40 transition-colors">
                 <td className="px-5 py-3">
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-white/[0.06] flex items-center justify-center shrink-0">
+                    <div className="w-8 h-8 rounded-lg bg-muted/50 flex items-center justify-center shrink-0">
                       <Building2 className="h-4 w-4 text-[#5a6480]" />
                     </div>
                     <div>

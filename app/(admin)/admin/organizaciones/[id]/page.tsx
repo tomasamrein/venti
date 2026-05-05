@@ -88,7 +88,7 @@ export default function AdminOrgDetailPage() {
 
   if (!org) return (
     <div className="flex items-center justify-center h-64">
-      <div className="h-5 w-5 border-2 border-white/20 border-t-white/80 rounded-full animate-spin" />
+      <div className="h-5 w-5 border-2 border-slate-200 border-t-slate-600 rounded-full animate-spin" />
     </div>
   )
 
@@ -114,7 +114,7 @@ export default function AdminOrgDetailPage() {
           <button
             onClick={extendTrial}
             disabled={saving}
-            className="h-8 px-3 rounded-lg text-[12px] font-medium text-[#8891a8] hover:text-white hover:bg-white/5 transition-colors border border-white/[0.08] disabled:opacity-50"
+            className="h-8 px-3 rounded-lg text-[12px] font-medium text-[#8891a8] hover:text-white hover:bg-white/5 transition-colors border border-border disabled:opacity-50"
           >
             Extender trial +14d
           </button>
@@ -130,7 +130,7 @@ export default function AdminOrgDetailPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {/* Info */}
-        <div className="md:col-span-2 rounded-xl border border-white/[0.07] bg-white/[0.03] p-5 space-y-4">
+        <div className="md:col-span-2 rounded-xl border border-border bg-white p-5 space-y-4">
           <div className="flex items-center gap-2">
             <Building2 className="h-4 w-4 text-[#5a6480]" />
             <h2 className="text-[14px] font-semibold text-white">Información</h2>
@@ -153,7 +153,7 @@ export default function AdminOrgDetailPage() {
         </div>
 
         {/* Suscripción */}
-        <div className="rounded-xl border border-white/[0.07] bg-white/[0.03] p-5 space-y-4">
+        <div className="rounded-xl border border-border bg-white p-5 space-y-4">
           <div className="flex items-center gap-2">
             <CreditCard className="h-4 w-4 text-[#5a6480]" />
             <h2 className="text-[14px] font-semibold text-white">Suscripción</h2>
@@ -187,14 +187,14 @@ export default function AdminOrgDetailPage() {
       </div>
 
       {/* Miembros */}
-      <div className="rounded-xl border border-white/[0.07] bg-white/[0.03] overflow-hidden">
-        <div className="px-5 py-4 border-b border-white/[0.06] flex items-center gap-2">
+      <div className="rounded-xl border border-border bg-white overflow-hidden">
+        <div className="px-5 py-4 border-b border-border flex items-center gap-2">
           <Users className="h-4 w-4 text-[#5a6480]" />
           <h2 className="text-[14px] font-semibold text-white">Equipo ({members.length})</h2>
         </div>
         <table className="w-full">
           <thead>
-            <tr className="border-b border-white/[0.05]">
+            <tr className="border-b border-border">
               <th className="text-left px-5 py-3 text-[11px] font-medium text-[#5a6480] uppercase tracking-wider">Nombre</th>
               <th className="text-left px-5 py-3 text-[11px] font-medium text-[#5a6480] uppercase tracking-wider">Rol</th>
               <th className="text-left px-5 py-3 text-[11px] font-medium text-[#5a6480] uppercase tracking-wider">Estado</th>
@@ -202,7 +202,7 @@ export default function AdminOrgDetailPage() {
           </thead>
           <tbody>
             {members.map(m => (
-              <tr key={m.id} className="border-b border-white/[0.03]">
+              <tr key={m.id} className="border-b border-border">
                 <td className="px-5 py-3 text-[13px] text-white">{m.profiles?.full_name ?? 'Sin nombre'}</td>
                 <td className="px-5 py-3 text-[13px] text-[#8891a8] capitalize">{m.role}</td>
                 <td className="px-5 py-3">

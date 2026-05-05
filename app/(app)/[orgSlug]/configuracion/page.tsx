@@ -104,7 +104,7 @@ export default function ConfiguracionPage() {
     return (
       <div className="max-w-xl space-y-6">
         {[1, 2].map(i => (
-          <div key={i} className="rounded-xl border border-white/[0.07] bg-card h-64 animate-pulse" />
+          <div key={i} className="rounded-xl border border-border bg-card h-64 animate-pulse" />
         ))}
       </div>
     )
@@ -117,8 +117,8 @@ export default function ConfiguracionPage() {
         <p className="text-[14px] text-muted-foreground mt-1">Ajustá los datos de tu negocio y perfil</p>
       </div>
 
-      <form onSubmit={saveOrg} className="rounded-xl border border-white/[0.07] bg-card card-shadow overflow-hidden">
-        <div className="px-6 py-4 border-b border-white/[0.05] flex items-center gap-2">
+      <form onSubmit={saveOrg} className="rounded-xl border border-border bg-card overflow-hidden">
+        <div className="px-6 py-4 border-b border-border flex items-center gap-2">
           <Building2 className="h-4 w-4 text-emerald-600" />
           <h2 className="text-[14px] font-semibold">Datos del negocio</h2>
         </div>
@@ -126,42 +126,42 @@ export default function ConfiguracionPage() {
           <div className="space-y-1.5">
             <Label className="text-[12px] font-semibold text-muted-foreground uppercase tracking-[0.06em]">Nombre del negocio *</Label>
             <Input value={orgForm.name} onChange={e => setOrg('name', e.target.value)}
-              className="h-10 bg-white/[0.04] border-white/[0.08] rounded-xl text-[14px]" />
+              className="h-10 bg-muted/30 border-border rounded-xl text-[14px]" />
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
               <Label className="text-[12px] font-semibold text-muted-foreground uppercase tracking-[0.06em]">CUIT</Label>
               <Input value={orgForm.cuit} onChange={e => setOrg('cuit', e.target.value)}
                 placeholder="30-12345678-9"
-                className="h-10 bg-white/[0.04] border-white/[0.08] rounded-xl text-[14px]" />
+                className="h-10 bg-muted/30 border-border rounded-xl text-[14px]" />
             </div>
             <div className="space-y-1.5">
               <Label className="text-[12px] font-semibold text-muted-foreground uppercase tracking-[0.06em]">Teléfono</Label>
               <Input value={orgForm.phone} onChange={e => setOrg('phone', e.target.value)}
-                className="h-10 bg-white/[0.04] border-white/[0.08] rounded-xl text-[14px]" />
+                className="h-10 bg-muted/30 border-border rounded-xl text-[14px]" />
             </div>
           </div>
           <div className="space-y-1.5">
             <Label className="text-[12px] font-semibold text-muted-foreground uppercase tracking-[0.06em]">Email</Label>
             <Input value={orgForm.email} onChange={e => setOrg('email', e.target.value)}
-              type="email" className="h-10 bg-white/[0.04] border-white/[0.08] rounded-xl text-[14px]" />
+              type="email" className="h-10 bg-muted/30 border-border rounded-xl text-[14px]" />
           </div>
           <div className="space-y-1.5">
             <Label className="text-[12px] font-semibold text-muted-foreground uppercase tracking-[0.06em]">Dirección</Label>
             <Input value={orgForm.address} onChange={e => setOrg('address', e.target.value)}
-              className="h-10 bg-white/[0.04] border-white/[0.08] rounded-xl text-[14px]" />
+              className="h-10 bg-muted/30 border-border rounded-xl text-[14px]" />
           </div>
           <div className="space-y-1.5">
             <Label className="flex items-center gap-1.5 text-[12px] font-semibold text-muted-foreground uppercase tracking-[0.06em]">
               <Globe className="h-3 w-3" />Zona horaria
             </Label>
             <select value={timezone} onChange={e => setTimezone(e.target.value)}
-              className="w-full h-10 px-3 rounded-xl bg-white/[0.04] border border-white/[0.08] text-[14px] text-foreground focus:outline-none focus:border-emerald-300/50">
+              className="w-full h-10 px-3 rounded-xl bg-muted/30 border border-border text-[14px] text-foreground focus:outline-none focus:border-emerald-300/50">
               {TIMEZONES.map(tz => <option key={tz} value={tz}>{tz.replace('America/Argentina/', '')}</option>)}
             </select>
           </div>
         </div>
-        <div className="px-6 py-4 border-t border-white/[0.05] flex justify-end bg-white/[0.01]">
+        <div className="px-6 py-4 border-t border-border flex justify-end bg-muted/30">
           <Button type="submit" disabled={loadingOrg} className="rounded-xl text-white"
             style={{ background: 'linear-gradient(135deg, oklch(0.55 0.16 155), oklch(0.50 0.16 158))' }}>
             {loadingOrg && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
@@ -170,8 +170,8 @@ export default function ConfiguracionPage() {
         </div>
       </form>
 
-      <form onSubmit={saveProfile} className="rounded-xl border border-white/[0.07] bg-card card-shadow overflow-hidden">
-        <div className="px-6 py-4 border-b border-white/[0.05] flex items-center gap-2">
+      <form onSubmit={saveProfile} className="rounded-xl border border-border bg-card overflow-hidden">
+        <div className="px-6 py-4 border-b border-border flex items-center gap-2">
           <User className="h-4 w-4 text-emerald-600" />
           <h2 className="text-[14px] font-semibold">Tu perfil</h2>
         </div>
@@ -179,15 +179,15 @@ export default function ConfiguracionPage() {
           <div className="space-y-1.5">
             <Label className="text-[12px] font-semibold text-muted-foreground uppercase tracking-[0.06em]">Nombre completo *</Label>
             <Input value={profileForm.full_name} onChange={e => setProf('full_name', e.target.value)}
-              className="h-10 bg-white/[0.04] border-white/[0.08] rounded-xl text-[14px]" />
+              className="h-10 bg-muted/30 border-border rounded-xl text-[14px]" />
           </div>
           <div className="space-y-1.5">
             <Label className="text-[12px] font-semibold text-muted-foreground uppercase tracking-[0.06em]">Teléfono</Label>
             <Input value={profileForm.phone} onChange={e => setProf('phone', e.target.value)}
-              className="h-10 bg-white/[0.04] border-white/[0.08] rounded-xl text-[14px]" />
+              className="h-10 bg-muted/30 border-border rounded-xl text-[14px]" />
           </div>
         </div>
-        <div className="px-6 py-4 border-t border-white/[0.05] flex justify-end bg-white/[0.01]">
+        <div className="px-6 py-4 border-t border-border flex justify-end bg-muted/30">
           <Button type="submit" disabled={loadingProfile} className="rounded-xl text-white"
             style={{ background: 'linear-gradient(135deg, oklch(0.55 0.16 155), oklch(0.50 0.16 158))' }}>
             {loadingProfile && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}

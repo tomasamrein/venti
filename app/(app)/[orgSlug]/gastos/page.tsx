@@ -99,8 +99,8 @@ export default function GastosPage() {
   if (fetching) {
     return (
       <div className="max-w-2xl space-y-4">
-        <div className="h-8 w-48 rounded-lg bg-white/[0.05] animate-pulse" />
-        <div className="rounded-xl border border-white/[0.07] bg-card h-64 animate-pulse" />
+        <div className="h-8 w-48 rounded-lg bg-muted/40 animate-pulse" />
+        <div className="rounded-xl border border-border bg-card h-64 animate-pulse" />
       </div>
     )
   }
@@ -123,7 +123,7 @@ export default function GastosPage() {
       </div>
 
       {showForm && (
-        <form onSubmit={handleSubmit} className="rounded-xl border border-white/[0.07] bg-card card-shadow overflow-hidden">
+        <form onSubmit={handleSubmit} className="rounded-xl border border-border bg-card overflow-hidden">
           <div className="p-5 space-y-4">
             <p className="text-[14px] font-semibold">Registrar gasto</p>
             <div className="grid grid-cols-2 gap-3">
@@ -131,7 +131,7 @@ export default function GastosPage() {
                 <Label className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Categoría</Label>
                 <select
                   value={form.category} onChange={e => set('category', e.target.value)}
-                  className="w-full h-10 px-3 rounded-xl bg-white/[0.04] border border-white/[0.08] text-[14px] text-foreground focus:outline-none focus:border-emerald-300/50"
+                  className="w-full h-10 px-3 rounded-xl bg-muted/30 border border-border text-[14px] text-foreground focus:outline-none focus:border-emerald-300/50"
                 >
                   {EXPENSE_CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
                 </select>
@@ -144,7 +144,7 @@ export default function GastosPage() {
                     type="number" min="0" step="0.01"
                     value={form.amount} onChange={e => set('amount', e.target.value)}
                     placeholder="0.00"
-                    className="h-10 pl-6 bg-white/[0.04] border-white/[0.08] rounded-xl text-[14px]"
+                    className="h-10 pl-6 bg-muted/30 border-border rounded-xl text-[14px]"
                   />
                 </div>
               </div>
@@ -154,11 +154,11 @@ export default function GastosPage() {
               <Textarea
                 value={form.description} onChange={e => set('description', e.target.value)}
                 placeholder="¿En qué se gastó?" rows={2}
-                className="bg-white/[0.04] border-white/[0.08] rounded-xl text-[14px] resize-none"
+                className="bg-muted/30 border-border rounded-xl text-[14px] resize-none"
               />
             </div>
           </div>
-          <div className="px-5 py-3.5 border-t border-white/[0.05] flex justify-end">
+          <div className="px-5 py-3.5 border-t border-border flex justify-end">
             <Button type="submit" disabled={loading} className="rounded-xl text-white text-[13px]"
               style={{ background: 'linear-gradient(135deg, oklch(0.55 0.16 155), oklch(0.50 0.16 158))' }}>
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
@@ -168,13 +168,13 @@ export default function GastosPage() {
         </form>
       )}
 
-      <div className="rounded-xl border border-white/[0.07] bg-card card-shadow overflow-hidden">
-        <div className="px-5 py-4 border-b border-white/[0.05]">
+      <div className="rounded-xl border border-border bg-card overflow-hidden">
+        <div className="px-5 py-4 border-b border-border">
           <h2 className="text-[14px] font-semibold">Gastos del día</h2>
         </div>
         {!expenses.length ? (
           <div className="py-14 text-center">
-            <div className="w-12 h-12 rounded-xl bg-white/[0.04] flex items-center justify-center mx-auto mb-3">
+            <div className="w-12 h-12 rounded-xl bg-muted/30 flex items-center justify-center mx-auto mb-3">
               <Receipt className="h-6 w-6 text-muted-foreground" />
             </div>
             <p className="text-[14px] text-muted-foreground">No hay gastos registrados hoy</p>
@@ -183,14 +183,14 @@ export default function GastosPage() {
           <div>
             {Object.entries(grouped).map(([cat, items]) => (
               <div key={cat}>
-                <div className="px-5 py-2 bg-white/[0.015] flex items-center justify-between">
-                  <Badge variant="outline" className="text-[11px] border-white/10 text-muted-foreground">{cat}</Badge>
+                <div className="px-5 py-2 bg-muted/20 flex items-center justify-between">
+                  <Badge variant="outline" className="text-[11px] border-border text-muted-foreground">{cat}</Badge>
                   <span className="text-[12px] text-muted-foreground">
                     {formatARS(items.reduce((s, i) => s + i.amount, 0))}
                   </span>
                 </div>
                 {items.map(expense => (
-                  <div key={expense.id} className="px-5 py-3 flex items-center justify-between border-t border-white/[0.03]">
+                  <div key={expense.id} className="px-5 py-3 flex items-center justify-between border-t border-border">
                     <div>
                       <p className="text-[13px]">{expense.description}</p>
                       <p className="text-[11px] text-muted-foreground">
@@ -202,7 +202,7 @@ export default function GastosPage() {
                 ))}
               </div>
             ))}
-            <div className="px-5 py-4 border-t border-white/[0.05] flex items-center justify-between">
+            <div className="px-5 py-4 border-t border-border flex items-center justify-between">
               <p className="text-[13px] font-semibold">Total gastos del día</p>
               <p className="text-[16px] font-extrabold text-red-400">{formatARS(totalHoy)}</p>
             </div>

@@ -73,8 +73,8 @@ export default function NotificacionesPage() {
   if (fetching) {
     return (
       <div className="max-w-2xl space-y-4">
-        <div className="h-8 w-48 rounded-lg bg-white/[0.05] animate-pulse" />
-        {[1, 2, 3].map(i => <div key={i} className="rounded-xl border border-white/[0.07] bg-card h-16 animate-pulse" />)}
+        <div className="h-8 w-48 rounded-lg bg-muted/40 animate-pulse" />
+        {[1, 2, 3].map(i => <div key={i} className="rounded-xl border border-border bg-card h-16 animate-pulse" />)}
       </div>
     )
   }
@@ -96,7 +96,7 @@ export default function NotificacionesPage() {
         )}
       </div>
 
-      <div className="rounded-xl border border-white/[0.07] bg-card card-shadow overflow-hidden">
+      <div className="rounded-xl border border-border bg-card overflow-hidden">
         {!notifications.length ? (
           <div className="py-16 text-center">
             <div className="w-12 h-12 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 flex items-center justify-center mx-auto mb-3">
@@ -106,14 +106,14 @@ export default function NotificacionesPage() {
             <p className="text-[13px] text-muted-foreground mt-1">Te avisaremos cuando haya alertas de stock u otros eventos</p>
           </div>
         ) : (
-          <div className="divide-y divide-white/[0.04]">
+          <div className="divide-y divide-border">
             {notifications.map(n => {
               const typeInfo = TYPE_ICONS[n.type] ?? { icon: Bell, color: 'text-emerald-500', bg: 'bg-emerald-50 dark:bg-emerald-900/20' }
               const Icon = typeInfo.icon
               return (
                 <div
                   key={n.id}
-                  className={`px-5 py-4 flex items-start gap-3 transition-colors cursor-pointer hover:bg-white/[0.02] ${!n.is_read ? 'bg-white/[0.015]' : ''}`}
+                  className={`px-5 py-4 flex items-start gap-3 transition-colors cursor-pointer hover:bg-muted/30 ${!n.is_read ? 'bg-muted/20' : ''}`}
                   onClick={() => !n.is_read && markRead(n.id)}
                 >
                   <div className={`w-8 h-8 rounded-lg ${typeInfo.bg} flex items-center justify-center shrink-0 mt-0.5`}>

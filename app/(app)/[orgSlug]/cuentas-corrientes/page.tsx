@@ -42,14 +42,14 @@ export default async function CuentasCorrientesPage({ params, searchParams }: Pr
       </div>
 
       <div className="grid grid-cols-2 gap-4">
-        <div className="rounded-xl border border-white/[0.07] bg-card card-shadow p-5">
+        <div className="rounded-xl border border-border bg-card p-5">
           <div className="flex items-center gap-2 mb-2">
             <TrendingDown className="h-4 w-4 text-red-400" />
             <p className="text-[12px] font-medium text-muted-foreground uppercase tracking-wider">Total adeudado</p>
           </div>
           <p className="text-[22px] font-extrabold tracking-[-0.03em] text-red-400">{formatARS(Math.abs(totalDebt))}</p>
         </div>
-        <div className="rounded-xl border border-white/[0.07] bg-card card-shadow p-5">
+        <div className="rounded-xl border border-border bg-card p-5">
           <div className="flex items-center gap-2 mb-2">
             <TrendingUp className="h-4 w-4 text-emerald-400" />
             <p className="text-[12px] font-medium text-muted-foreground uppercase tracking-wider">Total a favor clientes</p>
@@ -64,14 +64,14 @@ export default async function CuentasCorrientesPage({ params, searchParams }: Pr
           name="q"
           defaultValue={q}
           placeholder="Buscar cliente..."
-          className="w-full h-10 pl-9 pr-4 rounded-xl bg-card border border-white/[0.08] text-[14px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-emerald-300/50"
+          className="w-full h-10 pl-9 pr-4 rounded-xl bg-card border border-border text-[14px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-emerald-300/50"
         />
       </form>
 
-      <div className="rounded-xl border border-white/[0.07] bg-card card-shadow overflow-hidden">
+      <div className="rounded-xl border border-border bg-card overflow-hidden">
         <table className="w-full">
           <thead>
-            <tr className="border-b border-white/[0.05]">
+            <tr className="border-b border-border">
               <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-5 py-3">Cliente</th>
               <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-5 py-3 hidden sm:table-cell">Teléfono</th>
               <th className="text-right text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-5 py-3">Saldo</th>
@@ -79,7 +79,7 @@ export default async function CuentasCorrientesPage({ params, searchParams }: Pr
               <th className="px-5 py-3" />
             </tr>
           </thead>
-          <tbody className="divide-y divide-white/[0.04]">
+          <tbody className="divide-y divide-border">
             {!accounts?.length && (
               <tr>
                 <td colSpan={5} className="text-center py-14 text-[14px] text-muted-foreground">
@@ -90,7 +90,7 @@ export default async function CuentasCorrientesPage({ params, searchParams }: Pr
             {accounts?.map(a => {
               const customer = Array.isArray(a.customers) ? a.customers[0] : a.customers as { full_name: string; phone: string | null; alias: string | null; id: string }
               return (
-                <tr key={a.id} className="hover:bg-white/[0.02] transition-colors">
+                <tr key={a.id} className="hover:bg-muted/30 transition-colors">
                   <td className="px-5 py-3.5">
                     <div className="flex items-center gap-3">
                       <div className="w-8 h-8 rounded-full bg-emerald-600/10 flex items-center justify-center shrink-0">

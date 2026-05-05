@@ -54,7 +54,7 @@ export default async function ProveedoresPage({ params, searchParams }: Props) {
             name="q"
             defaultValue={q}
             placeholder="Buscar proveedor..."
-            className="w-full h-10 pl-9 pr-4 rounded-xl bg-card border border-white/[0.08] text-[14px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-emerald-300/50"
+            className="w-full h-10 pl-9 pr-4 rounded-xl bg-card border border-border text-[14px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-emerald-300/50"
           />
           {inactive && <input type="hidden" name="inactive" value="1" />}
         </form>
@@ -68,10 +68,10 @@ export default async function ProveedoresPage({ params, searchParams }: Props) {
         </div>
       </div>
 
-      <div className="rounded-xl border border-white/[0.07] bg-card card-shadow overflow-hidden">
+      <div className="rounded-xl border border-border bg-card overflow-hidden">
         <table className="w-full">
           <thead>
-            <tr className="border-b border-white/[0.05]">
+            <tr className="border-b border-border">
               <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-5 py-3">Proveedor</th>
               <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-5 py-3 hidden md:table-cell">Categoría</th>
               <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-5 py-3 hidden md:table-cell">Contacto</th>
@@ -79,7 +79,7 @@ export default async function ProveedoresPage({ params, searchParams }: Props) {
               <th className="px-5 py-3" />
             </tr>
           </thead>
-          <tbody className="divide-y divide-white/[0.04]">
+          <tbody className="divide-y divide-border">
             {!suppliers?.length && (
               <tr>
                 <td colSpan={5} className="text-center py-14 text-[14px] text-muted-foreground">
@@ -88,7 +88,7 @@ export default async function ProveedoresPage({ params, searchParams }: Props) {
               </tr>
             )}
             {suppliers?.map(s => (
-              <tr key={s.id} className="hover:bg-white/[0.02] transition-colors">
+              <tr key={s.id} className="hover:bg-muted/30 transition-colors">
                 <td className="px-5 py-3.5">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-lg bg-emerald-600/10 flex items-center justify-center shrink-0">
@@ -102,7 +102,7 @@ export default async function ProveedoresPage({ params, searchParams }: Props) {
                 </td>
                 <td className="px-5 py-3.5 hidden md:table-cell">
                   {s.category
-                    ? <Badge variant="outline" className="text-[11px] border-white/10 text-muted-foreground">{s.category}</Badge>
+                    ? <Badge variant="outline" className="text-[11px] border-border text-muted-foreground">{s.category}</Badge>
                     : <span className="text-muted-foreground text-[13px]">—</span>}
                 </td>
                 <td className="px-5 py-3.5 hidden md:table-cell text-[13px] text-muted-foreground">

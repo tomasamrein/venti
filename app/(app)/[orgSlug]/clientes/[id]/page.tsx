@@ -106,8 +106,8 @@ export default function EditarClientePage() {
   if (fetching) {
     return (
       <div className="max-w-2xl">
-        <div className="h-8 w-48 rounded-lg bg-white/[0.05] animate-pulse mb-4" />
-        <div className="rounded-xl border border-white/[0.07] bg-card h-96 animate-pulse" />
+        <div className="h-8 w-48 rounded-lg bg-muted/40 animate-pulse mb-4" />
+        <div className="rounded-xl border border-border bg-card h-96 animate-pulse" />
       </div>
     )
   }
@@ -125,7 +125,7 @@ export default function EditarClientePage() {
       </div>
 
       {account && (
-        <div className="rounded-xl border border-white/[0.07] bg-card card-shadow p-5 flex items-center justify-between">
+        <div className="rounded-xl border border-border bg-card p-5 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-lg bg-emerald-600/10 flex items-center justify-center">
               <CreditCard className="h-4 w-4 text-emerald-600" />
@@ -139,7 +139,7 @@ export default function EditarClientePage() {
           </div>
           <div className="flex gap-2">
             {account.credit_limit && (
-              <Badge variant="outline" className="text-[11px] border-white/10 text-muted-foreground">
+              <Badge variant="outline" className="text-[11px] border-border text-muted-foreground">
                 Límite {formatARS(account.credit_limit)}
               </Badge>
             )}
@@ -150,49 +150,49 @@ export default function EditarClientePage() {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="rounded-xl border border-white/[0.07] bg-card card-shadow overflow-hidden">
+      <form onSubmit={handleSubmit} className="rounded-xl border border-border bg-card overflow-hidden">
         <div className="p-6 space-y-5">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-1.5 sm:col-span-2">
               <Label className="text-[12px] font-semibold text-muted-foreground uppercase tracking-[0.06em]">Nombre completo *</Label>
               <Input value={form.full_name} onChange={e => set('full_name', e.target.value)}
-                className="h-10 bg-white/[0.04] border-white/[0.08] rounded-xl text-[14px]" />
+                className="h-10 bg-muted/30 border-border rounded-xl text-[14px]" />
             </div>
             <div className="space-y-1.5">
               <Label className="text-[12px] font-semibold text-muted-foreground uppercase tracking-[0.06em]">Alias</Label>
               <Input value={form.alias} onChange={e => set('alias', e.target.value)}
-                className="h-10 bg-white/[0.04] border-white/[0.08] rounded-xl text-[14px]" />
+                className="h-10 bg-muted/30 border-border rounded-xl text-[14px]" />
             </div>
             <div className="space-y-1.5">
               <Label className="flex items-center gap-1.5 text-[12px] font-semibold text-muted-foreground uppercase tracking-[0.06em]">
                 <Phone className="h-3 w-3" />Teléfono
               </Label>
               <Input value={form.phone} onChange={e => set('phone', e.target.value)}
-                className="h-10 bg-white/[0.04] border-white/[0.08] rounded-xl text-[14px]" />
+                className="h-10 bg-muted/30 border-border rounded-xl text-[14px]" />
             </div>
             <div className="space-y-1.5">
               <Label className="text-[12px] font-semibold text-muted-foreground uppercase tracking-[0.06em]">DNI</Label>
               <Input value={form.dni} onChange={e => set('dni', e.target.value)}
-                className="h-10 bg-white/[0.04] border-white/[0.08] rounded-xl text-[14px]" />
+                className="h-10 bg-muted/30 border-border rounded-xl text-[14px]" />
             </div>
             <div className="space-y-1.5">
               <Label className="text-[12px] font-semibold text-muted-foreground uppercase tracking-[0.06em]">CUIT</Label>
               <Input value={form.cuit} onChange={e => set('cuit', e.target.value)}
-                className="h-10 bg-white/[0.04] border-white/[0.08] rounded-xl text-[14px]" />
+                className="h-10 bg-muted/30 border-border rounded-xl text-[14px]" />
             </div>
             <div className="space-y-1.5">
               <Label className="flex items-center gap-1.5 text-[12px] font-semibold text-muted-foreground uppercase tracking-[0.06em]">
                 <Mail className="h-3 w-3" />Email
               </Label>
               <Input value={form.email} onChange={e => set('email', e.target.value)}
-                type="email" className="h-10 bg-white/[0.04] border-white/[0.08] rounded-xl text-[14px]" />
+                type="email" className="h-10 bg-muted/30 border-border rounded-xl text-[14px]" />
             </div>
             <div className="space-y-1.5">
               <Label className="flex items-center gap-1.5 text-[12px] font-semibold text-muted-foreground uppercase tracking-[0.06em]">
                 <Calendar className="h-3 w-3" />Fecha de nacimiento
               </Label>
               <Input value={form.birthday} onChange={e => set('birthday', e.target.value)}
-                type="date" className="h-10 bg-white/[0.04] border-white/[0.08] rounded-xl text-[14px]" />
+                type="date" className="h-10 bg-muted/30 border-border rounded-xl text-[14px]" />
             </div>
           </div>
           <div className="space-y-1.5">
@@ -200,21 +200,21 @@ export default function EditarClientePage() {
               <MapPin className="h-3 w-3" />Dirección
             </Label>
             <Input value={form.address} onChange={e => set('address', e.target.value)}
-              className="h-10 bg-white/[0.04] border-white/[0.08] rounded-xl text-[14px]" />
+              className="h-10 bg-muted/30 border-border rounded-xl text-[14px]" />
           </div>
           <div className="space-y-1.5">
             <Label className="text-[12px] font-semibold text-muted-foreground uppercase tracking-[0.06em]">Notas</Label>
             <Textarea value={form.notes} onChange={e => set('notes', e.target.value)}
-              rows={2} className="bg-white/[0.04] border-white/[0.08] rounded-xl text-[14px] resize-none" />
+              rows={2} className="bg-muted/30 border-border rounded-xl text-[14px] resize-none" />
           </div>
-          <div className="flex items-center justify-between rounded-xl bg-white/[0.02] border border-white/[0.05] px-4 py-3">
+          <div className="flex items-center justify-between rounded-xl bg-muted/30 border border-border px-4 py-3">
             <div>
               <p className="text-[14px] font-medium">Cuenta corriente</p>
               <p className="text-[12px] text-muted-foreground">Permite fiado y registro de pagos</p>
             </div>
             <Switch checked={form.has_account} onCheckedChange={v => set('has_account', v)} />
           </div>
-          <div className="flex items-center justify-between rounded-xl bg-white/[0.02] border border-white/[0.05] px-4 py-3">
+          <div className="flex items-center justify-between rounded-xl bg-muted/30 border border-border px-4 py-3">
             <div>
               <p className="text-[14px] font-medium">Cliente activo</p>
               <p className="text-[12px] text-muted-foreground">Aparece en búsquedas y en el POS</p>
@@ -222,7 +222,7 @@ export default function EditarClientePage() {
             <Switch checked={form.is_active} onCheckedChange={v => set('is_active', v)} />
           </div>
         </div>
-        <div className="px-6 py-4 border-t border-white/[0.05] flex gap-3 justify-end bg-white/[0.01]">
+        <div className="px-6 py-4 border-t border-border flex gap-3 justify-end bg-muted/30">
           <Button type="button" variant="ghost" className="rounded-xl" onClick={() => router.back()}>Cancelar</Button>
           <Button type="submit" disabled={loading} className="rounded-xl text-white"
             style={{ background: 'linear-gradient(135deg, oklch(0.55 0.16 155), oklch(0.50 0.16 158))' }}>

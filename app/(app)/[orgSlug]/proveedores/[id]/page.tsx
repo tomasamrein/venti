@@ -103,8 +103,8 @@ export default function EditarProveedorPage() {
   if (fetching) {
     return (
       <div className="max-w-2xl">
-        <div className="h-8 w-48 rounded-lg bg-white/[0.05] animate-pulse mb-4" />
-        <div className="rounded-xl border border-white/[0.07] bg-card h-96 animate-pulse" />
+        <div className="h-8 w-48 rounded-lg bg-muted/40 animate-pulse mb-4" />
+        <div className="rounded-xl border border-border bg-card h-96 animate-pulse" />
       </div>
     )
   }
@@ -131,57 +131,57 @@ export default function EditarProveedorPage() {
               <AlertDialogDescription>El proveedor dejará de aparecer en listados. Podés reactivarlo después.</AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel className="rounded-xl border-white/[0.08]">Cancelar</AlertDialogCancel>
+              <AlertDialogCancel className="rounded-xl border-border">Cancelar</AlertDialogCancel>
               <AlertDialogAction onClick={handleDelete} className="rounded-xl bg-red-500 hover:bg-red-600">Desactivar</AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
       </div>
 
-      <form onSubmit={handleSubmit} className="rounded-xl border border-white/[0.07] bg-card card-shadow overflow-hidden">
+      <form onSubmit={handleSubmit} className="rounded-xl border border-border bg-card overflow-hidden">
         <div className="p-6 space-y-5">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-1.5">
               <Label className="text-[12px] font-semibold text-muted-foreground uppercase tracking-[0.06em]">Nombre *</Label>
               <Input value={form.name} onChange={e => set('name', e.target.value)}
-                className="h-10 bg-white/[0.04] border-white/[0.08] rounded-xl text-[14px]" />
+                className="h-10 bg-muted/30 border-border rounded-xl text-[14px]" />
             </div>
             <div className="space-y-1.5">
               <Label className="text-[12px] font-semibold text-muted-foreground uppercase tracking-[0.06em]">Alias</Label>
               <Input value={form.alias} onChange={e => set('alias', e.target.value)}
-                className="h-10 bg-white/[0.04] border-white/[0.08] rounded-xl text-[14px]" />
+                className="h-10 bg-muted/30 border-border rounded-xl text-[14px]" />
             </div>
             <div className="space-y-1.5">
               <Label className="text-[12px] font-semibold text-muted-foreground uppercase tracking-[0.06em]">CUIT</Label>
               <Input value={form.cuit} onChange={e => set('cuit', e.target.value)}
-                placeholder="20-12345678-9" className="h-10 bg-white/[0.04] border-white/[0.08] rounded-xl text-[14px]" />
+                placeholder="20-12345678-9" className="h-10 bg-muted/30 border-border rounded-xl text-[14px]" />
             </div>
             <div className="space-y-1.5">
               <Label className="text-[12px] font-semibold text-muted-foreground uppercase tracking-[0.06em]">CUIL</Label>
               <Input value={form.cuil} onChange={e => set('cuil', e.target.value)}
-                placeholder="20-12345678-9" className="h-10 bg-white/[0.04] border-white/[0.08] rounded-xl text-[14px]" />
+                placeholder="20-12345678-9" className="h-10 bg-muted/30 border-border rounded-xl text-[14px]" />
             </div>
             <div className="space-y-1.5">
               <Label className="text-[12px] font-semibold text-muted-foreground uppercase tracking-[0.06em]">Teléfono</Label>
               <Input value={form.phone} onChange={e => set('phone', e.target.value)}
-                className="h-10 bg-white/[0.04] border-white/[0.08] rounded-xl text-[14px]" />
+                className="h-10 bg-muted/30 border-border rounded-xl text-[14px]" />
             </div>
             <div className="space-y-1.5">
               <Label className="text-[12px] font-semibold text-muted-foreground uppercase tracking-[0.06em]">Email</Label>
               <Input value={form.email} onChange={e => set('email', e.target.value)}
-                type="email" className="h-10 bg-white/[0.04] border-white/[0.08] rounded-xl text-[14px]" />
+                type="email" className="h-10 bg-muted/30 border-border rounded-xl text-[14px]" />
             </div>
             <div className="space-y-1.5">
               <Label className="text-[12px] font-semibold text-muted-foreground uppercase tracking-[0.06em]">Nombre de contacto</Label>
               <Input value={form.contact_name} onChange={e => set('contact_name', e.target.value)}
-                className="h-10 bg-white/[0.04] border-white/[0.08] rounded-xl text-[14px]" />
+                className="h-10 bg-muted/30 border-border rounded-xl text-[14px]" />
             </div>
             <div className="space-y-1.5">
               <Label className="text-[12px] font-semibold text-muted-foreground uppercase tracking-[0.06em]">Categoría</Label>
               <select
                 value={form.category}
                 onChange={e => set('category', e.target.value)}
-                className="w-full h-10 px-3 rounded-xl bg-white/[0.04] border border-white/[0.08] text-[14px] text-foreground focus:outline-none focus:border-emerald-300/50"
+                className="w-full h-10 px-3 rounded-xl bg-muted/30 border border-border text-[14px] text-foreground focus:outline-none focus:border-emerald-300/50"
               >
                 <option value="">Sin categoría</option>
                 {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
@@ -191,14 +191,14 @@ export default function EditarProveedorPage() {
           <div className="space-y-1.5">
             <Label className="text-[12px] font-semibold text-muted-foreground uppercase tracking-[0.06em]">Dirección</Label>
             <Input value={form.address} onChange={e => set('address', e.target.value)}
-              className="h-10 bg-white/[0.04] border-white/[0.08] rounded-xl text-[14px]" />
+              className="h-10 bg-muted/30 border-border rounded-xl text-[14px]" />
           </div>
           <div className="space-y-1.5">
             <Label className="text-[12px] font-semibold text-muted-foreground uppercase tracking-[0.06em]">Notas</Label>
             <Textarea value={form.notes} onChange={e => set('notes', e.target.value)}
-              rows={3} className="bg-white/[0.04] border-white/[0.08] rounded-xl text-[14px] resize-none" />
+              rows={3} className="bg-muted/30 border-border rounded-xl text-[14px] resize-none" />
           </div>
-          <div className="flex items-center justify-between rounded-xl bg-white/[0.02] border border-white/[0.05] px-4 py-3">
+          <div className="flex items-center justify-between rounded-xl bg-muted/30 border border-border px-4 py-3">
             <div>
               <p className="text-[14px] font-medium">Activo</p>
               <p className="text-[12px] text-muted-foreground">Aparece en listados y búsquedas</p>
@@ -206,7 +206,7 @@ export default function EditarProveedorPage() {
             <Switch checked={form.is_active} onCheckedChange={v => set('is_active', v)} />
           </div>
         </div>
-        <div className="px-6 py-4 border-t border-white/[0.05] flex gap-3 justify-end bg-white/[0.01]">
+        <div className="px-6 py-4 border-t border-border flex gap-3 justify-end bg-muted/30">
           <Button type="button" variant="ghost" className="rounded-xl" onClick={() => router.back()}>Cancelar</Button>
           <Button type="submit" disabled={loading} className="rounded-xl text-white"
             style={{ background: 'linear-gradient(135deg, oklch(0.55 0.16 155), oklch(0.50 0.16 158))' }}>

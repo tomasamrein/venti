@@ -53,7 +53,7 @@ export default async function AdminDashboardPage() {
         {stats.map(s => {
           const Icon = s.icon
           return (
-            <div key={s.label} className="rounded-xl border border-white/[0.07] bg-white/[0.03] p-4 space-y-3">
+            <div key={s.label} className="rounded-xl border border-border bg-white p-4 space-y-3">
               <div className={`w-9 h-9 rounded-lg ${s.bg} flex items-center justify-center`}>
                 <Icon className={`h-4.5 w-4.5 ${s.color}`} />
               </div>
@@ -67,13 +67,13 @@ export default async function AdminDashboardPage() {
         })}
       </div>
 
-      <div className="rounded-xl border border-white/[0.07] bg-white/[0.03] overflow-hidden">
-        <div className="px-5 py-4 border-b border-white/[0.06]">
+      <div className="rounded-xl border border-border bg-white overflow-hidden">
+        <div className="px-5 py-4 border-b border-border">
           <h2 className="text-[14px] font-semibold text-white">Organizaciones recientes</h2>
         </div>
         <table className="w-full">
           <thead>
-            <tr className="border-b border-white/[0.05]">
+            <tr className="border-b border-border">
               <th className="text-left px-5 py-3 text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Nombre</th>
               <th className="text-left px-5 py-3 text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Slug</th>
               <th className="text-left px-5 py-3 text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Estado</th>
@@ -82,8 +82,8 @@ export default async function AdminDashboardPage() {
           </thead>
           <tbody>
             {recentOrgs?.map(org => (
-              <tr key={org.id} className="border-b border-white/[0.03] hover:bg-white/[0.02] transition-colors">
-                <td className="px-5 py-3 text-[13px] text-white font-medium">{org.name}</td>
+              <tr key={org.id} className="border-b border-border hover:bg-muted/40 transition-colors">
+                <td className="px-5 py-3 text-[13px] text-foreground font-medium">{org.name}</td>
                 <td className="px-5 py-3 text-[13px] text-muted-foreground font-mono">{org.slug}</td>
                 <td className="px-5 py-3">
                   <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium ${org.is_active ? 'bg-emerald-500/15 text-emerald-400' : 'bg-red-500/15 text-red-400'}`}>

@@ -149,21 +149,21 @@ export default function EquipoPage() {
         )}
       </div>
 
-      <div className="rounded-xl border border-white/[0.07] bg-card card-shadow overflow-hidden">
-        <div className="px-5 py-4 border-b border-white/[0.05] flex items-center gap-2">
+      <div className="rounded-xl border border-border bg-card overflow-hidden">
+        <div className="px-5 py-4 border-b border-border flex items-center gap-2">
           <Users className="h-4 w-4 text-muted-foreground" />
           <h2 className="text-[14px] font-semibold">Miembros activos</h2>
           <span className="ml-auto text-[12px] text-muted-foreground">{members.filter(m => m.is_active).length} miembros</span>
         </div>
 
-        <div className="divide-y divide-white/[0.04]">
+        <div className="divide-y divide-border">
           {fetching
             ? Array.from({ length: 3 }).map((_, i) => (
               <div key={i} className="px-5 py-4 flex items-center gap-3">
-                <div className="w-9 h-9 rounded-full bg-white/[0.05] animate-pulse" />
+                <div className="w-9 h-9 rounded-full bg-muted/40 animate-pulse" />
                 <div className="flex-1 space-y-1.5">
-                  <div className="h-3.5 w-32 rounded bg-white/[0.05] animate-pulse" />
-                  <div className="h-3 w-20 rounded bg-white/[0.05] animate-pulse" />
+                  <div className="h-3.5 w-32 rounded bg-muted/40 animate-pulse" />
+                  <div className="h-3 w-20 rounded bg-muted/40 animate-pulse" />
                 </div>
               </div>
             ))
@@ -188,7 +188,7 @@ export default function EquipoPage() {
                 {canManage && member.role !== 'owner' && member.user_id !== myUserId && (
                   <div className="flex items-center gap-2">
                     <Select value={member.role} onValueChange={v => handleRoleChange(member.id, v as 'admin' | 'cashier')}>
-                      <SelectTrigger className="h-8 w-28 text-[12px] rounded-lg bg-white/[0.04] border-white/[0.08]">
+                      <SelectTrigger className="h-8 w-28 text-[12px] rounded-lg bg-muted/30 border-border">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -212,13 +212,13 @@ export default function EquipoPage() {
         </div>
       </div>
 
-      <div className="rounded-xl border border-white/[0.07] bg-card/50 p-4">
+      <div className="rounded-xl border border-border bg-muted/30 p-4">
         <div className="flex items-start gap-3">
           <Shield className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
           <div className="text-[13px] text-muted-foreground space-y-1">
-            <p><span className="text-white font-medium">Dueño:</span> acceso total, puede configurar facturación y suscripción.</p>
-            <p><span className="text-white font-medium">Admin:</span> puede gestionar productos, clientes y ver reportes.</p>
-            <p><span className="text-white font-medium">Cajero:</span> solo puede usar el POS y emitir facturas.</p>
+            <p><span className="text-foreground font-medium">Dueño:</span> acceso total, puede configurar facturación y suscripción.</p>
+            <p><span className="text-foreground font-medium">Admin:</span> puede gestionar productos, clientes y ver reportes.</p>
+            <p><span className="text-foreground font-medium">Cajero:</span> solo puede usar el POS y emitir facturas.</p>
           </div>
         </div>
       </div>
@@ -240,7 +240,7 @@ export default function EquipoPage() {
                   placeholder="usuario@email.com"
                   value={inviteEmail}
                   onChange={e => setInviteEmail(e.target.value)}
-                  className="pl-9 h-10 bg-white/[0.04] border-white/[0.08] rounded-xl"
+                  className="pl-9 h-10 bg-muted/30 border-border rounded-xl"
                 />
               </div>
               <p className="text-[11px] text-muted-foreground">El usuario debe tener una cuenta en Venti.</p>
@@ -248,7 +248,7 @@ export default function EquipoPage() {
             <div className="space-y-1.5">
               <Label className="text-[12px] font-semibold text-muted-foreground uppercase tracking-[0.06em]">Rol</Label>
               <Select value={inviteRole} onValueChange={v => setInviteRole(v as 'admin' | 'cashier')}>
-                <SelectTrigger className="h-10 rounded-xl bg-white/[0.04] border-white/[0.08]">
+                <SelectTrigger className="h-10 rounded-xl bg-muted/30 border-border">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>

@@ -156,7 +156,7 @@ export default function ReportesPage() {
         ].map(stat => {
           const Icon = stat.icon
           return (
-            <div key={stat.title} className="rounded-xl border border-white/[0.07] bg-card card-shadow p-5">
+            <div key={stat.title} className="rounded-xl border border-border bg-card p-5">
               <div className="flex items-center gap-3 mb-3">
                 <div className={`w-8 h-8 rounded-lg ${stat.bg} flex items-center justify-center`}>
                   <Icon className={`h-4 w-4 ${stat.color}`} />
@@ -169,10 +169,10 @@ export default function ReportesPage() {
         })}
       </div>
 
-      <div className="rounded-xl border border-white/[0.07] bg-card card-shadow p-5">
+      <div className="rounded-xl border border-border bg-card p-5">
         <h2 className="text-[14px] font-semibold mb-5">Ventas diarias</h2>
         {fetching ? (
-          <div className="h-52 rounded-xl bg-white/[0.03] animate-pulse" />
+          <div className="h-52 rounded-xl bg-muted/30 animate-pulse" />
         ) : (
           <ResponsiveContainer width="100%" height={200}>
             <AreaChart data={dayStats}>
@@ -197,17 +197,17 @@ export default function ReportesPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <div className="rounded-xl border border-white/[0.07] bg-card card-shadow overflow-hidden">
-          <div className="px-5 py-4 border-b border-white/[0.05] flex items-center gap-2">
+        <div className="rounded-xl border border-border bg-card overflow-hidden">
+          <div className="px-5 py-4 border-b border-border flex items-center gap-2">
             <Package className="h-4 w-4 text-muted-foreground" />
             <h2 className="text-[14px] font-semibold">Top productos</h2>
           </div>
-          <div className="divide-y divide-white/[0.04]">
+          <div className="divide-y divide-border">
             {fetching
               ? Array.from({ length: 5 }).map((_, i) => (
                 <div key={i} className="px-5 py-3 flex justify-between">
-                  <div className="h-4 w-32 rounded bg-white/[0.05] animate-pulse" />
-                  <div className="h-4 w-20 rounded bg-white/[0.05] animate-pulse" />
+                  <div className="h-4 w-32 rounded bg-muted/40 animate-pulse" />
+                  <div className="h-4 w-20 rounded bg-muted/40 animate-pulse" />
                 </div>
               ))
               : !topProducts.length
@@ -227,8 +227,8 @@ export default function ReportesPage() {
           </div>
         </div>
 
-        <div className="rounded-xl border border-white/[0.07] bg-card card-shadow overflow-hidden">
-          <div className="px-5 py-4 border-b border-white/[0.05] flex items-center gap-2">
+        <div className="rounded-xl border border-border bg-card overflow-hidden">
+          <div className="px-5 py-4 border-b border-border flex items-center gap-2">
             <AlertTriangle className="h-4 w-4 text-amber-400" />
             <h2 className="text-[14px] font-semibold">Alertas de stock</h2>
             {stockAlerts.length > 0 && (
@@ -237,12 +237,12 @@ export default function ReportesPage() {
               </span>
             )}
           </div>
-          <div className="divide-y divide-white/[0.04]">
+          <div className="divide-y divide-border">
             {fetching
               ? Array.from({ length: 4 }).map((_, i) => (
                 <div key={i} className="px-5 py-3 flex justify-between">
-                  <div className="h-4 w-32 rounded bg-white/[0.05] animate-pulse" />
-                  <div className="h-4 w-16 rounded bg-white/[0.05] animate-pulse" />
+                  <div className="h-4 w-32 rounded bg-muted/40 animate-pulse" />
+                  <div className="h-4 w-16 rounded bg-muted/40 animate-pulse" />
                 </div>
               ))
               : !stockAlerts.length

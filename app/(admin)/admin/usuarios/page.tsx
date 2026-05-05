@@ -32,7 +32,7 @@ export default async function AdminUsersPage({ searchParams }: Props) {
           name="q"
           defaultValue={q}
           placeholder="Buscar por nombre..."
-          className="flex-1 h-9 px-3 rounded-lg bg-muted border border-border text-[13px] text-white placeholder:text-muted-foreground focus:outline-none focus:border-white/20"
+          className="flex-1 h-9 px-3 rounded-lg bg-muted border border-border text-[13px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-emerald-300"
         />
         <button
           type="submit"
@@ -43,10 +43,10 @@ export default async function AdminUsersPage({ searchParams }: Props) {
         </button>
       </form>
 
-      <div className="rounded-xl border border-white/[0.07] bg-white/[0.03] overflow-hidden">
+      <div className="rounded-xl border border-border bg-white overflow-hidden">
         <table className="w-full">
           <thead>
-            <tr className="border-b border-white/[0.06]">
+            <tr className="border-b border-border">
               <th className="text-left px-5 py-3 text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Usuario</th>
               <th className="text-left px-5 py-3 text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Teléfono</th>
               <th className="text-left px-5 py-3 text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Rol</th>
@@ -55,10 +55,10 @@ export default async function AdminUsersPage({ searchParams }: Props) {
           </thead>
           <tbody>
             {profiles?.map(p => (
-              <tr key={p.id} className="border-b border-white/[0.03] hover:bg-white/[0.02] transition-colors">
+              <tr key={p.id} className="border-b border-border hover:bg-muted/40 transition-colors">
                 <td className="px-5 py-3">
                   <div className="flex items-center gap-3">
-                    <div className="w-7 h-7 rounded-full bg-white/[0.08] flex items-center justify-center shrink-0">
+                    <div className="w-7 h-7 rounded-full bg-muted/40 flex items-center justify-center shrink-0">
                       <span className="text-[11px] font-bold text-white">
                         {(p.full_name?.[0] ?? '?').toUpperCase()}
                       </span>
@@ -76,7 +76,7 @@ export default async function AdminUsersPage({ searchParams }: Props) {
                       Super Admin
                     </span>
                   ) : (
-                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-white/[0.06] text-muted-foreground">
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-muted/50 text-muted-foreground">
                       Usuario
                     </span>
                   )}

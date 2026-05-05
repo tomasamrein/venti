@@ -67,11 +67,11 @@ export default async function ReportesVentasPage({ params, searchParams }: Props
         </div>
         <form className="flex gap-2 flex-wrap" method="GET">
           <input type="date" name="from" defaultValue={from ?? fromDate.toISOString().slice(0,10)}
-            className="h-9 px-3 rounded-xl bg-white/[0.04] border border-white/[0.08] text-[13px] text-foreground" />
+            className="h-9 px-3 rounded-xl bg-muted/30 border border-border text-[13px] text-foreground" />
           <input type="date" name="to" defaultValue={to ?? now.toISOString().slice(0,10)}
-            className="h-9 px-3 rounded-xl bg-white/[0.04] border border-white/[0.08] text-[13px] text-foreground" />
+            className="h-9 px-3 rounded-xl bg-muted/30 border border-border text-[13px] text-foreground" />
           <select name="method" defaultValue={method ?? ''}
-            className="h-9 px-3 rounded-xl bg-white/[0.04] border border-white/[0.08] text-[13px] text-foreground">
+            className="h-9 px-3 rounded-xl bg-muted/30 border border-border text-[13px] text-foreground">
             <option value="">Todos los medios</option>
             {METHODS.map(m => <option key={m} value={m}>{METHOD_LABELS[m]}</option>)}
           </select>
@@ -91,7 +91,7 @@ export default async function ReportesVentasPage({ params, searchParams }: Props
         ].map(s => {
           const Icon = s.icon
           return (
-            <div key={s.label} className="rounded-xl border border-white/[0.07] bg-card card-shadow p-5">
+            <div key={s.label} className="rounded-xl border border-border bg-card p-5">
               <div className="flex items-center gap-2 mb-3">
                 <div className={`w-8 h-8 rounded-lg ${s.bg} flex items-center justify-center`}>
                   <Icon className={`h-4 w-4 ${s.color}`} />
@@ -105,17 +105,17 @@ export default async function ReportesVentasPage({ params, searchParams }: Props
       </div>
 
       {/* By method */}
-      <div className="rounded-xl border border-white/[0.07] bg-card card-shadow overflow-hidden">
-        <div className="px-5 py-4 border-b border-white/[0.05]">
+      <div className="rounded-xl border border-border bg-card overflow-hidden">
+        <div className="px-5 py-4 border-b border-border">
           <h2 className="text-[14px] font-semibold">Por medio de pago</h2>
         </div>
-        <div className="divide-y divide-white/[0.04]">
+        <div className="divide-y divide-border">
           {METHODS.filter(m => byMethod[m]).map(m => {
             const pct = totalRevenue > 0 ? (byMethod[m].total / totalRevenue) * 100 : 0
             return (
               <div key={m} className="px-5 py-3 flex items-center gap-4">
                 <p className="text-[13px] font-medium w-36">{METHOD_LABELS[m]}</p>
-                <div className="flex-1 h-1.5 rounded-full bg-white/[0.06] overflow-hidden">
+                <div className="flex-1 h-1.5 rounded-full bg-muted/50 overflow-hidden">
                   <div className="h-full rounded-full bg-emerald-600/60" style={{ width: `${pct}%` }} />
                 </div>
                 <p className="text-[13px] text-muted-foreground w-10 text-right">{byMethod[m].count}</p>
@@ -127,8 +127,8 @@ export default async function ReportesVentasPage({ params, searchParams }: Props
       </div>
 
       {/* Table */}
-      <div className="rounded-xl border border-white/[0.07] bg-card card-shadow overflow-hidden">
-        <div className="px-5 py-4 border-b border-white/[0.05]">
+      <div className="rounded-xl border border-border bg-card overflow-hidden">
+        <div className="px-5 py-4 border-b border-border">
           <h2 className="text-[14px] font-semibold">Detalle de ventas</h2>
         </div>
         {!sales?.length
@@ -137,15 +137,15 @@ export default async function ReportesVentasPage({ params, searchParams }: Props
             <div className="overflow-x-auto">
               <table className="w-full text-[13px]">
                 <thead>
-                  <tr className="border-b border-white/[0.05]">
+                  <tr className="border-b border-border">
                     {['Fecha', 'Cliente', 'Medio de pago', 'Total'].map(h => (
                       <th key={h} className="px-5 py-3 text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">{h}</th>
                     ))}
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-white/[0.04]">
+                <tbody className="divide-y divide-border">
                   {sales.map(s => (
-                    <tr key={s.id} className="hover:bg-white/[0.02]">
+                    <tr key={s.id} className="hover:bg-muted/30">
                       <td className="px-5 py-3 text-muted-foreground">
                         {new Date(s.created_at).toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
                       </td>

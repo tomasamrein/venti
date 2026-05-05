@@ -114,19 +114,19 @@ export default function SucursalesPage() {
         )}
       </div>
 
-      <div className="rounded-xl border border-white/[0.07] bg-card card-shadow overflow-hidden">
-        <div className="px-5 py-4 border-b border-white/[0.05] flex items-center gap-2">
+      <div className="rounded-xl border border-border bg-card overflow-hidden">
+        <div className="px-5 py-4 border-b border-border flex items-center gap-2">
           <Building2 className="h-4 w-4 text-muted-foreground" />
           <h2 className="text-[14px] font-semibold">Sucursales</h2>
           <span className="ml-auto text-[12px] text-muted-foreground">{branches.length}</span>
         </div>
-        <div className="divide-y divide-white/[0.04]">
+        <div className="divide-y divide-border">
           {fetching
             ? Array.from({ length: 2 }).map((_, i) => (
               <div key={i} className="px-5 py-4 flex items-center gap-3">
                 <div className="flex-1 space-y-1.5">
-                  <div className="h-4 w-40 rounded bg-white/[0.05] animate-pulse" />
-                  <div className="h-3 w-28 rounded bg-white/[0.05] animate-pulse" />
+                  <div className="h-4 w-40 rounded bg-muted/40 animate-pulse" />
+                  <div className="h-3 w-28 rounded bg-muted/40 animate-pulse" />
                 </div>
               </div>
             ))
@@ -185,7 +185,7 @@ export default function SucursalesPage() {
                   {field === 'name' ? 'Nombre *' : field === 'address' ? 'Dirección' : 'Teléfono'}
                 </Label>
                 <Input value={form[field] ?? ''} onChange={e => setForm(f => ({ ...f, [field]: e.target.value }))}
-                  className="h-10 bg-white/[0.04] border-white/[0.08] rounded-xl" />
+                  className="h-10 bg-muted/30 border-border rounded-xl" />
               </div>
             ))}
             <div className="flex gap-3 pt-2">
