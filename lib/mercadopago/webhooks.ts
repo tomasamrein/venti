@@ -3,6 +3,28 @@ import { Payment, PreApproval } from 'mercadopago'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { getMpClient } from './client'
 
+async function notifyAdmin(subject: string, body: string) {
+  const adminEmail = process.env.SUPER_ADMIN_EMAIL
+  const resendKey = process.env.RESEND_API_KEY
+
+  console.log(`[Venti Admin] ${subject} — ${body}`)
+
+  if (resendKey && adminEmail) {
+    try {
+      await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${resendKey}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          from: 'Venti <noreply@venti.ar>',
+          to: adminEmail,
+          subject: `[Venti] ${subject}`,
+          text: body,
+        }),
+      })
+    } catch { /* best-effort */ }
+  }
+}
+
 /**
  * Verify Mercado Pago webhook signature.
  *
@@ -102,6 +124,12 @@ export async function processMpWebhook(type: string, dataId: string): Promise<{ 
         })
         .eq('id', existing.organization_id)
 
+      const { data: orgData } = await supabase.from('organizations').select('name').eq('id', existing.organization_id).single()
+      await notifyAdmin(
+        `Suscripción actualizada — ${orgData?.name ?? existing.organization_id}`,
+        `Estado: ${status}\nMP ID: ${dataId}\nPayer: ${sub.payer_id ?? '—'}\nPróximo cobro: ${endDate ?? '—'}`
+      )
+
       return { handled: true }
     }
 
@@ -130,6 +158,12 @@ export async function processMpWebhook(type: string, dataId: string): Promise<{ 
         .from('organizations')
         .update({ is_active: status === 'active' || status === 'trialing' })
         .eq('id', orgId)
+
+      const { data: orgData } = await supabase.from('organizations').select('name').eq('id', orgId).single()
+      await notifyAdmin(
+        `Nueva suscripción — ${orgData?.name ?? orgId}`,
+        `Estado: ${status}\nMP ID: ${dataId}\nPayer: ${sub.payer_id ?? '—'}\nPróximo cobro: ${endDate ?? '—'}`
+      )
       return { handled: true }
     }
 

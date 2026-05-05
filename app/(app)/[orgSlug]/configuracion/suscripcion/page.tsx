@@ -2,10 +2,11 @@
 
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
-import { CreditCard, CheckCircle2, Clock, AlertCircle, Zap } from 'lucide-react'
+import { CreditCard, CheckCircle2, Clock, AlertCircle, Zap, Loader2 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { formatARS } from '@/lib/utils/currency'
 import { Button } from '@/components/ui/button'
+import { toast } from 'sonner'
 
 interface Plan {
   id: string
@@ -40,14 +41,21 @@ export default function SuscripcionPage() {
   const [subscription, setSubscription] = useState<Subscription | null>(null)
   const [plans, setPlans] = useState<Plan[]>([])
   const [trialEndsAt, setTrialEndsAt] = useState<string | null>(null)
+  const [orgId, setOrgId] = useState<string | null>(null)
+  const [userEmail, setUserEmail] = useState<string | null>(null)
   const [fetching, setFetching] = useState(true)
+  const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null)
 
   useEffect(() => {
     async function load() {
       const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      setUserEmail(user?.email ?? null)
+
       const { data: org } = await supabase
         .from('organizations').select('id, trial_ends_at').eq('slug', orgSlug).single()
       if (!org) return
+      setOrgId(org.id)
       setTrialEndsAt(org.trial_ends_at)
 
       const { data: sub } = await supabase
@@ -71,6 +79,30 @@ export default function SuscripcionPage() {
   const status = subscription?.status ?? 'trialing'
   const statusInfo = STATUS_INFO[status] ?? STATUS_INFO.trialing
   const StatusIcon = statusInfo.icon
+
+  async function handleCheckout(plan: Plan) {
+    if (plan.type === 'pro') {
+      window.open(`https://wa.me/5492604000000?text=Hola%2C+quiero+info+sobre+el+plan+Enterprise+de+Venti`, '_blank')
+      return
+    }
+    const email = userEmail ?? window.prompt('Ingresá tu email:')
+    if (!email?.includes('@')) { toast.error('Email inválido'); return }
+    setCheckoutLoading(plan.id)
+    try {
+      const res = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ plan_type: plan.type, email, org_id: orgId }),
+      })
+      const json = await res.json()
+      if (!res.ok) { toast.error(json.error ?? 'Error al iniciar el pago'); return }
+      window.location.href = json.init_point
+    } catch {
+      toast.error('Error de red')
+    } finally {
+      setCheckoutLoading(null)
+    }
+  }
 
   const trialDaysLeft = trialEndsAt
     ? Math.max(0, Math.ceil((new Date(trialEndsAt).getTime() - Date.now()) / 86400000))
@@ -167,9 +199,12 @@ export default function SuscripcionPage() {
                     <p className="text-[11px] text-muted-foreground">por mes</p>
                     {!isCurrent && (
                       <Button size="sm" className="mt-2 rounded-lg text-[12px] text-white"
+                        disabled={checkoutLoading === plan.id}
                         style={{ background: 'linear-gradient(135deg, oklch(0.55 0.16 155), oklch(0.50 0.16 158))' }}
-                        onClick={() => window.open(`https://wa.me/+5492915000000?text=Quiero%20cambiar%20al%20plan%20${encodeURIComponent(plan.name)}`, '_blank')}>
-                        {(subscription?.status === 'active' || subscription?.status === 'trialing') ? 'Cambiar plan' : 'Suscribirme'}
+                        onClick={() => handleCheckout(plan)}>
+                        {checkoutLoading === plan.id
+                          ? <Loader2 className="h-3 w-3 animate-spin" />
+                          : plan.type === 'pro' ? 'Consultar' : (subscription?.status === 'active' ? 'Cambiar plan' : 'Suscribirme')}
                       </Button>
                     )}
                   </div>

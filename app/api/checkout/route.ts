@@ -50,7 +50,8 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://app.venti.ar'
+    // Use CHECKOUT_BASE_URL override for local testing with ngrok
+    const appUrl = process.env.CHECKOUT_BASE_URL ?? process.env.NEXT_PUBLIC_APP_URL ?? 'https://app.venti.ar'
     const preApproval = getPreApproval()
 
     const result = await preApproval.create({
@@ -61,7 +62,7 @@ export async function POST(req: NextRequest) {
         auto_recurring: {
           frequency: 1,
           frequency_type: 'months',
-          transaction_amount: plan.price_ars,
+          transaction_amount: Number(plan.price_ars),
           currency_id: 'ARS',
         },
         back_url: `${appUrl}/registro/confirmacion`,
