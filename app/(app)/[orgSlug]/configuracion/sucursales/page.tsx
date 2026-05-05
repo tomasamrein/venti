@@ -154,7 +154,7 @@ export default function SucursalesPage() {
                 </div>
                 {isOwner && (
                   <div className="flex items-center gap-2">
-                    <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-white"
+                    <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground"
                       onClick={() => openEdit(b)}>
                       <Pencil className="h-3.5 w-3.5" />
                     </Button>
