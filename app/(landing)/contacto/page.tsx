@@ -3,7 +3,7 @@ import { MessageCircle, Mail, Clock } from 'lucide-react'
 
 export const metadata: Metadata = {
   title: 'Contacto',
-  description: 'Contactanos por WhatsApp o email. Soporte para Venti.',
+  description: 'Contactanos por WhatsApp o email. Soporte para Ventix.',
 }
 
 export default function ContactoPage() {
@@ -23,7 +23,7 @@ export default function ContactoPage() {
 
       <div className="space-y-4">
         <a
-          href={`https://wa.me/${PHONE}?text=Hola%2C%20quiero%20saber%20m%C3%A1s%20sobre%20Venti`}
+          href={`https://wa.me/${PHONE}?text=Hola%2C%20quiero%20saber%20m%C3%A1s%20sobre%20Ventix`}
           target="_blank"
           rel="noopener noreferrer"
           className="flex items-center gap-5 rounded-xl border border-emerald-200 bg-emerald-50 p-6 hover:bg-emerald-100 hover:border-emerald-300 transition-all group"
@@ -72,9 +72,9 @@ export default function ContactoPage() {
 
       <div className="mt-10 rounded-xl border border-slate-200 bg-slate-50 p-5 text-center">
         <p className="text-sm text-slate-600">
-          Si tenés un negocio y querés ver Venti en acción,{' '}
+          Si tenés un negocio y querés ver Ventix en acción,{' '}
           <a
-            href={`https://wa.me/${PHONE}?text=Quiero%20una%20demo%20de%20Venti`}
+            href={`https://wa.me/${PHONE}?text=Quiero%20una%20demo%20de%20Ventix`}
             target="_blank"
             rel="noopener noreferrer"
             className="text-emerald-700 hover:text-emerald-800 font-medium underline underline-offset-2"

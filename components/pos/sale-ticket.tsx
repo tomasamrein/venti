@@ -104,7 +104,7 @@ export function SaleTicket({ open, onClose, sale }: SaleTicketProps) {
       : format(new Date(), 'dd/MM/yyyy HH:mm', { locale: es })
 
     const lines = [
-      `*${sale.org_name || 'Venti POS'}*`,
+      `*${sale.org_name || 'Ventix POS'}*`,
       `Ticket #${sale.sale_number ?? sale.id.slice(0, 8)}`,
       `Fecha: ${date}`,
       ``,
@@ -139,7 +139,7 @@ export function SaleTicket({ open, onClose, sale }: SaleTicketProps) {
         >
           {/* Header */}
           <div className="ticket-header text-center mb-3">
-            <h1 className="text-lg font-bold">{sale.org_name || 'Venti POS'}</h1>
+            <h1 className="text-lg font-bold">{sale.org_name || 'Ventix POS'}</h1>
             {sale.org_address && <p className="text-[10px] text-gray-600">{sale.org_address}</p>}
             {sale.org_phone && <p className="text-[10px] text-gray-600">Tel: {sale.org_phone}</p>}
           </div>
@@ -215,7 +215,7 @@ export function SaleTicket({ open, onClose, sale }: SaleTicketProps) {
           {/* Footer */}
           <div className="ticket-footer text-center text-[10px] text-gray-500 mt-4">
             <p>¡Gracias por su compra!</p>
-            <p className="mt-1">Powered by Venti</p>
+            <p className="mt-1">Powered by Ventix</p>
           </div>
         </div>
 

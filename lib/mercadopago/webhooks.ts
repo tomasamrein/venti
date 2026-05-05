@@ -7,7 +7,7 @@ async function notifyAdmin(subject: string, body: string) {
   const adminEmail = process.env.SUPER_ADMIN_EMAIL
   const resendKey = process.env.RESEND_API_KEY
 
-  console.log(`[Venti Admin] ${subject} — ${body}`)
+  console.log(`[Ventix Admin] ${subject} — ${body}`)
 
   if (resendKey && adminEmail) {
     try {
@@ -15,9 +15,9 @@ async function notifyAdmin(subject: string, body: string) {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${resendKey}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          from: 'Venti <noreply@venti.ar>',
+          from: 'Ventix <noreply@ventix.ar>',
           to: adminEmail,
-          subject: `[Venti] ${subject}`,
+          subject: `[Ventix] ${subject}`,
           text: body,
         }),
       })

@@ -6,7 +6,7 @@ import { Providers } from '@/components/providers'
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 
 export const metadata: Metadata = {
-  title: { default: 'Venti', template: '%s | Venti' },
+  title: { default: 'Ventix', template: '%s | Ventix' },
   description: 'Sistema de gestión para kioscos, almacenes y negocios argentinos',
   manifest: '/manifest.json',
 }

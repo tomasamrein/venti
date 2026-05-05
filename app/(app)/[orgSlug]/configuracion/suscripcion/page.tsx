@@ -82,7 +82,7 @@ export default function SuscripcionPage() {
 
   async function handleCheckout(plan: Plan) {
     if (plan.type === 'pro') {
-      window.open(`https://wa.me/5492604000000?text=Hola%2C+quiero+info+sobre+el+plan+Enterprise+de+Venti`, '_blank')
+      window.open(`https://wa.me/5492604000000?text=Hola%2C+quiero+info+sobre+el+plan+Enterprise+de+Ventix`, '_blank')
       return
     }
     const email = userEmail ?? window.prompt('Ingresá tu email:')

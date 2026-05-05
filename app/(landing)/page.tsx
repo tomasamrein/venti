@@ -7,10 +7,10 @@ import {
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Venti — Software para negocios argentinos',
+  title: 'Ventix — Software para negocios argentinos',
   description: 'Dejá de perder plata por no controlar el stock. Software con facturación ARCA, gestión de clientes y reportes para kioscos, almacenes y comercios de Argentina.',
   openGraph: {
-    title: 'Venti — Software para negocios argentinos',
+    title: 'Ventix — Software para negocios argentinos',
     description: 'Dejá de perder plata por no controlar el stock.',
     images: [{ url: '/og-image.png', width: 1200, height: 630 }],
   },
@@ -98,7 +98,7 @@ const PLANS = [
       'Implementación asistida',
     ],
     cta: 'Consultar precio',
-    href: 'https://wa.me/5492604000000?text=Hola%2C+quiero+info+sobre+el+plan+Multi-sucursal+de+Venti',
+    href: 'https://wa.me/5492604000000?text=Hola%2C+quiero+info+sobre+el+plan+Multi-sucursal+de+Ventix',
     highlight: true,
   },
 ]
@@ -106,7 +106,7 @@ const PLANS = [
 const FAQS = [
   {
     q: '¿Necesito instalar algo?',
-    a: 'No. Venti funciona en el navegador. Sirve en PC, tablet y celular sin instalar nada.',
+    a: 'No. Ventix funciona en el navegador. Sirve en PC, tablet y celular sin instalar nada.',
   },
   {
     q: '¿Funciona con mi lector de código de barras USB?',
@@ -149,7 +149,7 @@ export default function LandingPage() {
         </h1>
 
         <p className="mt-6 text-lg text-slate-500 max-w-2xl mx-auto leading-relaxed">
-          Venti es el software para kioscos, almacenes y comercios argentinos que cierra la caja sola,
+          Ventix es el software para kioscos, almacenes y comercios argentinos que cierra la caja sola,
           factura con ARCA y te avisa cuando te quedás sin stock.
         </p>
 
@@ -190,7 +190,7 @@ export default function LandingPage() {
             })}
           </div>
           <p className="text-center mt-6 text-sm text-slate-500">
-            Con Venti, todo eso desaparece.{' '}
+            Con Ventix, todo eso desaparece.{' '}
             <Link href="/registro" className="text-emerald-600 hover:text-emerald-700 font-medium underline underline-offset-2">
               Probalo gratis 7 días →
             </Link>
@@ -261,7 +261,7 @@ export default function LandingPage() {
         <div className="space-y-4">
           {[
             { step: '1', title: 'Creás tu cuenta', desc: 'Registrás el negocio, cargás los productos y listo. Sin instalar nada.' },
-            { step: '2', title: 'Conectás tu caja', desc: 'Abrís Venti en cualquier dispositivo. PC, tablet o celular. Escaneás o buscás productos.' },
+            { step: '2', title: 'Conectás tu caja', desc: 'Abrís Ventix en cualquier dispositivo. PC, tablet o celular. Escaneás o buscás productos.' },
             { step: '3', title: 'Vendés y controlás', desc: 'El stock se actualiza solo. Los reportes se generan solos. Las facturas salen solas.' },
           ].map(s => (
             <div key={s.step} className="flex gap-4 items-start">

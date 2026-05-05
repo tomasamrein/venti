@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { toast } from 'sonner'
-import { Loader2, Building2, User, Globe, FileText, CreditCard, Users, GitBranch, ChevronRight } from 'lucide-react'
+import { Loader2, Building2, User, Globe, FileText, CreditCard, Users, GitBranch, ChevronRight, Download } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -33,6 +33,7 @@ export default function ConfiguracionPage() {
   const [fetching, setFetching] = useState(true)
   const [loadingOrg, setLoadingOrg] = useState(false)
   const [loadingProfile, setLoadingProfile] = useState(false)
+  const [exportingData, setExportingData] = useState(false)
   const [orgForm, setOrgForm] = useState<OrgForm>({ name: '', cuit: '', address: '', phone: '', email: '' })
   const [profileForm, setProfileForm] = useState<ProfileForm>({ full_name: '', phone: '' })
   const [timezone, setTimezone] = useState('America/Argentina/Buenos_Aires')
@@ -64,6 +65,25 @@ export default function ConfiguracionPage() {
     }
     load()
   }, [orgSlug])
+
+  async function exportBusinessData() {
+    setExportingData(true)
+    try {
+      const res = await fetch(`/api/exports/business?org=${orgSlug}`)
+      if (!res.ok) { toast.error('Error al exportar los datos'); return }
+      const blob = await res.blob()
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = res.headers.get('Content-Disposition')?.match(/filename="(.+)"/)?.[1] ?? 'ventix-export.xlsx'
+      a.click()
+      URL.revokeObjectURL(url)
+    } catch {
+      toast.error('Error al exportar los datos')
+    } finally {
+      setExportingData(false)
+    }
+  }
 
   async function saveOrg(e: React.FormEvent) {
     e.preventDefault()
@@ -197,6 +217,30 @@ export default function ConfiguracionPage() {
           </Button>
         </div>
       </form>
+
+      {/* Export data */}
+      <div className="rounded-xl border border-border bg-card overflow-hidden">
+        <div className="px-6 py-4 border-b border-border flex items-center gap-2">
+          <Download className="h-4 w-4 text-emerald-600" />
+          <h2 className="text-[14px] font-semibold">Exportar mis datos</h2>
+        </div>
+        <div className="p-6 flex items-center justify-between gap-4">
+          <div>
+            <p className="text-[13px] text-foreground">Descargá todos tus datos en un archivo Excel.</p>
+            <p className="text-[12px] text-muted-foreground mt-1">Incluye productos, clientes, proveedores y ventas de los últimos 12 meses.</p>
+          </div>
+          <Button
+            type="button"
+            variant="outline"
+            className="shrink-0 rounded-xl text-[13px] gap-2"
+            onClick={exportBusinessData}
+            disabled={exportingData}
+          >
+            {exportingData ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
+            {exportingData ? 'Exportando...' : 'Descargar'}
+          </Button>
+        </div>
+      </div>
 
       <form onSubmit={saveProfile} className="rounded-xl border border-border bg-card overflow-hidden">
         <div className="px-6 py-4 border-b border-border flex items-center gap-2">

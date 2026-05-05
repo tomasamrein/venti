@@ -31,8 +31,8 @@ export function TrialBanner({ trialEndsAt, isActive }: TrialBannerProps) {
 
   // Build WhatsApp link
   const msg = expired
-    ? 'Hola%2C+mi+prueba+de+Venti+venció+y+quiero+continuar+usando+el+sistema.'
-    : `Hola%2C+mi+prueba+de+Venti+vence+en+${daysLeft}+d%C3%ADa${daysLeft === 1 ? '' : 's'}+y+quiero+suscribirme.`
+    ? 'Hola%2C+mi+prueba+de+Ventix+venció+y+quiero+continuar+usando+el+sistema.'
+    : `Hola%2C+mi+prueba+de+Ventix+vence+en+${daysLeft}+d%C3%ADa${daysLeft === 1 ? '' : 's'}+y+quiero+suscribirme.`
   const waUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`
 
   return (
@@ -44,7 +44,7 @@ export function TrialBanner({ trialEndsAt, isActive }: TrialBannerProps) {
         {expired
           ? 'Tu período de prueba venció.'
           : `Tu período de prueba vence en ${daysLeft} día${daysLeft === 1 ? '' : 's'}.`}
-        {' '}Para seguir usando Venti,{' '}
+        {' '}Para seguir usando Ventix,{' '}
         <a
           href={waUrl}
           target="_blank"

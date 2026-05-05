@@ -1,12 +1,13 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import Image from 'next/image'
 import { MessageCircle } from 'lucide-react'
 
 export const metadata: Metadata = {
-  title: { default: 'Venti — Software para negocios argentinos', template: '%s | Venti' },
+  title: { default: 'Ventix — Software para negocios argentinos', template: '%s | Ventix' },
   description: 'Software de gestión pensado para kioscos, almacenes y comercios minoristas de Argentina.',
   openGraph: {
-    siteName: 'Venti',
+    siteName: 'Ventix',
     locale: 'es_AR',
   },
 }
@@ -24,10 +25,7 @@ export default function LandingLayout({ children }: { children: React.ReactNode 
       <header className="fixed top-0 left-0 right-0 z-50 border-b border-slate-200 bg-white/95 backdrop-blur-sm">
         <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2 shrink-0">
-            <div className="w-7 h-7 rounded-lg bg-emerald-600 flex items-center justify-center">
-              <span className="text-white text-xs font-black">V</span>
-            </div>
-            <span className="text-base font-bold text-slate-900">Venti</span>
+            <Image src="/logo-light.png" alt="Ventix" width={120} height={32} className="h-8 w-auto" priority />
           </Link>
 
           <nav className="hidden md:flex items-center gap-1">
@@ -76,16 +74,13 @@ export default function LandingLayout({ children }: { children: React.ReactNode 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-10">
             <div className="col-span-2 md:col-span-1">
               <div className="flex items-center gap-2 mb-3">
-                <div className="w-7 h-7 rounded-lg bg-emerald-600 flex items-center justify-center">
-                  <span className="text-white text-xs font-black">V</span>
-                </div>
-                <span className="text-base font-bold text-slate-900">Venti</span>
+                <Image src="/logo-light.png" alt="Ventix" width={100} height={28} className="h-7 w-auto" />
               </div>
               <p className="text-xs text-slate-500 leading-relaxed max-w-xs">
                 POS y CRM para kioscos, almacenes y comercios argentinos. Con facturación ARCA y modo offline.
               </p>
               <a
-                href="https://wa.me/5493437479134?text=Hola%2C%20quiero%20saber%20más%20sobre%20Venti"
+                href="https://wa.me/5493437479134?text=Hola%2C%20quiero%20saber%20más%20sobre%20Ventix"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1.5 mt-4 text-xs text-emerald-600 hover:text-emerald-700 transition-colors font-medium"
@@ -143,7 +138,7 @@ export default function LandingLayout({ children }: { children: React.ReactNode 
           </div>
 
           <div className="pt-6 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3">
-            <p className="text-xs text-slate-400">© 2026 Venti. Hecho en Argentina.</p>
+            <p className="text-xs text-slate-400">© 2026 Ventix. Hecho en Argentina.</p>
             <div className="flex items-center gap-4">
               <span className="text-xs text-slate-400">Pagos con</span>
               <span className="text-xs font-semibold text-slate-500">Mercado Pago</span>

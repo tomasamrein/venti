@@ -91,7 +91,7 @@ export default function RegistroPage() {
         return
       }
 
-      toast.success(`¡Bienvenido a Venti, ${step0Data.full_name}! 🎉`)
+      toast.success(`¡Bienvenido a Ventix, ${step0Data.full_name}! 🎉`)
       router.push(`/${data.org_slug}/dashboard`)
       router.refresh()
     } catch {
@@ -109,7 +109,7 @@ export default function RegistroPage() {
             Empezá a gestionar tu negocio hoy
           </h2>
           <p className="text-muted-foreground">
-            Unite a cientos de kioscos y almacenes que ya usan Venti para simplificar su día a día.
+            Unite a cientos de kioscos y almacenes que ya usan Ventix para simplificar su día a día.
           </p>
         </div>
         <div className="space-y-4">

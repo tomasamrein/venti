@@ -29,7 +29,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
               <span className="text-white text-xs font-black">V</span>
             </div>
             <div>
-              <p className="text-sm font-bold text-foreground">Venti Admin</p>
+              <p className="text-sm font-bold text-foreground">Ventix Admin</p>
               <p className="text-xs text-red-500 font-semibold">Super Admin</p>
             </div>
           </div>

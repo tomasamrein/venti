@@ -4,6 +4,7 @@ import { formatARS } from '@/lib/utils/currency'
 import { SalesChart } from '@/components/dashboard/sales-chart'
 import { TopProductsTable } from '@/components/dashboard/top-products-table'
 import { RecentSales } from '@/components/dashboard/recent-sales'
+import { OnboardingBanner } from '@/components/dashboard/onboarding-banner'
 import { toZonedTime, format as tzFormat } from 'date-fns-tz'
 
 interface Props {
@@ -171,6 +172,13 @@ export default async function DashboardPage({ params }: Props) {
           </div>
         )}
       </div>
+
+      <OnboardingBanner
+        orgSlug={orgSlug}
+        hasProducts={(totalProducts ?? 0) > 0}
+        hasSales={cantidadHoy > 0}
+        hasCashSession={openSession !== null}
+      />
 
       {/* Stat cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">

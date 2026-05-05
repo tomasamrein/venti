@@ -57,7 +57,7 @@ export async function POST(req: NextRequest) {
     const result = await preApproval.create({
       body: {
         preapproval_plan_id: plan.mp_plan_id ?? undefined,
-        reason: `Venti ${plan.name}`,
+        reason: `Ventix ${plan.name}`,
         payer_email: email,
         auto_recurring: {
           frequency: 1,

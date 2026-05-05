@@ -33,7 +33,7 @@ const ENTERPRISE_EXTRAS = [
   'Onboarding e implementación asistida',
 ]
 
-const WHATSAPP_URL = 'https://wa.me/5492604000000?text=Hola%2C+quiero+info+sobre+el+plan+Enterprise+de+Venti'
+const WHATSAPP_URL = 'https://wa.me/5492604000000?text=Hola%2C+quiero+info+sobre+el+plan+Enterprise+de+Ventix'
 
 export default function PreciosPage() {
   const [loading, setLoading] = useState<'basic' | null>(null)
@@ -138,7 +138,7 @@ export default function PreciosPage() {
           <p className="text-sm font-semibold text-slate-800 mb-0.5">Plan Single: pagás con Mercado Pago</p>
           <p className="text-xs text-slate-500 leading-relaxed">
             Tarjeta de débito, crédito o transferencia bancaria. Se cobra mensual de forma automática.
-            Podés cancelar desde tu cuenta en Venti en cualquier momento, sin permanencia ni penalidades.
+            Podés cancelar desde tu cuenta en Ventix en cualquier momento, sin permanencia ni penalidades.
           </p>
         </div>
       </div>

@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import {
   LayoutDashboard, ShoppingCart, Package, FileText,
@@ -106,11 +107,8 @@ export function Sidebar({ orgSlug, className }: SidebarProps) {
     )}>
       {/* Logo */}
       <div className="h-14 flex items-center px-5 border-b border-border shrink-0">
-        <Link href={`${base}/dashboard`} className="flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-lg bg-emerald-600 flex items-center justify-center shrink-0">
-            <span className="text-white text-[11px] font-black">V</span>
-          </div>
-          <span className="text-lg font-bold text-foreground tracking-tight">venti</span>
+        <Link href={`${base}/dashboard`}>
+          <Image src="/logo-light.png" alt="Ventix" width={100} height={28} className="h-7 w-auto dark:invert" priority />
         </Link>
       </div>
 

@@ -8,7 +8,7 @@ import {
 
 export const metadata: Metadata = {
   title: 'Funcionalidades',
-  description: 'Todo lo que incluye Venti: POS, facturación ARCA, stock, clientes, reportes y más.',
+  description: 'Todo lo que incluye Ventix: POS, facturación ARCA, stock, clientes, reportes y más.',
 }
 
 const SECTIONS = [
@@ -164,7 +164,7 @@ export default function FuncionalidadesPage() {
     <div className="max-w-6xl mx-auto px-4 py-20">
       <div className="text-center mb-16">
         <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-slate-900">
-          Todo lo que incluye Venti
+          Todo lo que incluye Ventix
         </h1>
         <p className="mt-4 text-base text-slate-600 max-w-xl mx-auto">
           Sin módulos separados, sin addons. Todo en un solo precio.

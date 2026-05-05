@@ -88,7 +88,16 @@ export default function EquipoPage() {
       const userId = authData as string | null
 
       if (!userId) {
-        toast.error('No encontramos una cuenta con ese email. El usuario debe registrarse primero.')
+        // User doesn't exist yet — send invitation email
+        const res = await fetch('/api/invitations', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ org_id: orgId, email: inviteEmail.trim().toLowerCase(), role: inviteRole }),
+        })
+        if (!res.ok) { toast.error('Error al enviar la invitación'); return }
+        toast.success(`Invitación enviada a ${inviteEmail.trim()}`)
+        setInviteOpen(false)
+        setInviteEmail('')
         return
       }
 
@@ -243,7 +252,7 @@ export default function EquipoPage() {
                   className="pl-9 h-10 bg-muted/30 border-border rounded-xl"
                 />
               </div>
-              <p className="text-[11px] text-muted-foreground">El usuario debe tener una cuenta en Venti.</p>
+              <p className="text-[11px] text-muted-foreground">Si el usuario no tiene cuenta, recibirá un email para registrarse.</p>
             </div>
             <div className="space-y-1.5">
               <Label className="text-[12px] font-semibold text-muted-foreground uppercase tracking-[0.06em]">Rol</Label>

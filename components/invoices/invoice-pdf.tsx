@@ -203,7 +203,7 @@ export async function generateInvoicePDF(data: InvoicePDFData): Promise<void> {
   doc.setFontSize(7)
   doc.setTextColor(120, 120, 120)
   doc.text(
-    `Generado por Venti — ${new Date().toLocaleString('es-AR')}`,
+    `Generado por Ventix — ${new Date().toLocaleString('es-AR')}`,
     pageWidth / 2,
     287,
     { align: 'center' },
