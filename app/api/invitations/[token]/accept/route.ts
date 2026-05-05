@@ -35,7 +35,7 @@ export async function POST(_request: NextRequest, { params }: { params: Promise<
   const { error: memberError } = await admin.from('organization_members').upsert({
     organization_id: inv.org_id,
     user_id: user.id,
-    role: inv.role,
+    role: inv.role as 'admin' | 'owner' | 'cashier',
     is_active: true,
     invited_by: null,
     joined_at: new Date().toISOString(),
