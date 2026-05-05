@@ -57,7 +57,7 @@ export async function GET(request: NextRequest) {
     rows.forEach(r => ws.addRow(r))
     ws.columns.forEach(col => {
       let max = 10
-      col.eachCell({ includeEmpty: false }, cell => {
+      col.eachCell?.({ includeEmpty: false }, cell => {
         const len = String(cell.value ?? '').length
         if (len > max) max = len
       })
