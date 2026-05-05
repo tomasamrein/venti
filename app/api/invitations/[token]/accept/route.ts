@@ -20,7 +20,7 @@ export async function POST(_request: NextRequest, { params }: { params: Promise<
 
   const admin = createAdminClient()
 
-  const { data: inv } = await admin.from('invitations' as never)
+  const { data: inv } = await admin.from('invitations' as any)
     .select('*')
     .eq('token', token)
     .single() as { data: Invitation | null }
@@ -43,7 +43,7 @@ export async function POST(_request: NextRequest, { params }: { params: Promise<
 
   if (memberError) return NextResponse.json({ error: 'Error al agregar miembro' }, { status: 500 })
 
-  await admin.from('invitations' as never).update({ accepted_at: new Date().toISOString() }).eq('token', token)
+  await admin.from('invitations' as any).update({ accepted_at: new Date().toISOString() }).eq('token', token)
 
   return NextResponse.json({ ok: true })
 }

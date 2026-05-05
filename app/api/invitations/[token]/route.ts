@@ -15,7 +15,7 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
   const { token } = await params
   const admin = createAdminClient()
 
-  const { data: inv } = await admin.from('invitations' as never)
+  const { data: inv } = await admin.from('invitations' as any)
     .select('token, email, role, expires_at, accepted_at, organizations(name, slug), profiles:invited_by(full_name)')
     .eq('token', token)
     .single() as { data: Invitation | null }

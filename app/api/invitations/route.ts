@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
 
   const admin = createAdminClient()
 
-  const { data: existing } = await admin.from('invitations' as never)
+  const { data: existing } = await admin.from('invitations' as any)
     .select('id').eq('org_id', org_id).eq('email', email.toLowerCase())
     .gt('expires_at', new Date().toISOString()).is('accepted_at', null)
     .single() as { data: { id: string } | null }
@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
   if (existing) {
     token = existing.id
   } else {
-    const { data: inv, error } = await admin.from('invitations' as never).insert({
+    const { data: inv, error } = await admin.from('invitations' as any).insert({
       email: email.toLowerCase(),
       org_id,
       role,
