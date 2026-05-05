@@ -114,7 +114,7 @@ export default async function CuentasCorrientesPage({ params, searchParams }: Pr
                     {a.credit_limit ? formatARS(a.credit_limit) : '—'}
                   </td>
                   <td className="px-5 py-3.5 text-right">
-                    <Link href={`/${orgSlug}/cuentas-corrientes/${a.id}`} className="h-7 px-3 text-[12px] rounded-lg text-muted-foreground hover:text-white hover:bg-white/5 inline-flex items-center transition-colors">
+                    <Link href={`/${orgSlug}/cuentas-corrientes/${a.id}`} className="h-7 px-3 text-[12px] rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/40 inline-flex items-center transition-colors">
                       Ver
                     </Link>
                   </td>

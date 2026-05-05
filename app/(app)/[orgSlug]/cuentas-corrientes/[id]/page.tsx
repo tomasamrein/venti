@@ -114,7 +114,7 @@ export default function CuentaCorrientePage() {
   return (
     <div className="max-w-2xl space-y-6">
       <div className="flex items-center gap-3">
-        <Link href={`/${orgSlug}/cuentas-corrientes`} className="h-8 w-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-white hover:bg-white/5 transition-colors shrink-0">
+        <Link href={`/${orgSlug}/cuentas-corrientes`} className="h-8 w-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/40 transition-colors shrink-0">
           <ArrowLeft className="h-4 w-4" />
         </Link>
         <div>

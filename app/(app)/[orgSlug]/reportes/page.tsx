@@ -141,7 +141,7 @@ export default function ReportesPage() {
         <div className="flex gap-2">
           {(['7d', '30d', 'month'] as Period[]).map(p => (
             <button key={p} onClick={() => setPeriod(p)}
-              className={`h-8 px-3 rounded-lg text-[13px] font-medium transition-colors ${period === p ? 'bg-emerald-600/20 text-emerald-600 border border-emerald-300/30' : 'text-muted-foreground hover:text-white hover:bg-white/5'}`}>
+              className={`h-8 px-3 rounded-lg text-[13px] font-medium transition-colors ${period === p ? 'bg-emerald-600/20 text-emerald-600 border border-emerald-300/30' : 'text-muted-foreground hover:text-foreground hover:bg-muted/40'}`}>
               {PERIOD_LABELS[p]}
             </button>
           ))}
