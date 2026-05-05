@@ -161,7 +161,9 @@ export default function SuscripcionPage() {
                     </p>
                   </div>
                   <div className="text-right shrink-0">
-                    <p className="text-[20px] font-extrabold">{formatARS(plan.price_ars)}</p>
+                    <p className="text-[20px] font-extrabold">
+                      {plan.type === 'pro' ? 'A consultar' : formatARS(plan.price_ars)}
+                    </p>
                     <p className="text-[11px] text-muted-foreground">por mes</p>
                     {!isCurrent && (
                       <Button size="sm" className="mt-2 rounded-lg text-[12px] text-white"

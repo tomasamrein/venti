@@ -113,10 +113,12 @@ export function ProductForm({ orgSlug, orgId, product }: ProductFormProps) {
         if (error) throw error
         toast.success('Producto creado')
       } else {
+        const { organization_id: _oid, ...updatePayload } = payload
         const { error } = await supabase
           .from('products')
-          .update(payload)
+          .update(updatePayload)
           .eq('id', product!.id)
+          .eq('organization_id', orgId)
         if (error) throw error
         toast.success('Producto actualizado')
       }

@@ -148,7 +148,7 @@ export default function POSPage() {
         p_amount_paid: amountPaid,
         p_change_amount: method === 'cash' ? amountPaid - total : 0,
         p_notes: null,
-        p_items: itemsPayload,
+        p_items: JSON.stringify(itemsPayload),
       })
 
       if (error) throw error
@@ -221,6 +221,7 @@ export default function POSPage() {
       <PaymentModal
         open={paymentOpen}
         total={getTotal()}
+        hasCustomer={!!customerId}
         onClose={() => setPaymentOpen(false)}
         onConfirm={handlePayment}
       />

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { DollarSign, CreditCard, Banknote } from 'lucide-react'
+import { DollarSign, CreditCard, Banknote, Smartphone, BookOpen } from 'lucide-react'
 import {
   Dialog,
   DialogContent,
@@ -24,11 +24,12 @@ import { formatARS } from '@/lib/utils/currency'
 interface PaymentModalProps {
   open: boolean
   total: number
+  hasCustomer: boolean
   onClose: () => void
   onConfirm: (method: string, amount: number) => void
 }
 
-export function PaymentModal({ open, total, onClose, onConfirm }: PaymentModalProps) {
+export function PaymentModal({ open, total, hasCustomer, onClose, onConfirm }: PaymentModalProps) {
   const [method, setMethod] = useState<string>('cash')
   const [amount, setAmount] = useState(total)
   const change = method === 'cash' ? Math.max(0, amount - total) : 0
@@ -81,6 +82,20 @@ export function PaymentModal({ open, total, onClose, onConfirm }: PaymentModalPr
                     Transferencia
                   </div>
                 </SelectItem>
+                <SelectItem value="mercadopago">
+                  <div className="flex items-center gap-2">
+                    <Smartphone className="h-4 w-4" />
+                    MercadoPago
+                  </div>
+                </SelectItem>
+                {hasCustomer && (
+                  <SelectItem value="current_account">
+                    <div className="flex items-center gap-2">
+                      <BookOpen className="h-4 w-4" />
+                      Cuenta corriente
+                    </div>
+                  </SelectItem>
+                )}
               </SelectContent>
             </Select>
           </div>
