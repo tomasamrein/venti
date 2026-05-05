@@ -2,10 +2,12 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, Printer, Share2, CheckCircle2, XCircle } from 'lucide-react'
+import { ArrowLeft, Printer, Share2, CheckCircle2, XCircle, FileDown } from 'lucide-react'
+import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { WhatsAppShare } from '@/components/invoices/whatsapp-share'
+import { generateInvoicePDF } from '@/components/invoices/invoice-pdf'
 import { createClient } from '@/lib/supabase/client'
 import { formatARS } from '@/lib/utils/currency'
 import type { Database } from '@/types/database'
@@ -43,6 +45,38 @@ export default function FacturaDetailPage({ params }: Props) {
   const [orgCuit, setOrgCuit] = useState('')
   const [loading, setLoading] = useState(true)
   const [shareOpen, setShareOpen] = useState(false)
+  const [downloading, setDownloading] = useState(false)
+
+  async function handleDownloadPDF() {
+    if (!invoice) return
+    setDownloading(true)
+    try {
+      await generateInvoicePDF({
+        type: invoice.invoice_type,
+        number: invoice.afip_punto_venta
+          ? `${String(invoice.afip_punto_venta).padStart(4, '0')}-${String(invoice.afip_comp_nro ?? 0).padStart(8, '0')}`
+          : '—',
+        issuedAt: invoice.issued_at,
+        orgName,
+        orgCuit,
+        customerName: invoice.customer_name ?? invoice.customers?.full_name ?? null,
+        customerCuit: invoice.customer_cuit,
+        customerAddress: invoice.customer_address,
+        items: (invoice.items as InvoiceItem[]) ?? [],
+        subtotal: invoice.subtotal,
+        tax: invoice.tax_amount,
+        total: invoice.total,
+        cae: invoice.cae,
+        caeVto: invoice.cae_vto,
+        qrUrl: invoice.qr_data ? `https://serviciosjava.afip.gob.ar/cae/qr/?p=${invoice.qr_data}` : null,
+      })
+    } catch (err) {
+      console.error(err)
+      toast.error('Error al generar el PDF')
+    } finally {
+      setDownloading(false)
+    }
+  }
 
   useEffect(() => {
     params.then(async p => {
@@ -97,6 +131,16 @@ export default function FacturaDetailPage({ params }: Props) {
           <p className="text-sm text-muted-foreground">{nroFormatted}</p>
         </div>
         <div className="flex gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            className="gap-2 rounded-xl"
+            onClick={handleDownloadPDF}
+            disabled={downloading}
+          >
+            <FileDown className="h-4 w-4" />
+            {downloading ? 'Generando...' : 'PDF'}
+          </Button>
           <Button variant="outline" size="sm" className="gap-2 rounded-xl" onClick={() => window.print()}>
             <Printer className="h-4 w-4" />
             Imprimir
