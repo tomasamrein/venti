@@ -114,36 +114,36 @@ export default async function DashboardPage({ params }: Props) {
       value: formatARS(totalHoy),
       description: `${cantidadHoy} venta${cantidadHoy !== 1 ? 's' : ''}`,
       icon: DollarSign,
-      color: 'from-emerald-500/15 to-emerald-500/5',
-      iconColor: 'text-emerald-400',
-      iconBg: 'bg-emerald-500/10',
+      iconColor: 'text-emerald-600',
+      iconBg: 'bg-emerald-100',
+      accent: true,
     },
     {
       title: 'Transacciones',
       value: cantidadHoy.toString(),
       description: 'Ventas del día',
       icon: ShoppingCart,
-      color: 'from-slate-100 to-slate-50',
       iconColor: 'text-slate-500',
       iconBg: 'bg-slate-100',
+      accent: false,
     },
     {
       title: 'Productos activos',
       value: (totalProducts ?? 0).toString(),
       description: 'En catálogo',
       icon: Package,
-      color: 'from-slate-100 to-slate-50',
       iconColor: 'text-slate-500',
       iconBg: 'bg-slate-100',
+      accent: false,
     },
     {
       title: 'Alertas de stock',
       value: (lowStockCount ?? 0).toString(),
       description: lowStockCount ? 'Requieren atención' : 'Todo en orden',
       icon: AlertTriangle,
-      color: (lowStockCount ?? 0) > 0 ? 'from-amber-500/20 to-amber-500/5' : 'from-slate-500/10 to-slate-500/5',
-      iconColor: (lowStockCount ?? 0) > 0 ? 'text-amber-400' : 'text-slate-400',
-      iconBg: (lowStockCount ?? 0) > 0 ? 'bg-amber-500/10' : 'bg-slate-500/10',
+      iconColor: (lowStockCount ?? 0) > 0 ? 'text-amber-600' : 'text-slate-400',
+      iconBg: (lowStockCount ?? 0) > 0 ? 'bg-amber-100' : 'bg-slate-100',
+      accent: false,
     },
   ]
 
@@ -156,41 +156,49 @@ export default async function DashboardPage({ params }: Props) {
 
   return (
     <div className="space-y-6 max-w-6xl">
-      <div className="space-y-1">
-        <h1 className="text-2xl font-extrabold tracking-tight">Buen día 👋</h1>
-        <p className="text-sm text-muted-foreground">
-          Resumen de <span className="text-foreground font-medium">{org.name}</span> — {dateLabel}
-        </p>
+      {/* Header */}
+      <div className="flex items-start justify-between">
+        <div className="space-y-0.5">
+          <h1 className="text-xl font-bold text-foreground">Buen día</h1>
+          <p className="text-sm text-muted-foreground">
+            {org.name} — <span className="capitalize">{dateLabel}</span>
+          </p>
+        </div>
+        {openSession && (
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-50 border border-emerald-200 text-xs text-emerald-700">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            Caja abierta · {formatARS(openSession.opening_amount)}
+          </div>
+        )}
       </div>
 
       {/* Stat cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {stats.map((stat) => {
           const Icon = stat.icon
           return (
             <div
               key={stat.title}
-              className="relative overflow-hidden rounded-xl border border-border/60 bg-card p-5"
+              className={`rounded-xl border p-5 bg-white ${stat.accent ? 'border-emerald-200 bg-emerald-50' : 'border-border'}`}
             >
-              <div className={`absolute inset-0 bg-gradient-to-br ${stat.color} opacity-60`} />
-              <div className="relative z-10">
-                <div className={`w-8 h-8 rounded-lg ${stat.iconBg} flex items-center justify-center mb-3`}>
-                  <Icon className={`h-4 w-4 ${stat.iconColor}`} />
-                </div>
-                <p className="text-xs font-medium text-muted-foreground tracking-wide">{stat.title}</p>
-                <p className="text-2xl font-extrabold tracking-tight mt-1">{stat.value}</p>
-                <p className="text-xs text-muted-foreground mt-0.5">{stat.description}</p>
+              <div className={`w-9 h-9 rounded-lg ${stat.iconBg} flex items-center justify-center mb-4`}>
+                <Icon className={`h-5 w-5 ${stat.iconColor}`} />
               </div>
+              <p className="text-xs text-muted-foreground mb-1">{stat.title}</p>
+              <p className={`text-2xl font-bold tracking-tight ${stat.accent ? 'text-emerald-700' : 'text-foreground'}`}>
+                {stat.value}
+              </p>
+              <p className="text-xs text-muted-foreground mt-0.5">{stat.description}</p>
             </div>
           )
         })}
       </div>
 
       {/* Chart + top products */}
-      <div className="grid lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 rounded-xl border border-border/60 bg-card overflow-hidden">
-          <div className="px-5 py-4 border-b border-border/40">
-            <h2 className="text-sm font-semibold">Ventas por hora</h2>
+      <div className="grid lg:grid-cols-3 gap-4">
+        <div className="lg:col-span-2 rounded-xl border border-border bg-white overflow-hidden">
+          <div className="px-5 py-4 border-b border-border">
+            <p className="text-sm font-semibold text-foreground">Ventas por hora</p>
             <p className="text-xs text-muted-foreground mt-0.5">Facturación acumulada del día</p>
           </div>
           <div className="p-4">
@@ -198,10 +206,10 @@ export default async function DashboardPage({ params }: Props) {
           </div>
         </div>
 
-        <div className="rounded-xl border border-border/60 bg-card overflow-hidden">
-          <div className="px-5 py-4 border-b border-border/40">
-            <h2 className="text-sm font-semibold">Top productos hoy</h2>
-            <p className="text-xs text-muted-foreground mt-0.5">Por unidades vendidas</p>
+        <div className="rounded-xl border border-border bg-white overflow-hidden">
+          <div className="px-5 py-4 border-b border-border">
+            <p className="text-sm font-semibold text-foreground">Top productos</p>
+            <p className="text-xs text-muted-foreground mt-0.5">Por unidades vendidas hoy</p>
           </div>
           <div className="p-4">
             <TopProductsTable products={topProducts} />
@@ -210,18 +218,10 @@ export default async function DashboardPage({ params }: Props) {
       </div>
 
       {/* Recent sales */}
-      <div className="rounded-xl border border-border/60 bg-card overflow-hidden">
-        <div className="px-5 py-4 border-b border-border/40 flex items-center justify-between">
-          <div>
-            <h2 className="text-sm font-semibold">Últimas ventas</h2>
-            <p className="text-xs text-muted-foreground mt-0.5">Ventas de hoy</p>
-          </div>
-          {openSession && (
-            <div className="flex items-center gap-1.5 text-xs text-emerald-500">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              Caja abierta · {formatARS(openSession.opening_amount)} inicial
-            </div>
-          )}
+      <div className="rounded-xl border border-border bg-white overflow-hidden">
+        <div className="px-5 py-4 border-b border-border">
+          <p className="text-sm font-semibold text-foreground">Últimas ventas</p>
+          <p className="text-xs text-muted-foreground mt-0.5">Ventas completadas hoy</p>
         </div>
         <RecentSales sales={recentSales} />
       </div>

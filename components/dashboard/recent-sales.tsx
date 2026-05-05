@@ -37,17 +37,17 @@ export function RecentSales({ sales }: RecentSalesProps) {
   }
 
   return (
-    <div className="divide-y divide-border/50">
+    <div className="divide-y divide-border">
       {sales.map(sale => (
-        <div key={sale.id} className="flex items-center justify-between py-3 px-4">
+        <div key={sale.id} className="flex items-center justify-between py-3 px-5">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center shrink-0">
-              <span className="text-xs font-bold text-emerald-500">
+            <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center shrink-0">
+              <span className="text-xs font-semibold text-slate-600">
                 #{sale.sale_number ?? '—'}
               </span>
             </div>
             <div>
-              <p className="text-sm font-medium">
+              <p className="text-sm font-medium text-foreground">
                 {sale.customer_name ?? 'Consumidor final'}
               </p>
               <p className="text-xs text-muted-foreground">
@@ -56,10 +56,10 @@ export function RecentSales({ sales }: RecentSalesProps) {
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <Badge variant="outline" className="text-xs hidden sm:flex">
+            <Badge variant="outline" className="text-xs hidden sm:flex text-slate-600">
               {METHOD_LABELS[sale.payment_method] ?? sale.payment_method}
             </Badge>
-            <span className="text-sm font-bold text-emerald-500">
+            <span className="text-sm font-bold text-emerald-700">
               {formatARS(sale.total)}
             </span>
           </div>

@@ -25,15 +25,15 @@ export function SalesChart({ data }: SalesChartProps) {
             <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
           </linearGradient>
         </defs>
-        <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+        <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
         <XAxis
           dataKey="hour"
-          tick={{ fontSize: 11, fill: 'var(--muted-foreground)' }}
+          tick={{ fontSize: 11, fill: '#94a3b8' }}
           axisLine={false}
           tickLine={false}
         />
         <YAxis
-          tick={{ fontSize: 11, fill: 'var(--muted-foreground)' }}
+          tick={{ fontSize: 11, fill: '#94a3b8' }}
           axisLine={false}
           tickLine={false}
           tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`}
@@ -42,10 +42,11 @@ export function SalesChart({ data }: SalesChartProps) {
         <Tooltip
           formatter={(value) => [formatARS(Number(value ?? 0)), 'Ventas']}
           contentStyle={{
-            backgroundColor: 'var(--card)',
-            border: '1px solid rgba(255,255,255,0.1)',
+            backgroundColor: '#fff',
+            border: '1px solid #e2e8f0',
             borderRadius: '8px',
             fontSize: 12,
+            color: '#1e293b',
           }}
         />
         <Area

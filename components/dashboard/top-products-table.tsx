@@ -23,25 +23,25 @@ export function TopProductsTable({ products }: TopProductsTableProps) {
   const maxQty = Math.max(...products.map(p => p.quantity), 1)
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
       {products.map((p, i) => (
-        <div key={p.name} className="flex items-center gap-3">
-          <span className="text-xs text-muted-foreground w-4 text-right">{i + 1}</span>
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center justify-between mb-1">
-              <span className="text-sm font-medium truncate">{p.name}</span>
-              <span className="text-xs text-muted-foreground ml-2 shrink-0">{p.quantity} un.</span>
+        <div key={p.name} className="space-y-1.5">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2 min-w-0">
+              <span className="text-xs font-semibold text-slate-400 w-4 shrink-0">{i + 1}</span>
+              <span className="text-sm font-medium text-foreground truncate">{p.name}</span>
             </div>
-            <div className="h-1.5 rounded-full bg-muted overflow-hidden">
-              <div
-                className="h-full rounded-full bg-emerald-500"
-                style={{ width: `${(p.quantity / maxQty) * 100}%` }}
-              />
+            <div className="flex items-center gap-3 shrink-0">
+              <span className="text-xs text-muted-foreground">{p.quantity} un.</span>
+              <span className="text-sm font-semibold text-emerald-700">{formatARS(p.total)}</span>
             </div>
           </div>
-          <span className="text-sm font-semibold text-right w-24 shrink-0">
-            {formatARS(p.total)}
-          </span>
+          <div className="h-1.5 rounded-full bg-slate-100 overflow-hidden">
+            <div
+              className="h-full rounded-full bg-emerald-500"
+              style={{ width: `${(p.quantity / maxQty) * 100}%` }}
+            />
+          </div>
         </div>
       ))}
     </div>
