@@ -1,29 +1,77 @@
 'use client'
 
-import { X, Minus, Plus, Trash2, Clock } from 'lucide-react'
+import { X, Minus, Plus, Trash2, Clock, User, Search } from 'lucide-react'
 import Link from 'next/link'
+import { useState, useEffect, useRef } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card } from '@/components/ui/card'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { useCartStore } from '@/stores/cart-store'
 import { formatARS } from '@/lib/utils/currency'
+import { createClient } from '@/lib/supabase/client'
 
 interface CartSummaryProps {
   onCheckout?: () => void
   onHold?: () => void
   orgSlug?: string
+  orgId?: string
 }
 
-export function CartSummary({ onCheckout, onHold, orgSlug }: CartSummaryProps) {
+export function CartSummary({ onCheckout, onHold, orgSlug, orgId }: CartSummaryProps) {
   const items = useCartStore(s => s.items)
   const discount_pct = useCartStore(s => s.discount_pct)
+  const customerId = useCartStore(s => s.customer_id)
   const updateQuantity = useCartStore(s => s.updateItemQuantity)
   const removeItem = useCartStore(s => s.removeItem)
   const setDiscount = useCartStore(s => s.setDiscount)
+  const setCustomer = useCartStore(s => s.setCustomer)
   const getSubtotal = useCartStore(s => s.getSubtotal)
   const getTotal = useCartStore(s => s.getTotal)
   const clear = useCartStore(s => s.clear)
+
+  const [customerSearch, setCustomerSearch] = useState('')
+  const [customerResults, setCustomerResults] = useState<{ id: string; full_name: string; has_account: boolean }[]>([])
+  const [customerName, setCustomerName] = useState<string | null>(null)
+  const [showSearch, setShowSearch] = useState(false)
+  const searchRef = useRef<HTMLDivElement>(null)
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    function handler(e: MouseEvent) {
+      if (searchRef.current && !searchRef.current.contains(e.target as Node)) setShowSearch(false)
+    }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [])
+
+  useEffect(() => {
+    if (!customerSearch.trim() || !orgId) { setCustomerResults([]); return }
+    const supabase = createClient()
+    const timer = setTimeout(async () => {
+      const { data } = await supabase.from('customers')
+        .select('id, full_name, has_account')
+        .eq('organization_id', orgId)
+        .eq('is_active', true)
+        .ilike('full_name', `%${customerSearch}%`)
+        .limit(6)
+      setCustomerResults(data ?? [])
+    }, 200)
+    return () => clearTimeout(timer)
+  }, [customerSearch, orgId])
+
+  function selectCustomer(c: { id: string; full_name: string }) {
+    setCustomer(c.id)
+    setCustomerName(c.full_name)
+    setCustomerSearch('')
+    setCustomerResults([])
+    setShowSearch(false)
+  }
+
+  function clearCustomer() {
+    setCustomer(null)
+    setCustomerName(null)
+  }
 
   const subtotal = getSubtotal()
   const total = getTotal()
@@ -33,18 +81,55 @@ export function CartSummary({ onCheckout, onHold, orgSlug }: CartSummaryProps) {
   return (
     <Card className="h-full flex flex-col border border-border/60 bg-gradient-to-br from-card to-card/80 rounded-2xl">
       {/* Header */}
-      <div className="p-4 border-b flex items-center justify-between">
-        <h2 className="font-semibold">Tu carrito</h2>
-        {!isEmpty && (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => clear()}
-            className="text-destructive hover:bg-destructive/10"
-          >
-            <Trash2 className="h-4 w-4" />
-          </Button>
-        )}
+      <div className="p-4 border-b space-y-2">
+        <div className="flex items-center justify-between">
+          <h2 className="font-semibold">Tu carrito</h2>
+          {!isEmpty && (
+            <Button variant="ghost" size="sm" onClick={() => clear()} className="text-destructive hover:bg-destructive/10">
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          )}
+        </div>
+        {/* Customer selector */}
+        <div ref={searchRef} className="relative">
+          {customerId && customerName ? (
+            <div className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-emerald-50 border border-emerald-200 text-[12px]">
+              <User className="h-3.5 w-3.5 text-emerald-600 shrink-0" />
+              <span className="flex-1 font-medium text-emerald-800 truncate">{customerName}</span>
+              <button onClick={clearCustomer} className="text-emerald-500 hover:text-emerald-700"><X className="h-3 w-3" /></button>
+            </div>
+          ) : (
+            <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-dashed border-border cursor-pointer hover:border-emerald-300 hover:bg-emerald-50/50 transition-colors"
+              onClick={() => setShowSearch(true)}>
+              <User className="h-3.5 w-3.5 text-muted-foreground" />
+              <span className="text-[12px] text-muted-foreground">Agregar cliente</span>
+            </div>
+          )}
+          {showSearch && (
+            <div className="absolute top-full left-0 right-0 z-50 mt-1 rounded-lg border border-border bg-white shadow-lg">
+              <div className="flex items-center gap-2 px-2.5 py-2 border-b">
+                <Search className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                <input autoFocus value={customerSearch} onChange={e => setCustomerSearch(e.target.value)}
+                  placeholder="Buscar cliente..." className="flex-1 text-[13px] outline-none bg-transparent" />
+              </div>
+              {customerResults.length > 0 && (
+                <div className="py-1">
+                  {customerResults.map(c => (
+                    <button key={c.id} onClick={() => selectCustomer(c)}
+                      className="w-full text-left px-3 py-2 text-[13px] hover:bg-muted/50 flex items-center gap-2">
+                      <User className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                      <span className="flex-1 truncate">{c.full_name}</span>
+                      {c.has_account && <span className="text-[10px] text-emerald-600 font-medium">Cta. cte.</span>}
+                    </button>
+                  ))}
+                </div>
+              )}
+              {customerSearch && customerResults.length === 0 && (
+                <p className="px-3 py-2 text-[12px] text-muted-foreground">Sin resultados</p>
+              )}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Items */}

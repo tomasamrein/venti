@@ -215,6 +215,7 @@ export default function POSPage() {
           onCheckout={handleCheckout}
           onHold={handleHoldSale}
           orgSlug={org.slug}
+          orgId={org.id}
         />
       </div>
 
