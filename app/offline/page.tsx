@@ -15,7 +15,7 @@ export default function OfflinePage() {
         <Link
           href="/"
           className="inline-flex items-center gap-2 mt-4 px-5 h-10 rounded-xl text-[14px] font-semibold text-white transition-opacity hover:opacity-80"
-          style={{ background: 'linear-gradient(135deg, oklch(0.60 0.26 278), oklch(0.55 0.28 295))' }}
+          style={{ background: 'linear-gradient(135deg, oklch(0.55 0.16 155), oklch(0.50 0.16 158))' }}
         >
           Reintentar
         </Link>

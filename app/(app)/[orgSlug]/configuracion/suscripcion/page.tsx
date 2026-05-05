@@ -165,7 +165,7 @@ export default function SuscripcionPage() {
                     <p className="text-[11px] text-muted-foreground">por mes</p>
                     {!isCurrent && (
                       <Button size="sm" className="mt-2 rounded-lg text-[12px] text-white"
-                        style={{ background: 'linear-gradient(135deg, oklch(0.60 0.26 278), oklch(0.55 0.28 295))' }}
+                        style={{ background: 'linear-gradient(135deg, oklch(0.55 0.16 155), oklch(0.50 0.16 158))' }}
                         onClick={() => window.open(`https://wa.me/+5492915000000?text=Quiero%20cambiar%20al%20plan%20${encodeURIComponent(plan.name)}`, '_blank')}>
                         {(subscription?.status === 'active' || subscription?.status === 'trialing') ? 'Cambiar plan' : 'Suscribirme'}
                       </Button>

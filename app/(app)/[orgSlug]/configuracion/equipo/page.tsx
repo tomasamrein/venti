@@ -142,7 +142,7 @@ export default function EquipoPage() {
         {canManage && (
           <Button onClick={() => setInviteOpen(true)}
             className="gap-2 rounded-xl text-white"
-            style={{ background: 'linear-gradient(135deg, oklch(0.60 0.26 278), oklch(0.55 0.28 295))' }}>
+            style={{ background: 'linear-gradient(135deg, oklch(0.55 0.16 155), oklch(0.50 0.16 158))' }}>
             <Plus className="h-4 w-4" />
             Agregar miembro
           </Button>
@@ -262,7 +262,7 @@ export default function EquipoPage() {
                 Cancelar
               </Button>
               <Button className="flex-1 rounded-xl text-white" disabled={inviting} onClick={handleInvite}
-                style={{ background: 'linear-gradient(135deg, oklch(0.60 0.26 278), oklch(0.55 0.28 295))' }}>
+                style={{ background: 'linear-gradient(135deg, oklch(0.55 0.16 155), oklch(0.50 0.16 158))' }}>
                 {inviting ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Agregar'}
               </Button>
             </div>

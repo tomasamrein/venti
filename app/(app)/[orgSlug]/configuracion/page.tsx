@@ -163,7 +163,7 @@ export default function ConfiguracionPage() {
         </div>
         <div className="px-6 py-4 border-t border-white/[0.05] flex justify-end bg-white/[0.01]">
           <Button type="submit" disabled={loadingOrg} className="rounded-xl text-white"
-            style={{ background: 'linear-gradient(135deg, oklch(0.60 0.26 278), oklch(0.55 0.28 295))' }}>
+            style={{ background: 'linear-gradient(135deg, oklch(0.55 0.16 155), oklch(0.50 0.16 158))' }}>
             {loadingOrg && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Guardar cambios
           </Button>
@@ -189,7 +189,7 @@ export default function ConfiguracionPage() {
         </div>
         <div className="px-6 py-4 border-t border-white/[0.05] flex justify-end bg-white/[0.01]">
           <Button type="submit" disabled={loadingProfile} className="rounded-xl text-white"
-            style={{ background: 'linear-gradient(135deg, oklch(0.60 0.26 278), oklch(0.55 0.28 295))' }}>
+            style={{ background: 'linear-gradient(135deg, oklch(0.55 0.16 155), oklch(0.50 0.16 158))' }}>
             {loadingProfile && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Actualizar perfil
           </Button>

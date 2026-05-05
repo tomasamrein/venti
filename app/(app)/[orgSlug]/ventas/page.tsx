@@ -64,7 +64,7 @@ export default async function VentasPage({ params, searchParams }: Props) {
         <Link
           href={`/${orgSlug}/pos`}
           className="inline-flex items-center gap-2 rounded-xl text-white text-[13px] font-semibold h-9 px-4 transition-opacity hover:opacity-90"
-          style={{ background: 'linear-gradient(135deg, oklch(0.60 0.26 278), oklch(0.55 0.28 295))' }}
+          style={{ background: 'linear-gradient(135deg, oklch(0.55 0.16 155), oklch(0.50 0.16 158))' }}
         >
           <ShoppingCart className="h-4 w-4" />
           Nueva venta

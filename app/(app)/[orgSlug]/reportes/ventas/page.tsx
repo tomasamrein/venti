@@ -76,7 +76,7 @@ export default async function ReportesVentasPage({ params, searchParams }: Props
             {METHODS.map(m => <option key={m} value={m}>{METHOD_LABELS[m]}</option>)}
           </select>
           <button type="submit" className="h-9 px-4 rounded-xl text-[13px] font-medium text-white"
-            style={{ background: 'linear-gradient(135deg, oklch(0.60 0.26 278), oklch(0.55 0.28 295))' }}>
+            style={{ background: 'linear-gradient(135deg, oklch(0.55 0.16 155), oklch(0.50 0.16 158))' }}>
             Filtrar
           </button>
         </form>

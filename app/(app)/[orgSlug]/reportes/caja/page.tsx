@@ -73,7 +73,7 @@ export default async function ReportesCajaPage({ params, searchParams }: Props) 
           <input type="date" name="to" defaultValue={to ?? now.toISOString().slice(0, 10)}
             className="h-9 px-3 rounded-xl bg-white/[0.04] border border-white/[0.08] text-[13px] text-foreground" />
           <button type="submit" className="h-9 px-4 rounded-xl text-[13px] font-medium text-white"
-            style={{ background: 'linear-gradient(135deg, oklch(0.60 0.26 278), oklch(0.55 0.28 295))' }}>
+            style={{ background: 'linear-gradient(135deg, oklch(0.55 0.16 155), oklch(0.50 0.16 158))' }}>
             Filtrar
           </button>
         </form>

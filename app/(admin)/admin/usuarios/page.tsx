@@ -37,7 +37,7 @@ export default async function AdminUsersPage({ searchParams }: Props) {
         <button
           type="submit"
           className="h-9 px-4 rounded-lg text-[13px] font-semibold text-white"
-          style={{ background: 'linear-gradient(135deg, oklch(0.60 0.26 278), oklch(0.55 0.28 295))' }}
+          style={{ background: 'linear-gradient(135deg, oklch(0.55 0.16 155), oklch(0.50 0.16 158))' }}
         >
           Buscar
         </button>

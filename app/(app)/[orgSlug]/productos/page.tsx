@@ -75,6 +75,7 @@ export default function ProductosPage() {
         .from('products')
         .select('*, product_categories(name, color)')
         .eq('organization_id', orgId)
+        .eq('is_active', true)
         .order('name'),
       supabase
         .from('product_categories')
@@ -93,15 +94,30 @@ export default function ProductosPage() {
 
   async function handleDelete(id: string) {
     const supabase = createClient()
-    const { error } = await supabase
+
+    // Try hard delete first (works if no sale_items reference it)
+    const { error: hardErr } = await supabase
+      .from('products')
+      .delete()
+      .eq('id', id)
+
+    if (!hardErr) {
+      toast.success('Producto eliminado')
+      setProducts(prev => prev.filter(p => p.id !== id))
+      setDeleteId(null)
+      return
+    }
+
+    // FK violation → fall back to soft delete
+    const { error: softErr } = await supabase
       .from('products')
       .update({ is_active: false })
       .eq('id', id)
 
-    if (error) {
+    if (softErr) {
       toast.error('Error al eliminar el producto')
     } else {
-      toast.success('Producto desactivado')
+      toast.success('Producto archivado (tiene ventas asociadas)')
       setProducts(prev => prev.filter(p => p.id !== id))
     }
     setDeleteId(null)

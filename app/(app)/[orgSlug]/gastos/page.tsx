@@ -114,7 +114,7 @@ export default function GastosPage() {
         </div>
         <Button
           className="gap-2 rounded-xl text-white text-[13px]"
-          style={{ background: 'linear-gradient(135deg, oklch(0.60 0.26 278), oklch(0.55 0.28 295))' }}
+          style={{ background: 'linear-gradient(135deg, oklch(0.55 0.16 155), oklch(0.50 0.16 158))' }}
           onClick={() => setShowForm(v => !v)}
         >
           {showForm ? <X className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
@@ -160,7 +160,7 @@ export default function GastosPage() {
           </div>
           <div className="px-5 py-3.5 border-t border-white/[0.05] flex justify-end">
             <Button type="submit" disabled={loading} className="rounded-xl text-white text-[13px]"
-              style={{ background: 'linear-gradient(135deg, oklch(0.60 0.26 278), oklch(0.55 0.28 295))' }}>
+              style={{ background: 'linear-gradient(135deg, oklch(0.55 0.16 155), oklch(0.50 0.16 158))' }}>
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Guardar gasto
             </Button>

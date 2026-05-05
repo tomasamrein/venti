@@ -108,7 +108,7 @@ export default function SucursalesPage() {
         </div>
         {isOwner && (
           <Button onClick={openNew} className="gap-2 rounded-xl text-white"
-            style={{ background: 'linear-gradient(135deg, oklch(0.60 0.26 278), oklch(0.55 0.28 295))' }}>
+            style={{ background: 'linear-gradient(135deg, oklch(0.55 0.16 155), oklch(0.50 0.16 158))' }}>
             <Plus className="h-4 w-4" />Nueva sucursal
           </Button>
         )}
@@ -191,7 +191,7 @@ export default function SucursalesPage() {
             <div className="flex gap-3 pt-2">
               <Button variant="outline" className="flex-1 rounded-xl" onClick={() => setOpen(false)}>Cancelar</Button>
               <Button className="flex-1 rounded-xl text-white" disabled={saving} onClick={handleSave}
-                style={{ background: 'linear-gradient(135deg, oklch(0.60 0.26 278), oklch(0.55 0.28 295))' }}>
+                style={{ background: 'linear-gradient(135deg, oklch(0.55 0.16 155), oklch(0.50 0.16 158))' }}>
                 {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Guardar'}
               </Button>
             </div>
