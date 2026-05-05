@@ -23,7 +23,8 @@ type FormData = z.infer<typeof schema>
 function LoginForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const redirect = searchParams.get('redirect') || '/'
+  const redirectTo = searchParams.get('redirect') || '/'
+  const checkout = searchParams.get('checkout')
   const [loading, setLoading] = useState(false)
 
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
@@ -41,7 +42,23 @@ function LoginForm() {
       return
     }
 
-    router.push(redirect)
+    if (checkout === 'basic') {
+      // Launch MP checkout immediately after login
+      try {
+        const res = await fetch('/api/checkout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ plan_type: 'basic', email: data.email }),
+        })
+        const json = await res.json()
+        if (res.ok && json.init_point) {
+          window.location.href = json.init_point
+          return
+        }
+      } catch { /* fall through to normal redirect */ }
+    }
+
+    router.push(redirectTo)
     router.refresh()
   }
 

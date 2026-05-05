@@ -39,26 +39,8 @@ export default function PreciosPage() {
   const [loading, setLoading] = useState<'basic' | null>(null)
 
   async function handleCheckout() {
-    const email = window.prompt('Ingresá tu email para continuar con el pago:')
-    if (!email?.includes('@')) {
-      if (email !== null) toast.error('Email inválido')
-      return
-    }
-    setLoading('basic')
-    try {
-      const res = await fetch('/api/checkout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ plan_type: 'basic', email }),
-      })
-      const json = await res.json()
-      if (!res.ok) { toast.error(json.error ?? 'Error al iniciar el pago'); return }
-      window.location.href = json.init_point
-    } catch {
-      toast.error('Error de red')
-    } finally {
-      setLoading(null)
-    }
+    // Redirect to login first — checkout needs an authenticated session to link the subscription
+    window.location.href = '/login?redirect=/precios&checkout=basic'
   }
 
   return (
