@@ -108,15 +108,17 @@ export default function ConfiguracionFacturacionPage({ params }: Props) {
         newArcaSettings.token_cache = existing.token_cache
       }
 
-      await supabase
+      const { error } = await supabase
         .from('organizations')
         .update({ settings: { ...currentSettings, arca: newArcaSettings } as any })
         .eq('id', orgId)
 
+      if (error) throw error
       toast.success('Configuración guardada')
       setTestResult(null)
-    } catch {
-      toast.error('Error al guardar')
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Error al guardar'
+      toast.error(msg)
     } finally {
       setSaving(false)
     }

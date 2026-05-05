@@ -18,8 +18,12 @@ function buildTRA(): string {
   const gen = new Date(now.getTime() - 5 * 60 * 1000)
   const exp = new Date(now.getTime() + 11 * 60 * 60 * 1000) // 11h to be safe
 
-  // ARCA expects ISO 8601 with -03:00 offset (no milliseconds)
-  const fmt = (d: Date) => d.toISOString().slice(0, 19) + '-03:00'
+  // ARCA expects ISO 8601 with -03:00 offset (no milliseconds).
+  // toISOString() is UTC — subtract 3h to get Argentina time, then append -03:00.
+  const fmt = (d: Date) => {
+    const ar = new Date(d.getTime() - 3 * 60 * 60 * 1000)
+    return ar.toISOString().slice(0, 19) + '-03:00'
+  }
 
   return `<?xml version="1.0" encoding="UTF-8"?>
 <loginTicketRequest version="1.0">
@@ -155,6 +159,7 @@ export async function getArcaToken(
   }
 
   const tra = buildTRA()
+  console.log('[ARCA] TRA XML:', tra)
   const cms = signTRA(tra, settings.cert_pem, settings.key_pem)
   const token = await callWSAA(cms, settings.environment)
 
