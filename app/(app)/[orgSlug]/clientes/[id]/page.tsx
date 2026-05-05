@@ -127,8 +127,8 @@ export default function EditarClientePage() {
       {account && (
         <div className="rounded-xl border border-white/[0.07] bg-card card-shadow p-5 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg bg-indigo-500/10 flex items-center justify-center">
-              <CreditCard className="h-4 w-4 text-indigo-400" />
+            <div className="w-9 h-9 rounded-lg bg-emerald-600/10 flex items-center justify-center">
+              <CreditCard className="h-4 w-4 text-emerald-600" />
             </div>
             <div>
               <p className="text-[13px] font-medium text-muted-foreground">Cuenta corriente</p>

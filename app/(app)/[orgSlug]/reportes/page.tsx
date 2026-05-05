@@ -141,7 +141,7 @@ export default function ReportesPage() {
         <div className="flex gap-2">
           {(['7d', '30d', 'month'] as Period[]).map(p => (
             <button key={p} onClick={() => setPeriod(p)}
-              className={`h-8 px-3 rounded-lg text-[13px] font-medium transition-colors ${period === p ? 'bg-violet-500/20 text-violet-300 border border-violet-500/30' : 'text-muted-foreground hover:text-white hover:bg-white/5'}`}>
+              className={`h-8 px-3 rounded-lg text-[13px] font-medium transition-colors ${period === p ? 'bg-emerald-600/20 text-emerald-600 border border-emerald-300/30' : 'text-muted-foreground hover:text-white hover:bg-white/5'}`}>
               {PERIOD_LABELS[p]}
             </button>
           ))}
@@ -151,7 +151,7 @@ export default function ReportesPage() {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {[
           { title: 'Facturado', value: formatARS(totalRevenue), icon: DollarSign, color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
-          { title: 'Ventas', value: totalSales.toString(), icon: ShoppingCart, color: 'text-violet-400', bg: 'bg-violet-500/10' },
+          { title: 'Ventas', value: totalSales.toString(), icon: ShoppingCart, color: 'text-emerald-600', bg: 'bg-emerald-600/10' },
           { title: 'Ticket promedio', value: formatARS(avgTicket), icon: TrendingUp, color: 'text-blue-400', bg: 'bg-blue-500/10' },
         ].map(stat => {
           const Icon = stat.icon
@@ -187,7 +187,7 @@ export default function ReportesPage() {
               <YAxis tick={{ fill: 'oklch(0.65 0.02 264)', fontSize: 11 }} axisLine={false} tickLine={false}
                 tickFormatter={v => `$${(v / 1000).toFixed(0)}k`} />
               <Tooltip
-                contentStyle={{ background: '#0f1320', border: '1px solid oklch(1 0 0 / 8%)', borderRadius: '12px', fontSize: '12px' }}
+                contentStyle={{ background: 'var(--popover)', border: '1px solid var(--border)', borderRadius: '12px', fontSize: '12px' }}
                 formatter={(value) => [formatARS(Number(value)), 'Facturado']}
               />
               <Area type="monotone" dataKey="total" stroke="oklch(0.64 0.26 278)" strokeWidth={2} fill="url(#colorTotal)" />

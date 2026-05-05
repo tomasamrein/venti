@@ -47,72 +47,66 @@ function LoginForm() {
 
   return (
     <div className="w-full max-w-md">
-      {/* Card */}
-      <div className="w-full rounded-2xl border border-white/[0.08] bg-[#0f1320] shadow-2xl shadow-black/60 overflow-hidden"
-           style={{ boxShadow: '0 0 0 1px rgba(255,255,255,0.05), 0 24px 80px rgba(0,0,0,0.6)' }}>
-        {/* Header */}
+      <div className="w-full rounded-xl border border-border bg-card shadow-sm overflow-hidden">
         <div className="px-7 pt-7 pb-5">
-          <h3 className="text-[20px] font-bold tracking-[-0.025em] text-white">Bienvenido de vuelta</h3>
-          <p className="text-[13px] text-[#5a6480] mt-1">Ingresá con tu cuenta para continuar</p>
+          <h3 className="text-xl font-bold text-foreground">Bienvenido de vuelta</h3>
+          <p className="text-sm text-muted-foreground mt-1">Ingresá con tu cuenta para continuar</p>
         </div>
 
-        {/* Form Body */}
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="px-7 space-y-4">
             <div className="space-y-1.5">
-              <Label htmlFor="login_email" className="text-[12px] font-semibold text-[#8891a8] uppercase tracking-[0.06em]">Email</Label>
+              <Label htmlFor="login_email">Email</Label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-[14px] w-[14px] text-[#3d4562]" />
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   id="login_email"
                   type="email"
                   placeholder="hola@tunegocio.com"
                   autoComplete="email"
-                  className="h-11 pl-9 rounded-xl bg-white/[0.05] border-white/[0.08] text-white placeholder:text-[#3d4562] focus:border-violet-500/60 focus:bg-white/[0.07] transition-colors text-[14px]"
+                  className="h-11 pl-9"
                   {...register('email')}
                 />
               </div>
-              {errors.email && <p className="text-[12px] text-red-400">{errors.email.message}</p>}
+              {errors.email && <p className="text-xs text-destructive">{errors.email.message}</p>}
             </div>
+
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
-                <Label htmlFor="login_password" className="text-[12px] font-semibold text-[#8891a8] uppercase tracking-[0.06em]">Contraseña</Label>
+                <Label htmlFor="login_password">Contraseña</Label>
                 <Link
                   href="/forgot-password"
-                  className="text-[12px] text-[#5a6480] hover:text-violet-400 transition-colors"
+                  className="text-xs text-muted-foreground hover:text-foreground transition-colors"
                 >
                   ¿Olvidaste tu contraseña?
                 </Link>
               </div>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-[14px] w-[14px] text-[#3d4562]" />
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   id="login_password"
                   type="password"
                   autoComplete="current-password"
-                  className="h-11 pl-9 rounded-xl bg-white/[0.05] border-white/[0.08] text-white focus:border-violet-500/60 focus:bg-white/[0.07] transition-colors text-[14px]"
+                  className="h-11 pl-9"
                   {...register('password')}
                 />
               </div>
-              {errors.password && <p className="text-[12px] text-red-400">{errors.password.message}</p>}
+              {errors.password && <p className="text-xs text-destructive">{errors.password.message}</p>}
             </div>
           </div>
+
           <div className="px-7 pt-6 pb-7 space-y-3">
             <Button
               type="submit"
-              className="w-full h-11 rounded-xl text-[14px] font-semibold text-white transition-all duration-200"
-              style={{
-                background: 'linear-gradient(135deg, oklch(0.60 0.26 278), oklch(0.55 0.28 295))',
-                boxShadow: '0 4px 16px oklch(0.64 0.26 278 / 35%)',
-              }}
+              className="w-full h-11 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold"
               disabled={loading}
             >
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Ingresar
             </Button>
-            <p className="text-center text-[13px] text-[#5a6480]">
+            <p className="text-center text-sm text-muted-foreground">
               ¿No tenés cuenta?{' '}
-              <Link href="/registro" className="text-violet-400 hover:text-violet-300 transition-colors font-semibold">
+              <Link href="/registro" className="text-emerald-600 hover:text-emerald-700 font-semibold transition-colors">
                 Registrate gratis
               </Link>
             </p>

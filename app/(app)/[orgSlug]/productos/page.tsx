@@ -157,7 +157,7 @@ export default function ProductosPage() {
             Actualizar precios
           </Button>
           <Link href={`/${orgSlug}/productos/nuevo`}>
-            <Button size="sm" className="gap-2 bg-indigo-600 hover:bg-indigo-700">
+            <Button size="sm" className="gap-2 bg-emerald-600 hover:bg-emerald-600">
               <Plus className="h-4 w-4" />
               Nuevo producto
             </Button>
@@ -251,7 +251,7 @@ export default function ProductosPage() {
               </p>
               {products.length === 0 && (
                 <Link href={`/${orgSlug}/productos/nuevo`}>
-                  <Button className="mt-4 bg-indigo-600 hover:bg-indigo-700">
+                  <Button className="mt-4 bg-emerald-600 hover:bg-emerald-600">
                     Crear primer producto
                   </Button>
                 </Link>
@@ -332,7 +332,7 @@ export default function ProductosPage() {
                             </p>
                           )}
                         </td>
-                        <td className="px-4 py-3 text-right font-semibold text-indigo-600 dark:text-indigo-400">
+                        <td className="px-4 py-3 text-right font-semibold text-emerald-600 dark:text-emerald-600">
                           {formatARS(product.price_sell)}
                         </td>
                         <td className="px-4 py-3 text-right">

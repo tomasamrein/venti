@@ -20,7 +20,7 @@ interface Notification {
 const TYPE_ICONS: Record<string, { icon: typeof Bell; color: string; bg: string }> = {
   low_stock: { icon: AlertTriangle, color: 'text-amber-400', bg: 'bg-amber-500/10' },
   out_of_stock: { icon: Package, color: 'text-red-400', bg: 'bg-red-500/10' },
-  subscription: { icon: Bell, color: 'text-violet-400', bg: 'bg-violet-500/10' },
+  subscription: { icon: Bell, color: 'text-emerald-500', bg: 'bg-emerald-50 dark:bg-emerald-900/20' },
   price_change: { icon: Bell, color: 'text-blue-400', bg: 'bg-blue-500/10' },
 }
 
@@ -99,8 +99,8 @@ export default function NotificacionesPage() {
       <div className="rounded-xl border border-white/[0.07] bg-card card-shadow overflow-hidden">
         {!notifications.length ? (
           <div className="py-16 text-center">
-            <div className="w-12 h-12 rounded-xl bg-violet-500/10 flex items-center justify-center mx-auto mb-3">
-              <Bell className="h-6 w-6 text-violet-400" />
+            <div className="w-12 h-12 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 flex items-center justify-center mx-auto mb-3">
+              <Bell className="h-6 w-6 text-emerald-500" />
             </div>
             <p className="text-[14px] font-medium">Sin notificaciones</p>
             <p className="text-[13px] text-muted-foreground mt-1">Te avisaremos cuando haya alertas de stock u otros eventos</p>
@@ -108,7 +108,7 @@ export default function NotificacionesPage() {
         ) : (
           <div className="divide-y divide-white/[0.04]">
             {notifications.map(n => {
-              const typeInfo = TYPE_ICONS[n.type] ?? { icon: Bell, color: 'text-violet-400', bg: 'bg-violet-500/10' }
+              const typeInfo = TYPE_ICONS[n.type] ?? { icon: Bell, color: 'text-emerald-500', bg: 'bg-emerald-50 dark:bg-emerald-900/20' }
               const Icon = typeInfo.icon
               return (
                 <div
@@ -125,7 +125,7 @@ export default function NotificacionesPage() {
                         {n.title}
                       </p>
                       {!n.is_read && (
-                        <span className="w-2 h-2 rounded-full bg-violet-400 shrink-0" />
+                        <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
                       )}
                     </div>
                     {n.body && <p className="text-[13px] text-muted-foreground mt-0.5">{n.body}</p>}
@@ -134,7 +134,7 @@ export default function NotificacionesPage() {
                     </p>
                   </div>
                   {!n.is_read && (
-                    <Badge variant="outline" className="text-[10px] border-violet-500/30 text-violet-400 shrink-0">Nueva</Badge>
+                    <Badge variant="outline" className="text-[10px] border-emerald-300/30 text-emerald-500 shrink-0">Nueva</Badge>
                   )}
                 </div>
               )

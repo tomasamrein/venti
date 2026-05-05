@@ -105,13 +105,13 @@ export function NotificationBell({ orgSlug, organizationId }: NotificationBellPr
       <Button
         variant="ghost"
         size="icon"
-        className="h-8 w-8 text-[#5a6480] hover:text-white hover:bg-white/5 rounded-lg"
+        className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg"
         onClick={() => router.push(`/${orgSlug}/notificaciones`)}
       >
         <Bell className="h-4 w-4" />
       </Button>
       {unreadCount > 0 && (
-        <span className="absolute -top-0.5 -right-0.5 h-4 min-w-4 rounded-full bg-violet-500 text-white text-[10px] font-bold flex items-center justify-center px-1 pointer-events-none">
+        <span className="absolute -top-0.5 -right-0.5 h-4 min-w-4 rounded-full bg-emerald-600 text-white text-[10px] font-bold flex items-center justify-center px-1 pointer-events-none">
           {unreadCount > 99 ? '99+' : unreadCount}
         </span>
       )}

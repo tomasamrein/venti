@@ -119,7 +119,7 @@ export default function ConfiguracionPage() {
 
       <form onSubmit={saveOrg} className="rounded-xl border border-white/[0.07] bg-card card-shadow overflow-hidden">
         <div className="px-6 py-4 border-b border-white/[0.05] flex items-center gap-2">
-          <Building2 className="h-4 w-4 text-violet-400" />
+          <Building2 className="h-4 w-4 text-emerald-600" />
           <h2 className="text-[14px] font-semibold">Datos del negocio</h2>
         </div>
         <div className="p-6 space-y-4">
@@ -156,7 +156,7 @@ export default function ConfiguracionPage() {
               <Globe className="h-3 w-3" />Zona horaria
             </Label>
             <select value={timezone} onChange={e => setTimezone(e.target.value)}
-              className="w-full h-10 px-3 rounded-xl bg-white/[0.04] border border-white/[0.08] text-[14px] text-foreground focus:outline-none focus:border-violet-500/50">
+              className="w-full h-10 px-3 rounded-xl bg-white/[0.04] border border-white/[0.08] text-[14px] text-foreground focus:outline-none focus:border-emerald-300/50">
               {TIMEZONES.map(tz => <option key={tz} value={tz}>{tz.replace('America/Argentina/', '')}</option>)}
             </select>
           </div>
@@ -172,7 +172,7 @@ export default function ConfiguracionPage() {
 
       <form onSubmit={saveProfile} className="rounded-xl border border-white/[0.07] bg-card card-shadow overflow-hidden">
         <div className="px-6 py-4 border-b border-white/[0.05] flex items-center gap-2">
-          <User className="h-4 w-4 text-indigo-400" />
+          <User className="h-4 w-4 text-emerald-600" />
           <h2 className="text-[14px] font-semibold">Tu perfil</h2>
         </div>
         <div className="p-6 space-y-4">

@@ -54,7 +54,7 @@ export function ProductGrid({ products, loading }: ProductGridProps) {
             filtered.map(product => (
               <Card
                 key={product.id}
-                className="p-3 cursor-pointer hover:border-indigo-400 transition-all border border-border/60 bg-gradient-to-br from-card to-card/80"
+                className="p-3 cursor-pointer hover:border-emerald-400 transition-all border border-border"
               >
                 <div
                   onClick={() => addItem(product, 1)}
@@ -72,14 +72,14 @@ export function ProductGrid({ products, loading }: ProductGridProps) {
                     <p className="text-xs text-muted-foreground">{product.sku}</p>
                   </div>
                   <div className="flex items-end justify-between pt-2 border-t">
-                    <p className="text-lg font-bold text-indigo-600 dark:text-indigo-400">
+                    <p className="text-lg font-bold text-emerald-700 dark:text-emerald-400">
                       {formatARS(product.price_sell || 0)}
                     </p>
                     <span className="text-xs text-muted-foreground">Stock: {product.stock_current}</span>
                   </div>
                   <Button
                     size="sm"
-                    className="w-full rounded-lg bg-indigo-600 hover:bg-indigo-700"
+                    className="w-full rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white"
                     onClick={e => {
                       e.stopPropagation()
                       addItem(product, 1)

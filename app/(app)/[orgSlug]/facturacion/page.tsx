@@ -110,7 +110,7 @@ export default function FacturacionPage({ params }: Props) {
           <h1 className="text-2xl font-bold">Facturación</h1>
           <p className="text-sm text-muted-foreground">{invoices.length} comprobantes emitidos</p>
         </div>
-        <Button className="gap-2 bg-indigo-600 hover:bg-indigo-700 rounded-xl" onClick={openForm}>
+        <Button className="gap-2 bg-emerald-600 hover:bg-emerald-700 text-white" onClick={openForm}>
           <Plus className="h-4 w-4" />
           Nueva factura
         </Button>
@@ -183,7 +183,7 @@ export default function FacturacionPage({ params }: Props) {
                   <td className="px-4 py-3">
                     <Link
                       href={`/${orgSlug}/facturacion/${inv.id}`}
-                      className="text-xs text-indigo-500 hover:underline"
+                      className="text-xs text-emerald-600 hover:underline"
                     >
                       Ver
                     </Link>

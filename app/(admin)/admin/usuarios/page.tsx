@@ -23,7 +23,7 @@ export default async function AdminUsersPage({ searchParams }: Props) {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-[22px] font-bold tracking-tight text-white">Usuarios</h1>
-          <p className="text-[13px] text-[#5a6480] mt-0.5">{profiles?.length ?? 0} resultados</p>
+          <p className="text-[13px] text-muted-foreground mt-0.5">{profiles?.length ?? 0} resultados</p>
         </div>
       </div>
 
@@ -32,7 +32,7 @@ export default async function AdminUsersPage({ searchParams }: Props) {
           name="q"
           defaultValue={q}
           placeholder="Buscar por nombre..."
-          className="flex-1 h-9 px-3 rounded-lg bg-white/[0.04] border border-white/[0.08] text-[13px] text-white placeholder:text-[#5a6480] focus:outline-none focus:border-white/20"
+          className="flex-1 h-9 px-3 rounded-lg bg-muted border border-border text-[13px] text-white placeholder:text-muted-foreground focus:outline-none focus:border-white/20"
         />
         <button
           type="submit"
@@ -47,10 +47,10 @@ export default async function AdminUsersPage({ searchParams }: Props) {
         <table className="w-full">
           <thead>
             <tr className="border-b border-white/[0.06]">
-              <th className="text-left px-5 py-3 text-[11px] font-medium text-[#5a6480] uppercase tracking-wider">Usuario</th>
-              <th className="text-left px-5 py-3 text-[11px] font-medium text-[#5a6480] uppercase tracking-wider">Teléfono</th>
-              <th className="text-left px-5 py-3 text-[11px] font-medium text-[#5a6480] uppercase tracking-wider">Rol</th>
-              <th className="text-left px-5 py-3 text-[11px] font-medium text-[#5a6480] uppercase tracking-wider">Registrado</th>
+              <th className="text-left px-5 py-3 text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Usuario</th>
+              <th className="text-left px-5 py-3 text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Teléfono</th>
+              <th className="text-left px-5 py-3 text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Rol</th>
+              <th className="text-left px-5 py-3 text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Registrado</th>
             </tr>
           </thead>
           <tbody>
@@ -65,29 +65,29 @@ export default async function AdminUsersPage({ searchParams }: Props) {
                     </div>
                     <div>
                       <p className="text-[13px] font-medium text-white">{p.full_name ?? 'Sin nombre'}</p>
-                      <p className="text-[11px] text-[#5a6480] font-mono truncate max-w-[160px]">{p.id.slice(0, 8)}…</p>
+                      <p className="text-[11px] text-muted-foreground font-mono truncate max-w-[160px]">{p.id.slice(0, 8)}…</p>
                     </div>
                   </div>
                 </td>
-                <td className="px-5 py-3 text-[13px] text-[#8891a8]">{p.phone ?? '—'}</td>
+                <td className="px-5 py-3 text-[13px] text-muted-foreground">{p.phone ?? '—'}</td>
                 <td className="px-5 py-3">
                   {p.is_super_admin ? (
                     <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-red-500/15 text-red-400">
                       Super Admin
                     </span>
                   ) : (
-                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-white/[0.06] text-[#8891a8]">
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-white/[0.06] text-muted-foreground">
                       Usuario
                     </span>
                   )}
                 </td>
-                <td className="px-5 py-3 text-[13px] text-[#5a6480]">
+                <td className="px-5 py-3 text-[13px] text-muted-foreground">
                   {new Date(p.created_at).toLocaleDateString('es-AR')}
                 </td>
               </tr>
             ))}
             {!profiles?.length && (
-              <tr><td colSpan={4} className="px-5 py-10 text-center text-[13px] text-[#5a6480]">Sin resultados</td></tr>
+              <tr><td colSpan={4} className="px-5 py-10 text-center text-[13px] text-muted-foreground">Sin resultados</td></tr>
             )}
           </tbody>
         </table>

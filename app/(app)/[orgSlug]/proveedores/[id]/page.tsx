@@ -125,7 +125,7 @@ export default function EditarProveedorPage() {
               <Trash2 className="h-3.5 w-3.5" />Desactivar
             </Button>
           } />
-          <AlertDialogContent className="bg-[#0f1320] border-white/[0.08]">
+          <AlertDialogContent className="bg-popover border-border">
             <AlertDialogHeader>
               <AlertDialogTitle>¿Desactivar proveedor?</AlertDialogTitle>
               <AlertDialogDescription>El proveedor dejará de aparecer en listados. Podés reactivarlo después.</AlertDialogDescription>
@@ -181,7 +181,7 @@ export default function EditarProveedorPage() {
               <select
                 value={form.category}
                 onChange={e => set('category', e.target.value)}
-                className="w-full h-10 px-3 rounded-xl bg-white/[0.04] border border-white/[0.08] text-[14px] text-foreground focus:outline-none focus:border-violet-500/50"
+                className="w-full h-10 px-3 rounded-xl bg-white/[0.04] border border-white/[0.08] text-[14px] text-foreground focus:outline-none focus:border-emerald-300/50"
               >
                 <option value="">Sin categoría</option>
                 {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}

@@ -64,7 +64,7 @@ export default async function CuentasCorrientesPage({ params, searchParams }: Pr
           name="q"
           defaultValue={q}
           placeholder="Buscar cliente..."
-          className="w-full h-10 pl-9 pr-4 rounded-xl bg-card border border-white/[0.08] text-[14px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-violet-500/50"
+          className="w-full h-10 pl-9 pr-4 rounded-xl bg-card border border-white/[0.08] text-[14px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-emerald-300/50"
         />
       </form>
 
@@ -93,8 +93,8 @@ export default async function CuentasCorrientesPage({ params, searchParams }: Pr
                 <tr key={a.id} className="hover:bg-white/[0.02] transition-colors">
                   <td className="px-5 py-3.5">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-indigo-500/10 flex items-center justify-center shrink-0">
-                        <CreditCard className="h-4 w-4 text-indigo-400" />
+                      <div className="w-8 h-8 rounded-full bg-emerald-600/10 flex items-center justify-center shrink-0">
+                        <CreditCard className="h-4 w-4 text-emerald-600" />
                       </div>
                       <div>
                         <p className="text-[14px] font-medium">{customer?.full_name}</p>

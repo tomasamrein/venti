@@ -155,7 +155,7 @@ export function ProductForm({ orgSlug, orgId, product }: ProductFormProps) {
         <Button
           type="submit"
           disabled={submitting}
-          className="gap-2 bg-indigo-600 hover:bg-indigo-700"
+          className="gap-2 bg-emerald-600 hover:bg-emerald-700 text-white"
         >
           <Save className="h-4 w-4" />
           {submitting ? 'Guardando...' : 'Guardar'}

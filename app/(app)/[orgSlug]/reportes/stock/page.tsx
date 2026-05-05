@@ -66,7 +66,7 @@ export default async function ReportesStockPage({ params, searchParams }: Props)
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[
-          { label: 'Productos', value: String(totalProducts), icon: Package, color: 'text-violet-400', bg: 'bg-violet-500/10' },
+          { label: 'Productos', value: String(totalProducts), icon: Package, color: 'text-emerald-600', bg: 'bg-emerald-600/10' },
           { label: 'Stock bajo', value: String(lowStockCount), icon: TrendingDown, color: 'text-amber-400', bg: 'bg-amber-500/10' },
           { label: 'Sin stock', value: String(outStockCount), icon: AlertTriangle, color: 'text-red-400', bg: 'bg-red-500/10' },
           { label: 'Valor inventario', value: formatARS(stockValue), icon: DollarSign, color: 'text-emerald-400', bg: 'bg-emerald-500/10' },

@@ -104,7 +104,7 @@ export function CartSummary({ onCheckout, onHold, orgSlug }: CartSummaryProps) {
                     </Button>
                   </div>
 
-                  <div className="text-right text-sm font-semibold text-indigo-600 dark:text-indigo-400">
+                  <div className="text-right text-sm font-semibold text-emerald-700 dark:text-emerald-400">
                     {formatARS((item.price_sell || 0) * item.cart_quantity)}
                   </div>
                 </div>
@@ -138,7 +138,7 @@ export function CartSummary({ onCheckout, onHold, orgSlug }: CartSummaryProps) {
                   <span>-{formatARS(discountAmount)}</span>
                 </div>
               )}
-              <div className="flex justify-between text-lg font-bold text-indigo-600 dark:text-indigo-400 pt-2 border-t">
+              <div className="flex justify-between text-lg font-bold text-emerald-700 dark:text-emerald-400 pt-2 border-t">
                 <span>Total</span>
                 <span>{formatARS(total)}</span>
               </div>
@@ -147,7 +147,7 @@ export function CartSummary({ onCheckout, onHold, orgSlug }: CartSummaryProps) {
             {/* Action buttons */}
             <div className="space-y-2">
               <Button
-                className="w-full h-10 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
+                className="w-full h-10 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold"
                 onClick={onCheckout}
               >
                 Cobrar

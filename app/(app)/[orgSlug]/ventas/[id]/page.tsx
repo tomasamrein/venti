@@ -65,7 +65,7 @@ export default async function VentaDetailPage({ params }: Props) {
       <div className="grid grid-cols-2 gap-4">
         <div className="rounded-xl border border-white/[0.07] bg-card card-shadow p-4">
           <div className="flex items-center gap-2 mb-2">
-            <User className="h-4 w-4 text-indigo-400" />
+            <User className="h-4 w-4 text-emerald-600" />
             <p className="text-[12px] font-semibold text-muted-foreground uppercase tracking-wider">Cliente</p>
           </div>
           {customer ? (
@@ -79,7 +79,7 @@ export default async function VentaDetailPage({ params }: Props) {
         </div>
         <div className="rounded-xl border border-white/[0.07] bg-card card-shadow p-4">
           <div className="flex items-center gap-2 mb-2">
-            <CreditCard className="h-4 w-4 text-violet-400" />
+            <CreditCard className="h-4 w-4 text-emerald-600" />
             <p className="text-[12px] font-semibold text-muted-foreground uppercase tracking-wider">Pago</p>
           </div>
           <p className="text-[14px] font-semibold">{METHOD_LABELS[sale.payment_method] ?? sale.payment_method}</p>

@@ -131,7 +131,7 @@ export default function GastosPage() {
                 <Label className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Categoría</Label>
                 <select
                   value={form.category} onChange={e => set('category', e.target.value)}
-                  className="w-full h-10 px-3 rounded-xl bg-white/[0.04] border border-white/[0.08] text-[14px] text-foreground focus:outline-none focus:border-violet-500/50"
+                  className="w-full h-10 px-3 rounded-xl bg-white/[0.04] border border-white/[0.08] text-[14px] text-foreground focus:outline-none focus:border-emerald-300/50"
                 >
                   {EXPENSE_CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
                 </select>

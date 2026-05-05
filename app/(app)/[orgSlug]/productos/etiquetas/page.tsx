@@ -177,7 +177,7 @@ export default function EtiquetasPage({ params }: Props) {
           <Button
             onClick={handlePrint}
             disabled={selected.length === 0}
-            className="gap-2 bg-indigo-600 hover:bg-indigo-700"
+            className="gap-2 bg-emerald-600 hover:bg-emerald-600"
           >
             <Printer className="h-4 w-4" />
             Imprimir ({selected.reduce((sum, p) => sum + p.qty, 0)})
@@ -204,7 +204,7 @@ export default function EtiquetasPage({ params }: Props) {
               key={product.id}
               className={`border transition-colors cursor-pointer ${
                 product.selected
-                  ? 'border-indigo-400 bg-indigo-50/50 dark:bg-indigo-950/20'
+                  ? 'border-emerald-300 bg-emerald-600/50 dark:bg-emerald-600/20'
                   : 'border-border/60'
               }`}
               onClick={() => toggleProduct(product.id)}
@@ -215,7 +215,7 @@ export default function EtiquetasPage({ params }: Props) {
                   checked={product.selected}
                   onChange={() => toggleProduct(product.id)}
                   onClick={e => e.stopPropagation()}
-                  className="w-4 h-4 rounded accent-indigo-600"
+                  className="w-4 h-4 rounded accent-emerald-600"
                 />
 
                 {product.image_url ? (
@@ -234,7 +234,7 @@ export default function EtiquetasPage({ params }: Props) {
                   </p>
                 </div>
 
-                <p className="text-indigo-600 dark:text-indigo-400 font-semibold text-sm">
+                <p className="text-emerald-600 dark:text-emerald-600 font-semibold text-sm">
                   {formatARS(product.price_sell)}
                 </p>
 

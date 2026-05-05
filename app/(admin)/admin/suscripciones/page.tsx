@@ -17,7 +17,7 @@ const STATUS_COLOR: Record<string, string> = {
   active: 'bg-emerald-500/15 text-emerald-400',
   trialing: 'bg-blue-500/15 text-blue-400',
   past_due: 'bg-red-500/15 text-red-400',
-  canceled: 'bg-[#3d4560]/40 text-[#5a6480]',
+  canceled: 'bg-[#3d4560]/40 text-muted-foreground',
   paused: 'bg-amber-500/15 text-amber-400',
 }
 
@@ -43,13 +43,13 @@ export default async function AdminSubscriptionsPage({ searchParams }: Props) {
     <div className="space-y-6">
       <div>
         <h1 className="text-[22px] font-bold tracking-tight text-white">Suscripciones</h1>
-        <p className="text-[13px] text-[#5a6480] mt-0.5">{subs?.length ?? 0} resultados</p>
+        <p className="text-[13px] text-muted-foreground mt-0.5">{subs?.length ?? 0} resultados</p>
       </div>
 
       <div className="flex gap-2 flex-wrap">
         <Link
           href="/admin/suscripciones"
-          className={`px-3 py-1.5 rounded-lg text-[12px] font-medium transition-colors ${!status ? 'bg-white/10 text-white' : 'text-[#5a6480] hover:text-white hover:bg-white/5'}`}
+          className={`px-3 py-1.5 rounded-lg text-[12px] font-medium transition-colors ${!status ? 'bg-muted text-foreground' : 'text-muted-foreground hover:text-foreground hover:bg-muted'}`}
         >
           Todas ({all?.length ?? 0})
         </Link>
@@ -57,7 +57,7 @@ export default async function AdminSubscriptionsPage({ searchParams }: Props) {
           <Link
             key={key}
             href={`/admin/suscripciones?status=${key}`}
-            className={`px-3 py-1.5 rounded-lg text-[12px] font-medium transition-colors ${status === key ? 'bg-white/10 text-white' : 'text-[#5a6480] hover:text-white hover:bg-white/5'}`}
+            className={`px-3 py-1.5 rounded-lg text-[12px] font-medium transition-colors ${status === key ? 'bg-muted text-foreground' : 'text-muted-foreground hover:text-foreground hover:bg-muted'}`}
           >
             {label} ({counts[key] ?? 0})
           </Link>
@@ -68,11 +68,11 @@ export default async function AdminSubscriptionsPage({ searchParams }: Props) {
         <table className="w-full">
           <thead>
             <tr className="border-b border-white/[0.06]">
-              <th className="text-left px-5 py-3 text-[11px] font-medium text-[#5a6480] uppercase tracking-wider">Organización</th>
-              <th className="text-left px-5 py-3 text-[11px] font-medium text-[#5a6480] uppercase tracking-wider">Plan</th>
-              <th className="text-left px-5 py-3 text-[11px] font-medium text-[#5a6480] uppercase tracking-wider">Estado</th>
-              <th className="text-left px-5 py-3 text-[11px] font-medium text-[#5a6480] uppercase tracking-wider">Período</th>
-              <th className="text-left px-5 py-3 text-[11px] font-medium text-[#5a6480] uppercase tracking-wider">Precio</th>
+              <th className="text-left px-5 py-3 text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Organización</th>
+              <th className="text-left px-5 py-3 text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Plan</th>
+              <th className="text-left px-5 py-3 text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Estado</th>
+              <th className="text-left px-5 py-3 text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Período</th>
+              <th className="text-left px-5 py-3 text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Precio</th>
             </tr>
           </thead>
           <tbody>
@@ -86,15 +86,15 @@ export default async function AdminSubscriptionsPage({ searchParams }: Props) {
                       <Link href={`/admin/organizaciones/${org.id}`} className="text-[13px] font-medium text-white hover:text-blue-400 transition-colors">
                         {org.name}
                       </Link>
-                    ) : <span className="text-[13px] text-[#5a6480]">—</span>}
+                    ) : <span className="text-[13px] text-muted-foreground">—</span>}
                   </td>
-                  <td className="px-5 py-3 text-[13px] text-[#8891a8]">{plan?.name ?? '—'}</td>
+                  <td className="px-5 py-3 text-[13px] text-muted-foreground">{plan?.name ?? '—'}</td>
                   <td className="px-5 py-3">
-                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium ${STATUS_COLOR[sub.status] ?? 'bg-white/10 text-white'}`}>
+                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium ${STATUS_COLOR[sub.status] ?? 'bg-muted text-foreground'}`}>
                       {STATUS_LABEL[sub.status] ?? sub.status}
                     </span>
                   </td>
-                  <td className="px-5 py-3 text-[12px] text-[#5a6480]">
+                  <td className="px-5 py-3 text-[12px] text-muted-foreground">
                     {sub.current_period_end ? new Date(sub.current_period_end).toLocaleDateString('es-AR') : '—'}
                   </td>
                   <td className="px-5 py-3 text-[13px] text-white">
@@ -104,7 +104,7 @@ export default async function AdminSubscriptionsPage({ searchParams }: Props) {
               )
             })}
             {!subs?.length && (
-              <tr><td colSpan={5} className="px-5 py-10 text-center text-[13px] text-[#5a6480]">Sin suscripciones</td></tr>
+              <tr><td colSpan={5} className="px-5 py-10 text-center text-[13px] text-muted-foreground">Sin suscripciones</td></tr>
             )}
           </tbody>
         </table>

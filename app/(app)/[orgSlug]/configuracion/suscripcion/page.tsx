@@ -145,13 +145,13 @@ export default function SuscripcionPage() {
               const isPro = plan.type === 'pro'
               return (
                 <div key={plan.id}
-                  className={`rounded-xl border p-5 flex items-center justify-between gap-4 transition-colors ${isCurrent ? 'border-violet-500/40 bg-violet-500/5' : 'border-white/[0.07] bg-card hover:border-white/[0.12]'}`}>
+                  className={`rounded-xl border p-5 flex items-center justify-between gap-4 transition-colors ${isCurrent ? 'border-emerald-300/40 bg-emerald-600/5' : 'border-white/[0.07] bg-card hover:border-white/[0.12]'}`}>
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
                       {isPro && <Zap className="h-3.5 w-3.5 text-amber-400" />}
                       <p className="text-[15px] font-bold">{plan.name}</p>
                       {isCurrent && (
-                        <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-violet-500/20 text-violet-400">
+                        <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-emerald-600/20 text-emerald-600">
                           Plan actual
                         </span>
                       )}

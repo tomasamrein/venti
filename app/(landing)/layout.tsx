@@ -19,21 +19,21 @@ const NAV_LINKS = [
 
 export default function LandingLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-[#070910] text-white">
+    <div className="min-h-screen bg-white text-slate-800">
       {/* Header */}
-      <header className="fixed top-0 left-0 right-0 z-50 border-b border-white/[0.06] bg-[#070910]/90 backdrop-blur-xl">
+      <header className="fixed top-0 left-0 right-0 z-50 border-b border-slate-200 bg-white/95 backdrop-blur-sm">
         <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2 shrink-0">
-            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-indigo-500 to-cyan-500 flex items-center justify-center">
-              <span className="text-white text-[11px] font-black">V</span>
+            <div className="w-7 h-7 rounded-lg bg-emerald-600 flex items-center justify-center">
+              <span className="text-white text-xs font-black">V</span>
             </div>
-            <span className="text-[15px] font-bold text-white">Venti</span>
+            <span className="text-base font-bold text-slate-900">Venti</span>
           </Link>
 
           <nav className="hidden md:flex items-center gap-1">
             {NAV_LINKS.map(l => (
               <Link key={l.href} href={l.href}
-                className="px-3 py-1.5 rounded-lg text-[13px] text-[#8891a8] hover:text-white hover:bg-white/[0.05] transition-colors">
+                className="px-3 py-1.5 rounded-lg text-sm text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors">
                 {l.label}
               </Link>
             ))}
@@ -41,13 +41,12 @@ export default function LandingLayout({ children }: { children: React.ReactNode 
 
           <div className="flex items-center gap-3">
             <Link href="/login"
-              className="hidden sm:inline text-[13px] font-medium text-[#8891a8] hover:text-white transition-colors">
+              className="hidden sm:inline text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">
               Ingresar
             </Link>
             <Link
               href="/registro"
-              className="inline-flex items-center h-8 px-4 rounded-lg text-[13px] font-semibold text-white transition-all hover:scale-[1.02]"
-              style={{ background: 'linear-gradient(135deg, #4F46E5, #06B6D4)' }}
+              className="inline-flex items-center h-8 px-4 rounded-lg text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 transition-colors"
             >
               Probar gratis
             </Link>
@@ -55,15 +54,15 @@ export default function LandingLayout({ children }: { children: React.ReactNode 
         </div>
 
         {/* Mobile nav */}
-        <div className="md:hidden border-t border-white/[0.05] px-4 py-2 flex items-center gap-1 overflow-x-auto">
+        <div className="md:hidden border-t border-slate-100 px-4 py-2 flex items-center gap-1 overflow-x-auto">
           {NAV_LINKS.map(l => (
             <Link key={l.href} href={l.href}
-              className="shrink-0 px-3 py-1 rounded-lg text-[12px] text-[#8891a8] hover:text-white hover:bg-white/[0.05] transition-colors">
+              className="shrink-0 px-3 py-1 rounded-lg text-xs text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors">
               {l.label}
             </Link>
           ))}
           <Link href="/login"
-            className="shrink-0 px-3 py-1 rounded-lg text-[12px] text-[#8891a8] hover:text-white hover:bg-white/[0.05] transition-colors ml-auto">
+            className="shrink-0 px-3 py-1 rounded-lg text-xs text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors ml-auto">
             Ingresar
           </Link>
         </div>
@@ -72,24 +71,24 @@ export default function LandingLayout({ children }: { children: React.ReactNode 
       <main className="pt-14 md:pt-14">{children}</main>
 
       {/* Footer */}
-      <footer className="border-t border-white/[0.06] mt-20">
+      <footer className="border-t border-slate-200 mt-20 bg-slate-50">
         <div className="max-w-6xl mx-auto px-4 py-12">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-10">
             <div className="col-span-2 md:col-span-1">
               <div className="flex items-center gap-2 mb-3">
-                <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-indigo-500 to-cyan-500 flex items-center justify-center">
-                  <span className="text-white text-[11px] font-black">V</span>
+                <div className="w-7 h-7 rounded-lg bg-emerald-600 flex items-center justify-center">
+                  <span className="text-white text-xs font-black">V</span>
                 </div>
-                <span className="text-[15px] font-bold text-white">Venti</span>
+                <span className="text-base font-bold text-slate-900">Venti</span>
               </div>
-              <p className="text-[12px] text-[#5a6480] leading-relaxed max-w-xs">
+              <p className="text-xs text-slate-500 leading-relaxed max-w-xs">
                 POS y CRM para kioscos, almacenes y comercios argentinos. Con facturación ARCA y modo offline.
               </p>
               <a
                 href="https://wa.me/5493437479134?text=Hola%2C%20quiero%20saber%20más%20sobre%20Venti"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 mt-4 text-[12px] text-indigo-400 hover:text-indigo-300 transition-colors"
+                className="inline-flex items-center gap-1.5 mt-4 text-xs text-emerald-600 hover:text-emerald-700 transition-colors font-medium"
               >
                 <MessageCircle className="h-3.5 w-3.5" />
                 Consultar por WhatsApp
@@ -97,7 +96,7 @@ export default function LandingLayout({ children }: { children: React.ReactNode 
             </div>
 
             <div>
-              <p className="text-[11px] font-semibold text-[#5a6480] uppercase tracking-wider mb-3">Producto</p>
+              <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Producto</p>
               <div className="space-y-2">
                 {[
                   { href: '/funcionalidades', label: 'Funcionalidades' },
@@ -105,7 +104,7 @@ export default function LandingLayout({ children }: { children: React.ReactNode 
                   { href: '/#precios', label: 'Planes' },
                 ].map(l => (
                   <Link key={l.href} href={l.href}
-                    className="block text-[13px] text-[#5a6480] hover:text-white transition-colors">
+                    className="block text-sm text-slate-500 hover:text-slate-800 transition-colors">
                     {l.label}
                   </Link>
                 ))}
@@ -113,14 +112,14 @@ export default function LandingLayout({ children }: { children: React.ReactNode 
             </div>
 
             <div>
-              <p className="text-[11px] font-semibold text-[#5a6480] uppercase tracking-wider mb-3">Soporte</p>
+              <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Soporte</p>
               <div className="space-y-2">
                 {[
                   { href: '/contacto', label: 'Contacto' },
                   { href: '/contacto', label: 'WhatsApp' },
                 ].map((l, i) => (
                   <Link key={i} href={l.href}
-                    className="block text-[13px] text-[#5a6480] hover:text-white transition-colors">
+                    className="block text-sm text-slate-500 hover:text-slate-800 transition-colors">
                     {l.label}
                   </Link>
                 ))}
@@ -128,14 +127,14 @@ export default function LandingLayout({ children }: { children: React.ReactNode 
             </div>
 
             <div>
-              <p className="text-[11px] font-semibold text-[#5a6480] uppercase tracking-wider mb-3">Cuenta</p>
+              <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Cuenta</p>
               <div className="space-y-2">
                 {[
                   { href: '/registro', label: 'Crear cuenta gratis' },
                   { href: '/login', label: 'Ingresar' },
                 ].map(l => (
                   <Link key={l.href} href={l.href}
-                    className="block text-[13px] text-[#5a6480] hover:text-white transition-colors">
+                    className="block text-sm text-slate-500 hover:text-slate-800 transition-colors">
                     {l.label}
                   </Link>
                 ))}
@@ -143,13 +142,13 @@ export default function LandingLayout({ children }: { children: React.ReactNode 
             </div>
           </div>
 
-          <div className="pt-6 border-t border-white/[0.05] flex flex-col sm:flex-row items-center justify-between gap-3">
-            <p className="text-[12px] text-[#3d4560]">© 2026 Venti. Hecho en Argentina.</p>
+          <div className="pt-6 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <p className="text-xs text-slate-400">© 2026 Venti. Hecho en Argentina.</p>
             <div className="flex items-center gap-4">
-              <span className="text-[11px] text-[#3d4560]">Pagos con</span>
-              <span className="text-[12px] font-semibold text-[#5a6480]">Mercado Pago</span>
-              <span className="text-[11px] text-[#3d4560]">·</span>
-              <span className="text-[12px] font-semibold text-[#5a6480]">ARCA / AFIP</span>
+              <span className="text-xs text-slate-400">Pagos con</span>
+              <span className="text-xs font-semibold text-slate-500">Mercado Pago</span>
+              <span className="text-xs text-slate-400">·</span>
+              <span className="text-xs font-semibold text-slate-500">ARCA / AFIP</span>
             </div>
           </div>
         </div>

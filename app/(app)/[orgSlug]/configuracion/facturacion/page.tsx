@@ -307,7 +307,7 @@ export default function ConfiguracionFacturacionPage({ params }: Props) {
           {testing ? 'Probando...' : 'Probar conexión'}
         </Button>
         <Button
-          className="gap-2 rounded-xl bg-indigo-600 hover:bg-indigo-700"
+          className="gap-2 rounded-xl bg-emerald-600 hover:bg-emerald-600"
           onClick={handleSave}
           disabled={saving}
         >

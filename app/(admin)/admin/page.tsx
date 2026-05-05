@@ -32,7 +32,7 @@ export default async function AdminDashboardPage() {
   const stats = [
     { label: 'Organizaciones', value: totalOrgs ?? 0, sub: `${activeOrgs ?? 0} activas`, icon: Building2, color: 'text-blue-400', bg: 'bg-blue-500/10' },
     { label: 'Suscripciones activas', value: activeSubs.length, sub: `${trialCount} en trial`, icon: CreditCard, color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
-    { label: 'MRR estimado', value: formatARS(mrr), sub: `${pastDueCount} vencidas`, icon: TrendingUp, color: 'text-violet-400', bg: 'bg-violet-500/10' },
+    { label: 'MRR estimado', value: formatARS(mrr), sub: `${pastDueCount} vencidas`, icon: TrendingUp, color: 'text-emerald-600', bg: 'bg-emerald-100' },
     { label: 'Usuarios totales', value: totalUsers ?? 0, sub: 'en todas las orgs', icon: Users, color: 'text-amber-400', bg: 'bg-amber-500/10' },
   ]
 
@@ -46,7 +46,7 @@ export default async function AdminDashboardPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-[22px] font-bold tracking-tight text-white">Dashboard</h1>
-        <p className="text-[13px] text-[#5a6480] mt-0.5">Resumen global del sistema</p>
+        <p className="text-[13px] text-muted-foreground mt-0.5">Resumen global del sistema</p>
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -59,8 +59,8 @@ export default async function AdminDashboardPage() {
               </div>
               <div>
                 <p className="text-[22px] font-bold text-white tracking-tight">{s.value}</p>
-                <p className="text-[12px] text-[#5a6480] mt-0.5">{s.label}</p>
-                <p className="text-[11px] text-[#3d4560] mt-0.5">{s.sub}</p>
+                <p className="text-[12px] text-muted-foreground mt-0.5">{s.label}</p>
+                <p className="text-[11px] text-muted-foreground mt-0.5">{s.sub}</p>
               </div>
             </div>
           )
@@ -74,29 +74,29 @@ export default async function AdminDashboardPage() {
         <table className="w-full">
           <thead>
             <tr className="border-b border-white/[0.05]">
-              <th className="text-left px-5 py-3 text-[11px] font-medium text-[#5a6480] uppercase tracking-wider">Nombre</th>
-              <th className="text-left px-5 py-3 text-[11px] font-medium text-[#5a6480] uppercase tracking-wider">Slug</th>
-              <th className="text-left px-5 py-3 text-[11px] font-medium text-[#5a6480] uppercase tracking-wider">Estado</th>
-              <th className="text-left px-5 py-3 text-[11px] font-medium text-[#5a6480] uppercase tracking-wider">Creada</th>
+              <th className="text-left px-5 py-3 text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Nombre</th>
+              <th className="text-left px-5 py-3 text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Slug</th>
+              <th className="text-left px-5 py-3 text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Estado</th>
+              <th className="text-left px-5 py-3 text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Creada</th>
             </tr>
           </thead>
           <tbody>
             {recentOrgs?.map(org => (
               <tr key={org.id} className="border-b border-white/[0.03] hover:bg-white/[0.02] transition-colors">
                 <td className="px-5 py-3 text-[13px] text-white font-medium">{org.name}</td>
-                <td className="px-5 py-3 text-[13px] text-[#5a6480] font-mono">{org.slug}</td>
+                <td className="px-5 py-3 text-[13px] text-muted-foreground font-mono">{org.slug}</td>
                 <td className="px-5 py-3">
                   <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium ${org.is_active ? 'bg-emerald-500/15 text-emerald-400' : 'bg-red-500/15 text-red-400'}`}>
                     {org.is_active ? 'Activa' : 'Inactiva'}
                   </span>
                 </td>
-                <td className="px-5 py-3 text-[13px] text-[#5a6480]">
+                <td className="px-5 py-3 text-[13px] text-muted-foreground">
                   {new Date(org.created_at).toLocaleDateString('es-AR')}
                 </td>
               </tr>
             ))}
             {!recentOrgs?.length && (
-              <tr><td colSpan={4} className="px-5 py-8 text-center text-[13px] text-[#5a6480]">Sin organizaciones aún</td></tr>
+              <tr><td colSpan={4} className="px-5 py-8 text-center text-[13px] text-muted-foreground">Sin organizaciones aún</td></tr>
             )}
           </tbody>
         </table>

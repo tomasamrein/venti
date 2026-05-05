@@ -34,9 +34,9 @@ const SECTIONS = [
   },
   {
     icon: Receipt,
-    color: 'text-violet-400',
-    bg: 'bg-violet-500/10',
-    border: 'border-violet-500/20',
+    color: 'text-emerald-600',
+    bg: 'bg-emerald-600/10',
+    border: 'border-emerald-300/20',
     title: 'Facturación ARCA (ex-AFIP)',
     desc: 'Facturás legalmente sin salir de la caja.',
     features: [
@@ -124,9 +124,9 @@ const SECTIONS = [
   },
   {
     icon: Building2,
-    color: 'text-indigo-400',
-    bg: 'bg-indigo-500/10',
-    border: 'border-indigo-500/20',
+    color: 'text-emerald-600',
+    bg: 'bg-emerald-600/10',
+    border: 'border-emerald-300/20',
     title: 'Multi-sucursal (Plan Pro)',
     desc: 'Manejás toda la cadena desde un solo lugar.',
     features: [
@@ -154,8 +154,8 @@ const SECTIONS = [
   },
   {
     icon: Wifi,
-    color: 'text-cyan-400',
-    bg: 'bg-cyan-500/10',
+    color: 'text-teal-600',
+    bg: 'bg-teal-100/10',
     border: 'border-cyan-500/20',
     title: 'Modo offline y PWA',
     desc: 'Seguís vendiendo aunque se corte internet.',
@@ -208,7 +208,7 @@ export default function FuncionalidadesPage() {
         })}
       </div>
 
-      <div className="mt-14 rounded-2xl border border-indigo-500/20 bg-indigo-500/[0.04] p-10 text-center">
+      <div className="mt-14 rounded-2xl border border-emerald-300/20 bg-emerald-600/[0.04] p-10 text-center">
         <h2 className="text-[28px] font-extrabold text-white">Probalo gratis 14 días</h2>
         <p className="mt-2 text-[14px] text-[#5a6480]">Sin tarjeta de crédito. Sin compromiso.</p>
         <Link

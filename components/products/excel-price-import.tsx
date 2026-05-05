@@ -245,7 +245,7 @@ export function ExcelPriceImport({ open, onClose, products, onDone }: Props) {
                       </td>
                       <td className="px-3 py-2 text-right">
                         {row.price_sell != null ? (
-                          <span className="text-indigo-600 dark:text-indigo-400 font-medium">
+                          <span className="text-emerald-600 dark:text-emerald-400 font-medium">
                             {formatARS(row.price_sell)}
                           </span>
                         ) : (

@@ -162,7 +162,7 @@ export function BulkPriceUpdate({ open, onClose, orgId, onDone }: BulkPriceUpdat
                   onClick={() => setType('pct')}
                   className={`p-2 rounded-xl border-2 text-sm font-medium transition-all ${
                     type === 'pct'
-                      ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-950/30 text-indigo-700 dark:text-indigo-400'
+                      ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400'
                       : 'border-border'
                   }`}
                 >
@@ -173,7 +173,7 @@ export function BulkPriceUpdate({ open, onClose, orgId, onDone }: BulkPriceUpdat
                   onClick={() => setType('fixed')}
                   className={`p-2 rounded-xl border-2 text-sm font-medium transition-all ${
                     type === 'fixed'
-                      ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-950/30 text-indigo-700 dark:text-indigo-400'
+                      ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400'
                       : 'border-border'
                   }`}
                 >
@@ -222,7 +222,7 @@ export function BulkPriceUpdate({ open, onClose, orgId, onDone }: BulkPriceUpdat
               Cancelar
             </Button>
             <Button
-              className="flex-1 rounded-xl bg-indigo-600 hover:bg-indigo-700"
+              className="flex-1 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white"
               onClick={handleApply}
               disabled={submitting || !value}
             >

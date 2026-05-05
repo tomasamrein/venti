@@ -85,7 +85,7 @@ export default async function ReportesVentasPage({ params, searchParams }: Props
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[
           { label: 'Facturado', value: formatARS(totalRevenue), icon: DollarSign, color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
-          { label: 'Ventas', value: String(sales?.length ?? 0), icon: ShoppingCart, color: 'text-violet-400', bg: 'bg-violet-500/10' },
+          { label: 'Ventas', value: String(sales?.length ?? 0), icon: ShoppingCart, color: 'text-emerald-600', bg: 'bg-emerald-600/10' },
           { label: 'Ticket promedio', value: formatARS(avgTicket), icon: TrendingUp, color: 'text-blue-400', bg: 'bg-blue-500/10' },
           { label: 'IVA total', value: formatARS(totalTax), icon: Users, color: 'text-amber-400', bg: 'bg-amber-500/10' },
         ].map(s => {
@@ -116,7 +116,7 @@ export default async function ReportesVentasPage({ params, searchParams }: Props
               <div key={m} className="px-5 py-3 flex items-center gap-4">
                 <p className="text-[13px] font-medium w-36">{METHOD_LABELS[m]}</p>
                 <div className="flex-1 h-1.5 rounded-full bg-white/[0.06] overflow-hidden">
-                  <div className="h-full rounded-full bg-violet-500/60" style={{ width: `${pct}%` }} />
+                  <div className="h-full rounded-full bg-emerald-600/60" style={{ width: `${pct}%` }} />
                 </div>
                 <p className="text-[13px] text-muted-foreground w-10 text-right">{byMethod[m].count}</p>
                 <p className="text-[13px] font-bold w-28 text-right">{formatARS(byMethod[m].total)}</p>

@@ -198,7 +198,7 @@ export default function EsperaPage({ params }: Props) {
                       <Button
                         size="sm"
                         onClick={() => handleRestore(sale)}
-                        className="bg-indigo-600 hover:bg-indigo-700"
+                        className="bg-emerald-600 hover:bg-emerald-700 text-white"
                       >
                         Retomar
                       </Button>

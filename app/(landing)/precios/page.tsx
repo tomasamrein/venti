@@ -68,7 +68,7 @@ export default function PreciosPage() {
         <h1 className="text-[42px] md:text-[56px] font-extrabold tracking-[-0.04em] text-white">
           Planes y precios
         </h1>
-        <p className="mt-4 text-[16px] text-[#5a6480] max-w-xl mx-auto">
+        <p className="mt-4 text-[16px] text-muted-foreground max-w-xl mx-auto">
           7 días de prueba gratis en el plan Single. Sin tarjeta de crédito. Cancelás cuando querés.
         </p>
       </div>
@@ -78,16 +78,16 @@ export default function PreciosPage() {
         <div className="rounded-2xl border border-white/[0.08] bg-white/[0.02] p-7 flex flex-col gap-6">
           <div>
             <p className="text-[14px] font-bold text-white">Single</p>
-            <p className="text-[13px] text-[#5a6480] mt-0.5">Para negocios con una sola sucursal.</p>
+            <p className="text-[13px] text-muted-foreground mt-0.5">Para negocios con una sola sucursal.</p>
             <div className="flex items-baseline gap-1.5 mt-5">
               <span className="text-[44px] font-extrabold tracking-tight text-white">{fmt(49999)}</span>
             </div>
-            <p className="text-[12px] text-[#5a6480] mt-0.5">por mes</p>
+            <p className="text-[12px] text-muted-foreground mt-0.5">por mes</p>
           </div>
           <ul className="space-y-2.5 flex-1">
             {SINGLE_FEATURES.map(f => (
-              <li key={f} className="flex items-start gap-2.5 text-[13px] text-[#8891a8]">
-                <Check className="h-4 w-4 text-indigo-400 shrink-0 mt-0.5" />
+              <li key={f} className="flex items-start gap-2.5 text-[13px] text-slate-500">
+                <Check className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
                 {f}
               </li>
             ))}
@@ -103,7 +103,7 @@ export default function PreciosPage() {
             </button>
             <Link
               href="/registro?plan=basic"
-              className="w-full inline-flex items-center justify-center gap-1 h-9 rounded-xl text-[13px] text-indigo-400 hover:text-indigo-300 transition-colors"
+              className="w-full inline-flex items-center justify-center gap-1 h-9 rounded-xl text-[13px] text-emerald-600 hover:text-emerald-700 transition-colors"
             >
               Empezar gratis 7 días <ChevronRight className="h-3.5 w-3.5" />
             </Link>
@@ -111,24 +111,24 @@ export default function PreciosPage() {
         </div>
 
         {/* Enterprise */}
-        <div className="relative rounded-2xl border border-indigo-500/40 bg-gradient-to-b from-indigo-500/[0.08] to-transparent p-7 flex flex-col gap-6">
+        <div className="relative rounded-2xl border border-emerald-300 bg-emerald-50 p-7 flex flex-col gap-6">
           <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
-            <span className="px-3 py-1 rounded-full text-[11px] font-bold bg-indigo-600 text-white flex items-center gap-1">
+            <span className="px-3 py-1 rounded-full text-[11px] font-bold bg-emerald-600 text-white flex items-center gap-1">
               <Zap className="h-3 w-3" /> Multi-sucursal
             </span>
           </div>
           <div>
             <p className="text-[14px] font-bold text-white">Enterprise</p>
-            <p className="text-[13px] text-[#5a6480] mt-0.5">Para cadenas y múltiples puntos de venta.</p>
+            <p className="text-[13px] text-muted-foreground mt-0.5">Para cadenas y múltiples puntos de venta.</p>
             <div className="flex items-baseline gap-1.5 mt-5">
-              <span className="text-[32px] font-extrabold tracking-tight text-indigo-300">A consultar</span>
+              <span className="text-[32px] font-extrabold tracking-tight text-emerald-600">A consultar</span>
             </div>
-            <p className="text-[12px] text-[#5a6480] mt-0.5">precio por sucursal según escala</p>
+            <p className="text-[12px] text-muted-foreground mt-0.5">precio por sucursal según escala</p>
           </div>
           <ul className="space-y-2.5 flex-1">
             {ENTERPRISE_EXTRAS.map(f => (
-              <li key={f} className="flex items-start gap-2.5 text-[13px] text-[#8891a8]">
-                <Check className="h-4 w-4 text-indigo-400 shrink-0 mt-0.5" />
+              <li key={f} className="flex items-start gap-2.5 text-[13px] text-slate-500">
+                <Check className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
                 {f}
               </li>
             ))}
@@ -144,7 +144,7 @@ export default function PreciosPage() {
               <CreditCard className="h-4 w-4" />
               Consultar por WhatsApp
             </a>
-            <p className="text-center text-[12px] text-[#5a6480] pt-1">
+            <p className="text-center text-[12px] text-muted-foreground pt-1">
               Te respondemos en menos de 24 horas hábiles
             </p>
           </div>
@@ -154,7 +154,7 @@ export default function PreciosPage() {
       {/* MP note */}
       <div className="mt-8 rounded-xl border border-white/[0.06] bg-white/[0.015] p-5 max-w-3xl mx-auto">
         <p className="text-[13px] font-semibold text-white mb-1">Plan Single: pagás con Mercado Pago</p>
-        <p className="text-[12px] text-[#5a6480] leading-relaxed">
+        <p className="text-[12px] text-muted-foreground leading-relaxed">
           Tarjeta de débito, crédito o transferencia bancaria. Se cobra mensual de forma automática.
           Podés cancelar desde tu cuenta en Venti en cualquier momento, sin permanencia ni penalidades.
           El plan Enterprise se cotiza a medida según cantidad de sucursales.
@@ -170,7 +170,7 @@ export default function PreciosPage() {
               <tr className="border-b border-white/[0.07]">
                 <th className="px-5 py-3 text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Funcionalidad</th>
                 <th className="px-5 py-3 text-center text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Single</th>
-                <th className="px-5 py-3 text-center text-[11px] font-semibold text-indigo-400 uppercase tracking-wider">Enterprise</th>
+                <th className="px-5 py-3 text-center text-[11px] font-semibold text-emerald-600 uppercase tracking-wider">Enterprise</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-white/[0.04]">
@@ -190,12 +190,12 @@ export default function PreciosPage() {
                 ['Onboarding asistido', false, true],
               ].map(([feat, single, enterprise]) => (
                 <tr key={String(feat)} className="hover:bg-white/[0.02]">
-                  <td className="px-5 py-3 text-[#8891a8]">{feat}</td>
+                  <td className="px-5 py-3 text-slate-500">{feat}</td>
                   <td className="px-5 py-3 text-center">
-                    {single === true ? <Check className="h-4 w-4 text-indigo-400 mx-auto" /> : single === false ? <span className="text-[#3d4560]">—</span> : <span className="text-white font-medium">{single}</span>}
+                    {single === true ? <Check className="h-4 w-4 text-emerald-600 mx-auto" /> : single === false ? <span className="text-[#3d4560]">—</span> : <span className="text-white font-medium">{single}</span>}
                   </td>
                   <td className="px-5 py-3 text-center">
-                    {enterprise === true ? <Check className="h-4 w-4 text-indigo-400 mx-auto" /> : enterprise === false ? <span className="text-[#3d4560]">—</span> : <span className="text-indigo-400 font-medium">{enterprise}</span>}
+                    {enterprise === true ? <Check className="h-4 w-4 text-emerald-600 mx-auto" /> : enterprise === false ? <span className="text-[#3d4560]">—</span> : <span className="text-emerald-600 font-medium">{enterprise}</span>}
                   </td>
                 </tr>
               ))}

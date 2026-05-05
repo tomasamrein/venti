@@ -75,17 +75,17 @@ export default async function VentasPage({ params, searchParams }: Props) {
         <div className="space-y-1">
           <label className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Desde</label>
           <input type="date" name="from" defaultValue={fromDate}
-            className="h-9 px-3 rounded-xl bg-card border border-white/[0.08] text-[13px] text-foreground focus:outline-none focus:border-violet-500/50" />
+            className="h-9 px-3 rounded-xl bg-card border border-white/[0.08] text-[13px] text-foreground focus:outline-none focus:border-emerald-300/50" />
         </div>
         <div className="space-y-1">
           <label className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Hasta</label>
           <input type="date" name="to" defaultValue={toDate}
-            className="h-9 px-3 rounded-xl bg-card border border-white/[0.08] text-[13px] text-foreground focus:outline-none focus:border-violet-500/50" />
+            className="h-9 px-3 rounded-xl bg-card border border-white/[0.08] text-[13px] text-foreground focus:outline-none focus:border-emerald-300/50" />
         </div>
         <div className="space-y-1">
           <label className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Estado</label>
           <select name="status" defaultValue={status ?? ''}
-            className="h-9 px-3 rounded-xl bg-card border border-white/[0.08] text-[13px] text-foreground focus:outline-none focus:border-violet-500/50">
+            className="h-9 px-3 rounded-xl bg-card border border-white/[0.08] text-[13px] text-foreground focus:outline-none focus:border-emerald-300/50">
             <option value="">Todos</option>
             {Object.entries(STATUS_LABELS).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
           </select>
@@ -93,7 +93,7 @@ export default async function VentasPage({ params, searchParams }: Props) {
         <div className="space-y-1">
           <label className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Método</label>
           <select name="method" defaultValue={method ?? ''}
-            className="h-9 px-3 rounded-xl bg-card border border-white/[0.08] text-[13px] text-foreground focus:outline-none focus:border-violet-500/50">
+            className="h-9 px-3 rounded-xl bg-card border border-white/[0.08] text-[13px] text-foreground focus:outline-none focus:border-emerald-300/50">
             <option value="">Todos</option>
             {Object.entries(METHOD_LABELS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
           </select>

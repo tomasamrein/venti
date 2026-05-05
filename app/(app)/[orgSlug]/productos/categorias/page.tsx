@@ -188,7 +188,7 @@ export default function CategoriasPage({ params }: Props) {
           <h1 className="text-2xl font-bold">Categorías</h1>
           <p className="text-sm text-muted-foreground">{categories.length} categorías</p>
         </div>
-        <Button onClick={openNew} size="sm" className="gap-2 bg-indigo-600 hover:bg-indigo-700">
+        <Button onClick={openNew} size="sm" className="gap-2 bg-emerald-600 hover:bg-emerald-600">
           <Plus className="h-4 w-4" />
           Nueva categoría
         </Button>
@@ -201,7 +201,7 @@ export default function CategoriasPage({ params }: Props) {
           <CardContent className="py-16 text-center">
             <Tag className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
             <p className="text-muted-foreground mb-4">No hay categorías aún.</p>
-            <Button onClick={openNew} className="bg-indigo-600 hover:bg-indigo-700">
+            <Button onClick={openNew} className="bg-emerald-600 hover:bg-emerald-600">
               Crear primera categoría
             </Button>
           </CardContent>
@@ -294,7 +294,7 @@ export default function CategoriasPage({ params }: Props) {
                 Cancelar
               </Button>
               <Button
-                className="flex-1 rounded-xl bg-indigo-600 hover:bg-indigo-700"
+                className="flex-1 rounded-xl bg-emerald-600 hover:bg-emerald-600"
                 onClick={handleSave}
                 disabled={submitting}
               >

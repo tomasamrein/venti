@@ -313,7 +313,7 @@ export function InvoiceForm({ orgId, orgSlug, saleId, onClose, onDone }: Props) 
               Cancelar
             </Button>
             <Button
-              className="flex-1 rounded-xl bg-indigo-600 hover:bg-indigo-700"
+              className="flex-1 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white"
               onClick={handleSubmit}
               disabled={submitting}
             >

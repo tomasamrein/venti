@@ -139,7 +139,7 @@ export default function SucursalesPage() {
                   <div className="flex items-center gap-2">
                     <p className="text-[14px] font-medium">{b.name}</p>
                     {b.is_main && (
-                      <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-violet-500/10 text-violet-400 border border-violet-500/20">
+                      <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-emerald-600/10 text-emerald-600 border border-emerald-300/20">
                         Principal
                       </span>
                     )}

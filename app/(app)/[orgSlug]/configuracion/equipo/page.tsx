@@ -26,7 +26,7 @@ interface Member {
 
 const ROLE_LABELS = { owner: 'Dueño', admin: 'Admin', cashier: 'Cajero' }
 const ROLE_COLORS = {
-  owner: 'text-violet-400 bg-violet-500/10 border-violet-500/20',
+  owner: 'text-emerald-600 bg-emerald-600/10 border-emerald-300/20',
   admin: 'text-blue-400 bg-blue-500/10 border-blue-500/20',
   cashier: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20',
 }
@@ -169,8 +169,8 @@ export default function EquipoPage() {
             ))
             : members.filter(m => m.is_active).map(member => (
               <div key={member.id} className="px-5 py-4 flex items-center gap-3">
-                <div className="w-9 h-9 rounded-full bg-violet-500/10 border border-violet-500/20 flex items-center justify-center shrink-0">
-                  <span className="text-[13px] font-bold text-violet-400">
+                <div className="w-9 h-9 rounded-full bg-emerald-600/10 border border-emerald-300/20 flex items-center justify-center shrink-0">
+                  <span className="text-[13px] font-bold text-emerald-600">
                     {(member.profiles?.full_name ?? '?')[0].toUpperCase()}
                   </span>
                 </div>

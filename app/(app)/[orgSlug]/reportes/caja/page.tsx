@@ -81,7 +81,7 @@ export default async function ReportesCajaPage({ params, searchParams }: Props) 
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[
-          { label: 'Sesiones', value: String(closedSessions.length), icon: Wallet, color: 'text-violet-400', bg: 'bg-violet-500/10' },
+          { label: 'Sesiones', value: String(closedSessions.length), icon: Wallet, color: 'text-emerald-600', bg: 'bg-emerald-600/10' },
           { label: 'Total cierre', value: formatARS(totalClosing), icon: TrendingUp, color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
           { label: 'Diferencia total', value: formatARS(Math.abs(totalDiff)), icon: TrendingDown, color: totalDiff >= 0 ? 'text-emerald-400' : 'text-red-400', bg: totalDiff >= 0 ? 'bg-emerald-500/10' : 'bg-red-500/10' },
           { label: 'Promedio/sesión', value: formatARS(avgSession), icon: Clock, color: 'text-blue-400', bg: 'bg-blue-500/10' },
