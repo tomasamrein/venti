@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 import { formatARS } from '@/lib/utils/currency'
 import { Package, AlertTriangle, TrendingDown, DollarSign } from 'lucide-react'
+import { CsvExportButton } from '@/components/shared/csv-export-button'
 
 interface Props {
   params: Promise<{ orgSlug: string }>
@@ -61,6 +62,20 @@ export default async function ReportesStockPage({ params, searchParams }: Props)
             style={{ background: 'linear-gradient(135deg, oklch(0.55 0.16 155), oklch(0.50 0.16 158))' }}>
             Filtrar
           </button>
+          <CsvExportButton
+            filename="stock.csv"
+            data={filtered.map(p => ({
+              Producto: p.name,
+              Categoría: (p.product_categories as { name: string } | null)?.name ?? '',
+              Código: p.barcode ?? '',
+              SKU: p.sku ?? '',
+              Stock: p.stock_current,
+              Mínimo: p.stock_min,
+              'Precio costo': p.price_cost ?? '',
+              'Precio venta': p.price_sell,
+              Estado: p.track_stock && p.stock_current <= 0 ? 'Sin stock' : p.track_stock && p.stock_current <= p.stock_min ? 'Stock bajo' : 'OK',
+            }))}
+          />
         </form>
       </div>
 

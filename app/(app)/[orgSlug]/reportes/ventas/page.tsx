@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 import { formatARS } from '@/lib/utils/currency'
 import { ShoppingCart, TrendingUp, DollarSign, Users } from 'lucide-react'
+import { CsvExportButton } from '@/components/shared/csv-export-button'
 
 interface Props {
   params: Promise<{ orgSlug: string }>
@@ -79,6 +80,15 @@ export default async function ReportesVentasPage({ params, searchParams }: Props
             style={{ background: 'linear-gradient(135deg, oklch(0.55 0.16 155), oklch(0.50 0.16 158))' }}>
             Filtrar
           </button>
+          <CsvExportButton
+            filename={`ventas-${fromDate.toISOString().slice(0,10)}.csv`}
+            data={(sales ?? []).map(s => ({
+              Fecha: new Date(s.created_at).toLocaleString('es-AR'),
+              Cliente: (s.customers as { full_name: string } | null)?.full_name ?? '',
+              Medio: METHOD_LABELS[s.payment_method] ?? s.payment_method,
+              Total: s.total,
+            }))}
+          />
         </form>
       </div>
 

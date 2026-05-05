@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 import { formatARS } from '@/lib/utils/currency'
 import { Wallet, TrendingUp, TrendingDown, Clock } from 'lucide-react'
+import { CsvExportButton } from '@/components/shared/csv-export-button'
 
 interface Props {
   params: Promise<{ orgSlug: string }>
@@ -76,6 +77,21 @@ export default async function ReportesCajaPage({ params, searchParams }: Props) 
             style={{ background: 'linear-gradient(135deg, oklch(0.55 0.16 155), oklch(0.50 0.16 158))' }}>
             Filtrar
           </button>
+          <CsvExportButton
+            filename={`caja-${fromDate.toISOString().slice(0,10)}.csv`}
+            data={allSessions.map(s => ({
+              Apertura: new Date(s.opened_at).toLocaleString('es-AR'),
+              Cierre: s.closed_at ? new Date(s.closed_at).toLocaleString('es-AR') : '',
+              Sucursal: s.branches?.name ?? '',
+              Cajero: s.opened_by_profile?.full_name ?? '',
+              'Monto apertura': s.opening_amount,
+              'Monto cierre': s.closing_amount ?? '',
+              Esperado: s.expected_amount ?? '',
+              Diferencia: s.difference ?? '',
+              Duración: duration(s),
+              Estado: s.status,
+            }))}
+          />
         </form>
       </div>
 
