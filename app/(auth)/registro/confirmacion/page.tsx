@@ -72,7 +72,7 @@ function ConfirmacionInner() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center space-y-4 max-w-sm">
           <XCircle className="h-12 w-12 text-red-400 mx-auto" />
-          <h1 className="text-[20px] font-bold text-white">Algo salió mal</h1>
+          <h1 className="text-[20px] font-bold text-foreground">Algo salió mal</h1>
           <p className="text-[14px] text-muted-foreground">
             No pudimos confirmar el pago. Si ya se procesó, aparecerá activo en las próximas horas.
           </p>
@@ -90,7 +90,7 @@ function ConfirmacionInner() {
         <div className="w-16 h-16 rounded-full bg-emerald-500/15 flex items-center justify-center mx-auto">
           <CheckCircle2 className="h-9 w-9 text-emerald-400" />
         </div>
-        <h1 className="text-[24px] font-extrabold text-white">¡Suscripción activa!</h1>
+        <h1 className="text-[24px] font-extrabold text-foreground">¡Suscripción activa!</h1>
         <p className="text-[14px] text-muted-foreground">
           Tu pago se procesó correctamente. Te redirigimos al dashboard en un momento.
         </p>
