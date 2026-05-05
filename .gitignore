@@ -24,6 +24,16 @@
 .DS_Store
 *.pem
 
+# certificates & secrets
+*.p12
+*.pfx
+*.key
+*.crt
+*.cer
+/certificados/
+/certs/
+/keys/
+
 # debug
 npm-debug.log*
 yarn-debug.log*
