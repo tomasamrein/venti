@@ -1,7 +1,7 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   let supabaseResponse = NextResponse.next({ request })
@@ -61,7 +61,6 @@ export async function middleware(request: NextRequest) {
   }
 
   // Org routes: /[orgSlug]/*
-  // Extract slug — path looks like /mi-negocio/dashboard
   const segments = pathname.split('/').filter(Boolean)
   const orgSlug = segments[0]
   if (!orgSlug) return supabaseResponse
