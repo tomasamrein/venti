@@ -37,7 +37,7 @@ export function TrialBanner({ trialEndsAt, isActive }: TrialBannerProps) {
 
   return (
     <div className={`flex items-center gap-3 px-4 py-2.5 text-[13px] ${
-      expired ? 'bg-red-950/80 border-b border-red-800/60 text-red-200' : 'bg-amber-950/80 border-b border-amber-800/60 text-amber-200'
+      expired ? 'bg-red-50 border-b border-red-200 text-red-800' : 'bg-amber-50 border-b border-amber-200 text-amber-800'
     }`}>
       <AlertTriangle className="h-4 w-4 shrink-0" />
       <span className="flex-1">
@@ -58,7 +58,7 @@ export function TrialBanner({ trialEndsAt, isActive }: TrialBannerProps) {
       </span>
       <button
         onClick={() => setDismissed(true)}
-        className="p-1 rounded hover:bg-white/10 transition-colors shrink-0"
+        className="p-1 rounded hover:bg-black/5 transition-colors shrink-0"
         aria-label="Cerrar"
       >
         <X className="h-4 w-4" />
