@@ -148,7 +148,7 @@ export default function POSPage() {
         p_amount_paid: amountPaid,
         p_change_amount: method === 'cash' ? amountPaid - total : 0,
         p_notes: null,
-        p_items: JSON.stringify(itemsPayload),
+        p_items: itemsPayload,
       })
 
       if (error) throw error
