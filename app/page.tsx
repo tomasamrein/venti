@@ -1,9 +1,9 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import LandingPage from './(landing)/page'
+import LandingPage from './(landing)/landing-content'
 import LandingLayout from './(landing)/layout'
 
-export { metadata } from './(landing)/page'
+export { metadata } from './(landing)/landing-content'
 
 export default async function RootPage() {
   try {
