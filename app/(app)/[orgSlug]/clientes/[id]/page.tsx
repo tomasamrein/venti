@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { toast } from 'sonner'
-import { ArrowLeft, Loader2, CreditCard, Phone, Mail, MapPin, Calendar } from 'lucide-react'
+import { ArrowLeft, Loader2, CreditCard, Phone, Mail, MapPin, Calendar, Trash2 } from 'lucide-react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
@@ -13,6 +13,10 @@ import { Textarea } from '@/components/ui/textarea'
 import { Switch } from '@/components/ui/switch'
 import { Badge } from '@/components/ui/badge'
 import { formatARS } from '@/lib/utils/currency'
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
+} from '@/components/ui/alert-dialog'
 
 interface FormState {
   full_name: string; alias: string; dni: string; cuit: string
@@ -70,6 +74,16 @@ export default function EditarClientePage() {
     load()
   }, [clientId, orgSlug, router])
 
+  async function handleDelete() {
+    const supabase = createClient()
+    const { error: hardErr } = await supabase.from('customers').delete().eq('id', clientId).eq('organization_id', orgId)
+    if (!hardErr) { toast.success('Cliente eliminado'); router.push(`/${orgSlug}/clientes`); return }
+    const { error: softErr } = await supabase.from('customers').update({ is_active: false }).eq('id', clientId).eq('organization_id', orgId)
+    if (softErr) { toast.error('Error al eliminar el cliente'); return }
+    toast.success('Cliente desactivado')
+    router.push(`/${orgSlug}/clientes`)
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!form.full_name.trim()) { toast.error('El nombre es obligatorio'); return }
@@ -122,6 +136,25 @@ export default function EditarClientePage() {
           <h1 className="text-[24px] font-extrabold tracking-[-0.03em]">{form.full_name}</h1>
           <p className="text-[13px] text-muted-foreground">Editar cliente</p>
         </div>
+        <AlertDialog>
+          <AlertDialogTrigger className="h-9 w-9 rounded-md flex items-center justify-center text-destructive hover:text-destructive hover:bg-destructive/10 transition-colors">
+            <Trash2 className="h-4 w-4" />
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>¿Eliminar cliente?</AlertDialogTitle>
+              <AlertDialogDescription>
+                Se eliminará {form.full_name} del sistema. Si tiene ventas asociadas, se desactivará en su lugar.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancelar</AlertDialogCancel>
+              <AlertDialogAction className="bg-destructive hover:bg-destructive/90" onClick={handleDelete}>
+                Eliminar
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
 
       {account && (

@@ -2,6 +2,7 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { getArcaToken } from '@/lib/arca/auth'
 import type { ArcaSettings } from '@/types/arca'
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
@@ -125,30 +126,34 @@ export async function testArcaConnection(
   try {
     await assertOwner(orgId)
 
-    // Delegate to the existing API route logic (server-to-server)
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
-    const supabase = await createClient()
-    const { data: { session } } = await supabase.auth.getSession()
+    const admin = createAdminClient()
+    const { data: org } = await admin
+      .from('organizations')
+      .select('settings')
+      .eq('id', orgId)
+      .single()
 
-    const res = await fetch(`${baseUrl}/api/arca/authorize`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Cookie': `sb-access-token=${session?.access_token ?? ''}`,
-      },
-      body: JSON.stringify({ org_id: orgId }),
-    })
-
-    const json = await res.json()
-    if (res.ok) {
-      return {
-        ok: true,
-        message: `Conexión exitosa. Token válido hasta ${new Date(json.expires_at).toLocaleTimeString('es-AR')}`,
-        expires_at: json.expires_at,
-      }
+    const arcaSettings = (org?.settings as Record<string, unknown>)?.arca as ArcaSettings | undefined
+    if (!arcaSettings?.cert_pem || !arcaSettings?.key_pem) {
+      return { ok: false, message: 'Credenciales ARCA no configuradas. Guardá el certificado primero.' }
     }
-    return { ok: false, message: json.error ?? 'Error de conexión' }
+
+    const { token, updatedSettings } = await getArcaToken(arcaSettings)
+
+    // Persist updated token cache
+    await admin
+      .from('organizations')
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .update({ settings: { ...(org!.settings as object), arca: updatedSettings } as any })
+      .eq('id', orgId)
+
+    return {
+      ok: true,
+      message: `Conexión exitosa. Token válido hasta ${new Date(token.expires_at).toLocaleTimeString('es-AR')}`,
+      expires_at: token.expires_at,
+    }
   } catch (err) {
-    return { ok: false, message: err instanceof Error ? err.message : 'Error de red' }
+    const msg = err instanceof Error ? err.message : 'Error de red'
+    return { ok: false, message: msg }
   }
 }

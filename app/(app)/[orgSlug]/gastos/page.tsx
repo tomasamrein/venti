@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
-import { Plus, Loader2, Receipt, X } from 'lucide-react'
+import { Plus, Loader2, Receipt, X, ChevronLeft, ChevronRight } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -29,11 +29,19 @@ interface FormState {
   category: string; description: string; amount: string
 }
 
+function monthStart(d: Date) {
+  return new Date(d.getFullYear(), d.getMonth(), 1)
+}
+function monthEnd(d: Date) {
+  return new Date(d.getFullYear(), d.getMonth() + 1, 0, 23, 59, 59, 999)
+}
+
 export default function GastosPage() {
   const { org, branch, userId } = useOrg()
   const orgId = org.id
   const branchId = branch.id
 
+  const [currentMonth, setCurrentMonth] = useState(() => monthStart(new Date()))
   const [expenses, setExpenses] = useState<Expense[]>([])
   const [fetching, setFetching] = useState(true)
   const [loading, setLoading] = useState(false)
@@ -44,22 +52,33 @@ export default function GastosPage() {
     setForm(f => ({ ...f, [k]: v }))
   }
 
-  async function loadExpenses() {
+  const isCurrentMonth = currentMonth.getMonth() === new Date().getMonth() &&
+    currentMonth.getFullYear() === new Date().getFullYear()
+
+  async function loadExpenses(month: Date) {
+    setFetching(true)
     const supabase = createClient()
-    const today = new Date()
-    today.setHours(0, 0, 0, 0)
     const { data } = await supabase
       .from('expenses')
       .select('*')
       .eq('organization_id', orgId)
-      .gte('created_at', today.toISOString())
+      .gte('created_at', monthStart(month).toISOString())
+      .lte('created_at', monthEnd(month).toISOString())
       .order('created_at', { ascending: false })
     setExpenses(data ?? [])
+    setFetching(false)
   }
 
   useEffect(() => {
-    loadExpenses().then(() => setFetching(false))
-  }, [orgId])  // eslint-disable-line react-hooks/exhaustive-deps
+    loadExpenses(currentMonth)
+  }, [orgId, currentMonth])  // eslint-disable-line react-hooks/exhaustive-deps
+
+  function prevMonth() {
+    setCurrentMonth(m => new Date(m.getFullYear(), m.getMonth() - 1, 1))
+  }
+  function nextMonth() {
+    if (!isCurrentMonth) setCurrentMonth(m => new Date(m.getFullYear(), m.getMonth() + 1, 1))
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -70,7 +89,6 @@ export default function GastosPage() {
     setLoading(true)
 
     const supabase = createClient()
-
     const { error } = await supabase.from('expenses').insert({
       organization_id: orgId,
       branch_id: branchId,
@@ -86,43 +104,38 @@ export default function GastosPage() {
     setForm({ category: 'Otro', description: '', amount: '' })
     setShowForm(false)
     setLoading(false)
-    loadExpenses()
+    loadExpenses(currentMonth)
   }
 
-  const totalHoy = expenses.reduce((s, e) => s + e.amount, 0)
+  const totalMes = expenses.reduce((s, e) => s + e.amount, 0)
 
   const grouped = expenses.reduce<Record<string, Expense[]>>((acc, e) => {
     acc[e.category] = [...(acc[e.category] ?? []), e]
     return acc
   }, {})
 
-  if (fetching) {
-    return (
-      <div className="max-w-2xl space-y-4">
-        <div className="h-8 w-48 rounded-lg bg-muted/40 animate-pulse" />
-        <div className="rounded-xl border border-border bg-card h-64 animate-pulse" />
-      </div>
-    )
-  }
+  const monthLabel = currentMonth.toLocaleDateString('es-AR', { month: 'long', year: 'numeric' })
 
   return (
     <div className="space-y-6 max-w-2xl">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-[28px] font-extrabold tracking-[-0.03em]">Gastos</h1>
-          <p className="text-[14px] text-muted-foreground mt-1">Total hoy: {formatARS(totalHoy)}</p>
+          <p className="text-[14px] text-muted-foreground mt-1">Total del mes: {formatARS(totalMes)}</p>
         </div>
-        <Button
-          className="gap-2 rounded-xl text-white text-[13px]"
-          style={{ background: 'linear-gradient(135deg, oklch(0.55 0.16 155), oklch(0.50 0.16 158))' }}
-          onClick={() => setShowForm(v => !v)}
-        >
-          {showForm ? <X className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
-          {showForm ? 'Cancelar' : 'Nuevo gasto'}
-        </Button>
+        {isCurrentMonth && (
+          <Button
+            className="gap-2 rounded-xl text-white text-[13px]"
+            style={{ background: 'linear-gradient(135deg, oklch(0.55 0.16 155), oklch(0.50 0.16 158))' }}
+            onClick={() => setShowForm(v => !v)}
+          >
+            {showForm ? <X className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
+            {showForm ? 'Cancelar' : 'Nuevo gasto'}
+          </Button>
+        )}
       </div>
 
-      {showForm && (
+      {showForm && isCurrentMonth && (
         <form onSubmit={handleSubmit} className="rounded-xl border border-border bg-card overflow-hidden">
           <div className="p-5 space-y-4">
             <p className="text-[14px] font-semibold">Registrar gasto</p>
@@ -169,15 +182,28 @@ export default function GastosPage() {
       )}
 
       <div className="rounded-xl border border-border bg-card overflow-hidden">
-        <div className="px-5 py-4 border-b border-border">
-          <h2 className="text-[14px] font-semibold">Gastos del día</h2>
+        <div className="px-5 py-4 border-b border-border flex items-center justify-between">
+          <h2 className="text-[14px] font-semibold capitalize">{monthLabel}</h2>
+          <div className="flex items-center gap-1">
+            <button onClick={prevMonth} className="h-7 w-7 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/40 transition-colors">
+              <ChevronLeft className="h-4 w-4" />
+            </button>
+            <button onClick={nextMonth} disabled={isCurrentMonth} className="h-7 w-7 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/40 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
+              <ChevronRight className="h-4 w-4" />
+            </button>
+          </div>
         </div>
-        {!expenses.length ? (
+
+        {fetching ? (
+          <div className="py-10 flex justify-center">
+            <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+          </div>
+        ) : !expenses.length ? (
           <div className="py-14 text-center">
             <div className="w-12 h-12 rounded-xl bg-muted/30 flex items-center justify-center mx-auto mb-3">
               <Receipt className="h-6 w-6 text-muted-foreground" />
             </div>
-            <p className="text-[14px] text-muted-foreground">No hay gastos registrados hoy</p>
+            <p className="text-[14px] text-muted-foreground">No hay gastos registrados en {monthLabel}</p>
           </div>
         ) : (
           <div>
@@ -194,7 +220,10 @@ export default function GastosPage() {
                     <div>
                       <p className="text-[13px]">{expense.description}</p>
                       <p className="text-[11px] text-muted-foreground">
-                        {new Date(expense.created_at).toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' })}
+                        {new Date(expense.created_at).toLocaleDateString('es-AR', {
+                          day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit',
+                          timeZone: 'America/Argentina/Buenos_Aires',
+                        })}
                       </p>
                     </div>
                     <p className="text-[14px] font-semibold text-red-400">{formatARS(expense.amount)}</p>
@@ -203,8 +232,8 @@ export default function GastosPage() {
               </div>
             ))}
             <div className="px-5 py-4 border-t border-border flex items-center justify-between">
-              <p className="text-[13px] font-semibold">Total gastos del día</p>
-              <p className="text-[16px] font-extrabold text-red-400">{formatARS(totalHoy)}</p>
+              <p className="text-[13px] font-semibold">Total del mes</p>
+              <p className="text-[16px] font-extrabold text-red-400">{formatARS(totalMes)}</p>
             </div>
           </div>
         )}

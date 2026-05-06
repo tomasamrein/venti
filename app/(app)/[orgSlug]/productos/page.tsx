@@ -5,8 +5,8 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import {
-  Plus, Search, Filter, Package, TrendingUp, TrendingDown,
-  MoreHorizontal, Pencil, Trash2, AlertTriangle, Upload, Tag,
+  Plus, Search, Package, TrendingUp, TrendingDown,
+  MoreHorizontal, Pencil, Trash2, AlertTriangle, Upload, Tag, Send,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -53,6 +53,13 @@ interface Category {
   name: string
 }
 
+interface Supplier {
+  id: string
+  name: string
+  phone: string | null
+  email: string | null
+}
+
 export default function ProductosPage() {
   const router = useRouter()
   const { org } = useOrg()
@@ -61,10 +68,13 @@ export default function ProductosPage() {
 
   const [products, setProducts] = useState<Product[]>([])
   const [categories, setCategories] = useState<Category[]>([])
+  const [suppliers, setSuppliers] = useState<Supplier[]>([])
+  const [supplierProductMap, setSupplierProductMap] = useState<Record<string, Set<string>>>({})
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
   const [categoryFilter, setCategoryFilter] = useState('all')
   const [stockFilter, setStockFilter] = useState('all')
+  const [supplierFilter, setSupplierFilter] = useState('all')
   const [deleteId, setDeleteId] = useState<string | null>(null)
   const [bulkOpen, setBulkOpen] = useState(false)
   const [excelOpen, setExcelOpen] = useState(false)
@@ -72,7 +82,7 @@ export default function ProductosPage() {
 
   const loadData = useCallback(async () => {
     const supabase = createClient()
-    const [{ data: prods }, { data: cats }] = await Promise.all([
+    const [{ data: prods }, { data: cats }, { data: suppls }, { data: suppProds }] = await Promise.all([
       supabase
         .from('products')
         .select('*, product_categories(name, color)')
@@ -84,9 +94,27 @@ export default function ProductosPage() {
         .select('id, name')
         .eq('organization_id', orgId)
         .order('name'),
+      supabase
+        .from('suppliers')
+        .select('id, name, phone, email')
+        .eq('organization_id', orgId)
+        .eq('is_active', true)
+        .order('name'),
+      supabase
+        .from('supplier_products')
+        .select('supplier_id, product_id')
+        .eq('organization_id', orgId),
     ])
     setProducts((prods as Product[]) || [])
     setCategories(cats || [])
+    setSuppliers((suppls as Supplier[]) || [])
+
+    const map: Record<string, Set<string>> = {}
+    for (const sp of suppProds ?? []) {
+      if (!map[sp.supplier_id]) map[sp.supplier_id] = new Set()
+      map[sp.supplier_id].add(sp.product_id)
+    }
+    setSupplierProductMap(map)
     setLoading(false)
   }, [orgId])
 
@@ -138,8 +166,23 @@ export default function ProductosPage() {
       (stockFilter === 'out' && p.track_stock && p.stock_current <= 0) ||
       (stockFilter === 'ok' && (!p.track_stock || p.stock_current > p.stock_min))
 
-    return matchSearch && matchCategory && matchStock
+    const matchSupplier = supplierFilter === 'all' || supplierProductMap[supplierFilter]?.has(p.id)
+
+    return matchSearch && matchCategory && matchStock && matchSupplier
   })
+
+  function handleShareSupplierOrder() {
+    const supplier = suppliers.find(s => s.id === supplierFilter)
+    if (!supplier) return
+    const lowStock = filtered.filter(p => p.track_stock && p.stock_current <= p.stock_min)
+    const lines = lowStock.length > 0
+      ? lowStock.map(p => `- ${p.name}: stock actual ${p.stock_current} ${p.unit} (mínimo ${p.stock_min})`).join('\n')
+      : filtered.map(p => `- ${p.name}`).join('\n')
+    const msg = encodeURIComponent(`Hola ${supplier.name}! Te mando la lista de pedido:\n\n${lines}\n\n¡Gracias!`)
+    const contact = supplier.phone?.replace(/\D/g, '') ?? ''
+    const url = contact ? `https://wa.me/${contact}?text=${msg}` : `https://wa.me/?text=${msg}`
+    window.open(url, '_blank')
+  }
 
   const lowStockCount = products.filter(
     p => p.track_stock && p.stock_current <= p.stock_min && p.stock_current > 0
@@ -247,11 +290,37 @@ export default function ProductosPage() {
           </SelectContent>
         </Select>
 
-        {(search || categoryFilter !== 'all' || stockFilter !== 'all') && (
+        {suppliers.length > 0 && (
+          <Select value={supplierFilter} onValueChange={v => v && setSupplierFilter(v)}>
+            <SelectTrigger className="w-44 rounded-xl">
+              <SelectValue placeholder="Proveedor" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todos los proveedores</SelectItem>
+              {suppliers.map(s => (
+                <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
+
+        {supplierFilter !== 'all' && (
+          <Button
+            variant="outline"
+            size="sm"
+            className="gap-2"
+            onClick={handleShareSupplierOrder}
+          >
+            <Send className="h-4 w-4" />
+            Enviar lista
+          </Button>
+        )}
+
+        {(search || categoryFilter !== 'all' || stockFilter !== 'all' || supplierFilter !== 'all') && (
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => { setSearch(''); setCategoryFilter('all'); setStockFilter('all') }}
+            onClick={() => { setSearch(''); setCategoryFilter('all'); setStockFilter('all'); setSupplierFilter('all') }}
           >
             Limpiar filtros
           </Button>

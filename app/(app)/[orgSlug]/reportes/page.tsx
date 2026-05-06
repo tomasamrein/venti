@@ -31,13 +31,13 @@ interface StockAlert {
   products: { name: string } | null
 }
 
-type Period = '7d' | '30d' | 'month'
+type Period = '7d' | '30d' | 'year'
 
 export default function ReportesPage() {
   const params = useParams()
   const orgSlug = params.orgSlug as string
 
-  const [period, setPeriod] = useState<Period>('7d')
+  const [period, setPeriod] = useState<Period>('30d')
   const [dayStats, setDayStats] = useState<DayStat[]>([])
   const [topProducts, setTopProducts] = useState<TopProduct[]>([])
   const [stockAlerts, setStockAlerts] = useState<StockAlert[]>([])
@@ -70,7 +70,7 @@ export default function ReportesPage() {
     } else if (p === '30d') {
       fromDate = new Date(now); fromDate.setDate(now.getDate() - 29); fromDate.setHours(0, 0, 0, 0)
     } else {
-      fromDate = new Date(now.getFullYear(), now.getMonth(), 1)
+      fromDate = new Date(now.getFullYear(), 0, 1)
     }
 
     const { data: sales } = await supabase
@@ -94,7 +94,7 @@ export default function ReportesPage() {
       .limit(10)
 
     const byDay: Record<string, DayStat> = {}
-    const dayCount = p === '7d' ? 7 : p === '30d' ? 30 : new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate()
+    const dayCount = p === '7d' ? 7 : p === '30d' ? 30 : Math.ceil((now.getTime() - new Date(now.getFullYear(), 0, 1).getTime()) / 86400000) + 1
 
     for (let i = dayCount - 1; i >= 0; i--) {
       const d = new Date(now); d.setDate(now.getDate() - i); d.setHours(0, 0, 0, 0)
@@ -129,7 +129,7 @@ export default function ReportesPage() {
   const totalSales = dayStats.reduce((s, d) => s + d.count, 0)
   const avgTicket = totalSales > 0 ? totalRevenue / totalSales : 0
 
-  const PERIOD_LABELS: Record<Period, string> = { '7d': 'Últimos 7 días', '30d': 'Últimos 30 días', 'month': 'Este mes' }
+  const PERIOD_LABELS: Record<Period, string> = { '7d': 'Últimos 7 días', '30d': 'Últimos 30 días', 'year': 'Este año' }
 
   return (
     <div className="space-y-6 max-w-5xl">
@@ -139,7 +139,7 @@ export default function ReportesPage() {
           <p className="text-[14px] text-muted-foreground mt-1">{PERIOD_LABELS[period]}</p>
         </div>
         <div className="flex gap-2">
-          {(['7d', '30d', 'month'] as Period[]).map(p => (
+          {(['7d', '30d', 'year'] as Period[]).map(p => (
             <button key={p} onClick={() => setPeriod(p)}
               className={`h-8 px-3 rounded-lg text-[13px] font-medium transition-colors ${period === p ? 'bg-emerald-600/20 text-emerald-600 border border-emerald-300/30' : 'text-muted-foreground hover:text-foreground hover:bg-muted/40'}`}>
               {PERIOD_LABELS[p]}

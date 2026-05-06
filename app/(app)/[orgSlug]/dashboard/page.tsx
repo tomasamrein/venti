@@ -187,16 +187,16 @@ export default async function DashboardPage({ params }: Props) {
           return (
             <div
               key={stat.title}
-              className={`rounded-xl border p-5 bg-white ${stat.accent ? 'border-emerald-200 bg-emerald-50' : 'border-border'}`}
+              className={`rounded-xl border p-5 ${stat.accent ? 'border-emerald-200 bg-emerald-50' : 'border-slate-200 bg-white'}`}
             >
               <div className={`w-9 h-9 rounded-lg ${stat.iconBg} flex items-center justify-center mb-4`}>
                 <Icon className={`h-5 w-5 ${stat.iconColor}`} />
               </div>
-              <p className="text-xs text-muted-foreground mb-1">{stat.title}</p>
-              <p className={`text-2xl font-bold tracking-tight ${stat.accent ? 'text-emerald-700' : 'text-foreground'}`}>
+              <p className="text-xs text-slate-500 mb-1">{stat.title}</p>
+              <p className={`text-2xl font-bold tracking-tight ${stat.accent ? 'text-emerald-700' : 'text-slate-900'}`}>
                 {stat.value}
               </p>
-              <p className="text-xs text-muted-foreground mt-0.5">{stat.description}</p>
+              <p className="text-xs text-slate-500 mt-0.5">{stat.description}</p>
             </div>
           )
         })}
@@ -204,20 +204,20 @@ export default async function DashboardPage({ params }: Props) {
 
       {/* Chart + top products */}
       <div className="grid lg:grid-cols-3 gap-4">
-        <div className="lg:col-span-2 rounded-xl border border-border bg-white overflow-hidden">
-          <div className="px-5 py-4 border-b border-border">
-            <p className="text-sm font-semibold text-foreground">Ventas por hora</p>
-            <p className="text-xs text-muted-foreground mt-0.5">Facturación acumulada del día</p>
+        <div className="lg:col-span-2 rounded-xl border border-slate-200 bg-white overflow-hidden">
+          <div className="px-5 py-4 border-b border-slate-200">
+            <p className="text-sm font-semibold text-slate-900">Ventas por hora</p>
+            <p className="text-xs text-slate-500 mt-0.5">Facturación acumulada del día</p>
           </div>
           <div className="p-4">
             <SalesChart data={chartData} />
           </div>
         </div>
 
-        <div className="rounded-xl border border-border bg-white overflow-hidden">
-          <div className="px-5 py-4 border-b border-border">
-            <p className="text-sm font-semibold text-foreground">Top productos</p>
-            <p className="text-xs text-muted-foreground mt-0.5">Por unidades vendidas hoy</p>
+        <div className="rounded-xl border border-slate-200 bg-white overflow-hidden">
+          <div className="px-5 py-4 border-b border-slate-200">
+            <p className="text-sm font-semibold text-slate-900">Top productos</p>
+            <p className="text-xs text-slate-500 mt-0.5">Por unidades vendidas hoy</p>
           </div>
           <div className="p-4">
             <TopProductsTable products={topProducts} />
@@ -226,10 +226,10 @@ export default async function DashboardPage({ params }: Props) {
       </div>
 
       {/* Recent sales */}
-      <div className="rounded-xl border border-border bg-white overflow-hidden">
-        <div className="px-5 py-4 border-b border-border">
-          <p className="text-sm font-semibold text-foreground">Últimas ventas</p>
-          <p className="text-xs text-muted-foreground mt-0.5">Ventas completadas hoy</p>
+      <div className="rounded-xl border border-slate-200 bg-white overflow-hidden">
+        <div className="px-5 py-4 border-b border-slate-200">
+          <p className="text-sm font-semibold text-slate-900">Últimas ventas</p>
+          <p className="text-xs text-slate-500 mt-0.5">Ventas completadas hoy</p>
         </div>
         <RecentSales sales={recentSales} />
       </div>

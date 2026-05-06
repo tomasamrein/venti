@@ -1,7 +1,8 @@
 import { formatARS } from '@/lib/utils/currency'
-import { format } from 'date-fns'
-import { es } from 'date-fns/locale'
+import { formatInTimeZone } from 'date-fns-tz'
 import { Badge } from '@/components/ui/badge'
+
+const TZ = 'America/Argentina/Buenos_Aires'
 
 const METHOD_LABELS: Record<string, string> = {
   cash: 'Efectivo',
@@ -51,7 +52,7 @@ export function RecentSales({ sales }: RecentSalesProps) {
                 {sale.customer_name ?? 'Consumidor final'}
               </p>
               <p className="text-xs text-muted-foreground">
-                {format(new Date(sale.completed_at ?? sale.created_at), 'HH:mm', { locale: es })}
+                {formatInTimeZone(new Date(sale.completed_at ?? sale.created_at), TZ, 'HH:mm')}
               </p>
             </div>
           </div>

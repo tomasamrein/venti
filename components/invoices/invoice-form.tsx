@@ -222,8 +222,8 @@ export function InvoiceForm({ orgId, orgSlug, saleId, onClose, onDone }: Props) 
                     className="rounded-xl h-9"
                   />
                 </div>
-                <div className="col-span-2">
-                  {i === 0 && <Label className="mb-1 block text-xs">Cantidad</Label>}
+                <div className="col-span-1">
+                  {i === 0 && <Label className="mb-1 block text-xs">Cant.</Label>}
                   <Input
                     type="number"
                     min={0.001}
@@ -234,7 +234,7 @@ export function InvoiceForm({ orgId, orgSlug, saleId, onClose, onDone }: Props) 
                   />
                 </div>
                 <div className="col-span-2">
-                  {i === 0 && <Label className="mb-1 block text-xs">P. unit.</Label>}
+                  {i === 0 && <Label className="mb-1 block text-xs">Precio unit.</Label>}
                   <Input
                     type="number"
                     min={0}
@@ -249,7 +249,7 @@ export function InvoiceForm({ orgId, orgSlug, saleId, onClose, onDone }: Props) 
                     value={String(item.tax_rate)}
                     onValueChange={v => updateItem(i, 'tax_rate', parseFloat(v ?? '21'))}
                   >
-                    <SelectTrigger className="rounded-xl h-9">
+                    <SelectTrigger className="rounded-xl h-9 w-full">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -259,24 +259,23 @@ export function InvoiceForm({ orgId, orgSlug, saleId, onClose, onDone }: Props) 
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="col-span-1">
-                  {i === 0 && <div className="mb-1 h-4" />}
-                  <div className="h-9 flex items-center justify-end pr-1 text-sm font-medium">
-                    {formatARS(item.subtotal)}
+                <div className="col-span-2">
+                  {i === 0 && <Label className="mb-1 block text-xs">Subtotal</Label>}
+                  <div className="h-9 flex items-center gap-1">
+                    <span className="flex-1 text-right text-sm font-medium tabular-nums pr-1">
+                      {formatARS(item.subtotal)}
+                    </span>
+                    {items.length > 1 ? (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-7 w-7 shrink-0 text-destructive"
+                        onClick={() => setItems(prev => prev.filter((_, idx) => idx !== i))}
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </Button>
+                    ) : <div className="w-7" />}
                   </div>
-                </div>
-                <div className="col-span-1">
-                  {i === 0 && <div className="mb-1 h-4" />}
-                  {items.length > 1 && (
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-9 w-9 text-destructive"
-                      onClick={() => setItems(prev => prev.filter((_, idx) => idx !== i))}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  )}
                 </div>
               </div>
             ))}

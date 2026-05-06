@@ -257,6 +257,7 @@ export default function RegistroPage() {
                     id="reg_password"
                     type="password"
                     placeholder="Mínimo 8 caracteres"
+                    autoComplete="new-password"
                     className="h-11 rounded-xl bg-muted/50 border-border/60 focus:bg-background transition-colors"
                     {...form0.register('password')}
                   />
@@ -326,6 +327,7 @@ export default function RegistroPage() {
                   <Input
                     id="branch_name"
                     placeholder="Local principal"
+                    autoComplete="off"
                     className="h-11 rounded-xl bg-muted/50 border-border/60 focus:bg-background transition-colors"
                     {...form1.register('branch_name')}
                   />

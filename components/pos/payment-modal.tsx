@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { DollarSign, CreditCard, Banknote, Smartphone, BookOpen } from 'lucide-react'
+import { DollarSign, CreditCard, Banknote, BookOpen } from 'lucide-react'
 import {
   Dialog,
   DialogContent,
@@ -85,13 +85,7 @@ export function PaymentModal({ open, total, hasCustomer, onClose, onConfirm }: P
                 <SelectItem value="transfer">
                   <div className="flex items-center gap-2">
                     <Banknote className="h-4 w-4" />
-                    Transferencia
-                  </div>
-                </SelectItem>
-                <SelectItem value="mercadopago">
-                  <div className="flex items-center gap-2">
-                    <Smartphone className="h-4 w-4" />
-                    MercadoPago
+                    Transferencia / Billetera
                   </div>
                 </SelectItem>
                 {hasCustomer && (

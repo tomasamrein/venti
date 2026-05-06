@@ -60,13 +60,16 @@ export function BulkPriceUpdate({ open, onClose, orgId, onDone }: BulkPriceUpdat
     try {
       const supabase = createClient()
 
-      let query = supabase.from('products').select('id, price_sell, price_cost').eq('organization_id', orgId)
+      let query = supabase.from('products').select('id, price_sell, price_cost')
+        .eq('organization_id', orgId)
+        .eq('is_active', true)
       if (categoryId !== 'all') query = query.eq('category_id', categoryId)
 
       const { data: products, error } = await query
       if (error) throw error
       if (!products || products.length === 0) {
         toast.error('No hay productos para actualizar')
+        setSubmitting(false)
         return
       }
 
@@ -89,11 +92,13 @@ export function BulkPriceUpdate({ open, onClose, orgId, onDone }: BulkPriceUpdat
         const results = await Promise.all(
           chunk.map(u =>
             field === 'price_sell'
-              ? supabase.from('products').update({ price_sell: u.newValue }).eq('id', u.id)
-              : supabase.from('products').update({ price_cost: u.newValue }).eq('id', u.id)
+              ? supabase.from('products').update({ price_sell: u.newValue }).eq('id', u.id).eq('organization_id', orgId)
+              : supabase.from('products').update({ price_cost: u.newValue }).eq('id', u.id).eq('organization_id', orgId)
           )
         )
-        failed += results.filter(r => r.error).length
+        const errors = results.filter(r => r.error)
+        failed += errors.length
+        if (errors.length > 0) console.error('Bulk update errors:', errors.map(r => r.error))
       }
 
       if (failed > 0) toast.error(`${failed} productos no se pudieron actualizar`)
