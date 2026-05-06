@@ -199,7 +199,7 @@ export default function FuncionalidadesPage() {
       </div>
 
       <div className="mt-14 rounded-xl border border-emerald-200 bg-emerald-50 p-10 text-center">
-        <h2 className="text-2xl font-bold text-slate-900">Probalo gratis 7 días</h2>
+        <h2 className="text-2xl font-bold text-slate-900">Probalo gratis 14 días</h2>
         <p className="mt-2 text-sm text-slate-600">Sin tarjeta de crédito. Sin compromiso.</p>
         <Link
           href="/registro"

@@ -23,7 +23,7 @@ export async function POST(request: Request) {
   if (existingOrg) return NextResponse.json({ error: 'Ya existe un negocio con esa URL. Probá con otra.' }, { status: 409 })
 
   const trialEnds = new Date()
-  trialEnds.setDate(trialEnds.getDate() + 7)
+  trialEnds.setDate(trialEnds.getDate() + 14)
 
   const { data: org, error: orgError } = await admin.from('organizations').insert({
     name: data.org_name,

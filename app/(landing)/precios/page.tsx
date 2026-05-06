@@ -50,7 +50,7 @@ export default function PreciosPage() {
           Planes y precios
         </h1>
         <p className="mt-4 text-base text-slate-600 max-w-xl mx-auto">
-          7 días de prueba gratis en el plan Single. Sin tarjeta de crédito. Cancelás cuando querés.
+          14 días de prueba gratis en el plan Single. Sin tarjeta de crédito. Cancelás cuando querés.
         </p>
       </div>
 
@@ -86,7 +86,7 @@ export default function PreciosPage() {
               href="/registro?plan=basic"
               className="w-full inline-flex items-center justify-center gap-1 h-9 rounded-lg text-sm font-medium text-emerald-700 hover:text-emerald-800 transition-colors"
             >
-              Empezar gratis 7 días <ChevronRight className="h-3.5 w-3.5" />
+              Empezar gratis 14 días <ChevronRight className="h-3.5 w-3.5" />
             </Link>
           </div>
         </div>

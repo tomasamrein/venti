@@ -80,7 +80,7 @@ const PLANS = [
       'Funciona offline',
       'Soporte por WhatsApp',
     ],
-    cta: 'Empezar gratis 7 días',
+    cta: 'Empezar gratis 14 días',
     href: '/registro?plan=basic',
     highlight: false,
   },
@@ -125,7 +125,7 @@ const FAQS = [
     a: 'Vía Mercado Pago. Podés pagar con tarjeta de débito, crédito o transferencia. Se renueva cada mes y podés cancelar cuando querés.',
   },
   {
-    q: '¿Los 7 días de prueba son gratis de verdad?',
+    q: '¿Los 14 días de prueba son gratis de verdad?',
     a: 'Sí. Sin tarjeta de crédito. Accedés a todas las funcionalidades del plan Single. Al terminar el trial te avisamos para que elijas si seguís o no.',
   },
 ]
@@ -140,7 +140,7 @@ export default function LandingPage() {
       <section className="max-w-6xl mx-auto px-4 pt-20 pb-20 text-center">
         <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-emerald-200 bg-emerald-50 mb-8">
           <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-          <span className="text-xs font-medium text-emerald-700">7 días gratis · Sin tarjeta de crédito</span>
+          <span className="text-xs font-medium text-emerald-700">14 días gratis · Sin tarjeta de crédito</span>
         </div>
 
         <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-slate-900 leading-tight max-w-4xl mx-auto">
@@ -167,7 +167,7 @@ export default function LandingPage() {
             Ver planes
           </Link>
         </div>
-        <p className="mt-4 text-xs text-slate-400">7 días gratis · Sin permanencia · Cancelás cuando querés</p>
+        <p className="mt-4 text-xs text-slate-400">14 días gratis · Sin permanencia · Cancelás cuando querés</p>
       </section>
 
       {/* Pain points */}
@@ -192,7 +192,7 @@ export default function LandingPage() {
           <p className="text-center mt-6 text-sm text-slate-500">
             Con Ventix, todo eso desaparece.{' '}
             <Link href="/registro" className="text-emerald-600 hover:text-emerald-700 font-medium underline underline-offset-2">
-              Probalo gratis 7 días →
+              Probalo gratis 14 días →
             </Link>
           </p>
         </div>
@@ -238,7 +238,7 @@ export default function LandingPage() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             {[
               { n: '< 3s', label: 'para completar una venta' },
-              { n: '7 días', label: 'de prueba gratuita' },
+              { n: '14 días', label: 'de prueba gratuita' },
               { n: '100%', label: 'hecho para Argentina' },
               { n: '0', label: 'instalaciones requeridas' },
             ].map(s => (
@@ -283,7 +283,7 @@ export default function LandingPage() {
           <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-slate-900">
             Un precio claro, sin sorpresas
           </h2>
-          <p className="mt-3 text-base text-slate-500">7 días gratis en el plan Single. Sin tarjeta de crédito.</p>
+          <p className="mt-3 text-base text-slate-500">14 días gratis en el plan Single. Sin tarjeta de crédito.</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5 max-w-3xl mx-auto">
@@ -374,7 +374,7 @@ export default function LandingPage() {
             Empezá hoy, gratis
           </h2>
           <p className="mt-3 text-base text-slate-500 max-w-md mx-auto">
-            7 días con todas las funcionalidades. Sin tarjeta. Sin compromiso.
+            14 días con todas las funcionalidades. Sin tarjeta. Sin compromiso.
           </p>
           <Link
             href="/registro"
