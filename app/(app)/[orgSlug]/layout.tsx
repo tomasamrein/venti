@@ -1,5 +1,6 @@
 import { notFound, redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { getOrgBySlug } from '@/lib/supabase/get-org'
 import { Sidebar } from '@/components/layout/sidebar'
 import { TopNav } from '@/components/layout/top-nav'
 import { OfflineBanner } from '@/components/shared/offline-banner'
@@ -19,12 +20,8 @@ export default async function OrgLayout({ children, params }: Props) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
-  const [{ data: org }, { data: profile }] = await Promise.all([
-    supabase
-      .from('organizations')
-      .select('id, name, slug, timezone, currency, settings, is_active, trial_ends_at')
-      .eq('slug', orgSlug)
-      .single(),
+  const [org, { data: profile }] = await Promise.all([
+    getOrgBySlug(orgSlug),
     supabase
       .from('profiles')
       .select('full_name, avatar_url')

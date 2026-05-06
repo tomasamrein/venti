@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
+import { getOrgBySlug } from '@/lib/supabase/get-org'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { Plus, Search, Building2, Phone, Mail } from 'lucide-react'
@@ -13,10 +14,7 @@ interface Props {
 export default async function ProveedoresPage({ params, searchParams }: Props) {
   const { orgSlug } = await params
   const { q, inactive } = await searchParams
-  const supabase = await createClient()
-
-  const { data: org } = await supabase
-    .from('organizations').select('id').eq('slug', orgSlug).single()
+  const [supabase, org] = await Promise.all([createClient(), getOrgBySlug(orgSlug)])
   if (!org) notFound()
 
   let query = supabase

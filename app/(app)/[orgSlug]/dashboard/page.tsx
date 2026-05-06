@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
+import { getOrgBySlug } from '@/lib/supabase/get-org'
 import { ShoppingCart, DollarSign, Package, AlertTriangle, TrendingUp } from 'lucide-react'
 import { formatARS } from '@/lib/utils/currency'
 import { SalesChart } from '@/components/dashboard/sales-chart'
@@ -15,14 +16,7 @@ const TZ = 'America/Argentina/Buenos_Aires'
 
 export default async function DashboardPage({ params }: Props) {
   const { orgSlug } = await params
-  const supabase = await createClient()
-
-  const { data: org } = await supabase
-    .from('organizations')
-    .select('id, name')
-    .eq('slug', orgSlug)
-    .single()
-
+  const [supabase, org] = await Promise.all([createClient(), getOrgBySlug(orgSlug)])
   if (!org) return null
 
   // Start of today in Argentina timezone

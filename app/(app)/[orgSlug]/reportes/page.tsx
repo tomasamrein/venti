@@ -83,8 +83,9 @@ export default function ReportesPage() {
 
     const { data: saleItems } = await supabase
       .from('sale_items')
-      .select('name, quantity, subtotal, sale_id')
+      .select('name, quantity, subtotal')
       .eq('organization_id', oId)
+      .gte('created_at', fromDate.toISOString())
 
     const { data: alerts } = await supabase
       .from('stock_alerts')
