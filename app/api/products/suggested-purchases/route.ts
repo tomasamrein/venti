@@ -10,19 +10,7 @@ export async function GET(request: Request) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
 
-  // Products below minimum stock or out of stock
-  const { data: lowStock } = await supabase
-    .from('products')
-    .select('id, name, barcode, sku, brand, unit, stock_current, stock_min, stock_max, price_cost')
-    .eq('organization_id', org_id)
-    .eq('is_active', true)
-    .eq('track_stock', true)
-    .lte('stock_current', supabase.rpc ? 'stock_min' : 'stock_min') // filter below
-    .order('stock_current', { ascending: true })
-    .limit(50)
-
-  // Re-filter in JS for proper lte(stock_current, stock_min)
-  const { data: allLow } = await supabase
+  const { data: allProducts } = await supabase
     .from('products')
     .select('id, name, barcode, sku, brand, unit, stock_current, stock_min, stock_max, price_cost, supplier_products(supplier_id, suppliers(name, phone, email))')
     .eq('organization_id', org_id)
@@ -31,7 +19,7 @@ export async function GET(request: Request) {
     .order('stock_current', { ascending: true })
     .limit(200)
 
-  const suggestions = (allLow || [])
+  const suggestions = (allProducts || [])
     .filter(p => p.stock_current <= p.stock_min)
     .map(p => {
       const suggestedQty = p.stock_max
