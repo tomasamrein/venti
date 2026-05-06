@@ -93,22 +93,41 @@ export default function ReportesPage() {
       .eq('is_resolved', false)
       .limit(10)
 
-    const byDay: Record<string, DayStat> = {}
-    const dayCount = p === '7d' ? 7 : p === '30d' ? 30 : Math.ceil((now.getTime() - new Date(now.getFullYear(), 0, 1).getTime()) / 86400000) + 1
+    let chartStats: DayStat[]
 
-    for (let i = dayCount - 1; i >= 0; i--) {
-      const d = new Date(now); d.setDate(now.getDate() - i); d.setHours(0, 0, 0, 0)
-      const key = d.toISOString().split('T')[0]
-      byDay[key] = {
-        date: key,
-        label: d.toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit' }),
-        total: 0, count: 0,
+    if (p === 'year') {
+      // Group by month — 12 buckets Jan–Dec
+      const MONTH_NAMES = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic']
+      const byMonth: DayStat[] = Array.from({ length: 12 }, (_, m) => ({
+        date: `${now.getFullYear()}-${String(m + 1).padStart(2, '0')}`,
+        label: MONTH_NAMES[m],
+        total: 0,
+        count: 0,
+      }))
+      for (const s of sales ?? []) {
+        const m = new Date(s.created_at).getMonth()
+        byMonth[m].total += s.total
+        byMonth[m].count += 1
       }
-    }
+      chartStats = byMonth
+    } else {
+      const byDay: Record<string, DayStat> = {}
+      const dayCount = p === '7d' ? 7 : 30
 
-    for (const s of sales ?? []) {
-      const key = s.created_at.split('T')[0]
-      if (byDay[key]) { byDay[key].total += s.total; byDay[key].count += 1 }
+      for (let i = dayCount - 1; i >= 0; i--) {
+        const d = new Date(now); d.setDate(now.getDate() - i); d.setHours(0, 0, 0, 0)
+        const key = d.toISOString().split('T')[0]
+        byDay[key] = {
+          date: key,
+          label: d.toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit' }),
+          total: 0, count: 0,
+        }
+      }
+      for (const s of sales ?? []) {
+        const key = s.created_at.split('T')[0]
+        if (byDay[key]) { byDay[key].total += s.total; byDay[key].count += 1 }
+      }
+      chartStats = Object.values(byDay)
     }
 
     const productMap: Record<string, TopProduct> = {}
@@ -119,7 +138,7 @@ export default function ReportesPage() {
     }
     const top = Object.values(productMap).sort((a, b) => b.revenue - a.revenue).slice(0, 5)
 
-    setDayStats(Object.values(byDay))
+    setDayStats(chartStats)
     setTopProducts(top)
     setStockAlerts((alerts ?? []) as StockAlert[])
     setFetching(false)
