@@ -107,8 +107,9 @@ export function Sidebar({ orgSlug, className }: SidebarProps) {
     )}>
       {/* Logo */}
       <div className="h-14 flex items-center px-5 border-b border-border shrink-0">
-        <Link href={`${base}/dashboard`}>
-          <Image src="/logo-light.png" alt="Ventix" width={100} height={28} className="h-7 w-auto dark:invert" priority />
+        <Link href={`${base}/dashboard`} className="flex items-center gap-2">
+          <Image src="/icon.png" alt="Ventix" width={28} height={28} className="h-7 w-7" priority />
+          <span className="text-base font-extrabold text-slate-900 dark:text-slate-100 tracking-tight">Ventix</span>
         </Link>
       </div>
 

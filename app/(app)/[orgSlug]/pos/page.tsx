@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { toast } from 'sonner'
-import { Clock } from 'lucide-react'
+import { Clock, ShoppingCart, Grid3X3 } from 'lucide-react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { ProductGrid } from '@/components/pos/product-grid'
@@ -41,6 +41,7 @@ export default function POSPage() {
   const [loading, setLoading] = useState(true)
   const [paymentOpen, setPaymentOpen] = useState(false)
   const [ticketData, setTicketData] = useState<SaleData | null>(null)
+  const [mobileTab, setMobileTab] = useState<'products' | 'cart'>('products')
 
   const cartItems = useCartStore(s => s.items)
   const cartDiscount = useCartStore(s => s.discount_pct)
@@ -193,13 +194,15 @@ export default function POSPage() {
     }
   }
 
+  const cartCount = cartItems.reduce((s, i) => s + i.cart_quantity, 0)
+
   return (
-    <div className="h-[calc(100vh-3.5rem)] flex gap-4 p-4">
-      {/* Products area */}
-      <div className="flex-1 flex flex-col rounded-2xl overflow-hidden border border-border/60 bg-card relative">
+    <div className="h-[calc(100vh-3.5rem)] flex flex-col md:flex-row gap-0 md:gap-4 md:p-4">
+      {/* Products area — full width on mobile, flex-1 on desktop */}
+      <div className={`flex-1 flex flex-col overflow-hidden md:rounded-2xl md:border md:border-border/60 md:bg-card relative ${mobileTab === 'cart' ? 'hidden md:flex' : 'flex'}`}>
         {!loading && !isOpen && (
-          <div className="absolute top-3 left-1/2 -translate-x-1/2 z-20 bg-yellow-50 dark:bg-yellow-950/50 border border-yellow-300 dark:border-yellow-800 text-yellow-800 dark:text-yellow-300 text-sm px-4 py-2 rounded-full flex items-center gap-2">
-            <Clock className="h-4 w-4" />
+          <div className="absolute top-3 left-1/2 -translate-x-1/2 z-20 bg-yellow-50 dark:bg-yellow-950/50 border border-yellow-300 dark:border-yellow-800 text-yellow-800 dark:text-yellow-300 text-sm px-4 py-2 rounded-full flex items-center gap-2 whitespace-nowrap">
+            <Clock className="h-4 w-4 shrink-0" />
             <span>No hay caja abierta.</span>
             <Link href={`/${org.slug}/caja`} className="font-semibold underline">
               Abrir caja →
@@ -209,8 +212,8 @@ export default function POSPage() {
         <ProductGrid products={products} loading={loading} />
       </div>
 
-      {/* Cart */}
-      <div className="w-80">
+      {/* Cart — hidden on mobile unless mobileTab='cart', fixed w-80 on desktop */}
+      <div className={`md:w-80 md:shrink-0 flex-1 flex flex-col ${mobileTab === 'products' ? 'hidden md:flex' : 'flex'}`}>
         <CartSummary
           onCheckout={handleCheckout}
           onHold={handleHoldSale}
@@ -218,6 +221,34 @@ export default function POSPage() {
           orgId={org.id}
         />
       </div>
+
+      {/* Mobile tab bar */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-30 bg-background border-t border-border flex h-14 shrink-0">
+        <button
+          onClick={() => setMobileTab('products')}
+          className={`flex-1 flex flex-col items-center justify-center gap-0.5 text-xs font-medium transition-colors ${mobileTab === 'products' ? 'text-emerald-600' : 'text-muted-foreground'}`}
+        >
+          <Grid3X3 className="h-5 w-5" />
+          Productos
+        </button>
+        <button
+          onClick={() => setMobileTab('cart')}
+          className={`flex-1 flex flex-col items-center justify-center gap-0.5 text-xs font-medium transition-colors relative ${mobileTab === 'cart' ? 'text-emerald-600' : 'text-muted-foreground'}`}
+        >
+          <span className="relative">
+            <ShoppingCart className="h-5 w-5" />
+            {cartCount > 0 && (
+              <span className="absolute -top-1.5 -right-2 bg-emerald-600 text-white text-[10px] font-bold rounded-full h-4 min-w-4 flex items-center justify-center px-0.5">
+                {cartCount}
+              </span>
+            )}
+          </span>
+          Carrito
+        </button>
+      </div>
+
+      {/* Bottom padding on mobile so content isn't hidden behind tab bar */}
+      <div className="md:hidden h-14 shrink-0" />
 
       <PaymentModal
         open={paymentOpen}

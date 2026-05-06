@@ -25,7 +25,8 @@ export default function LandingLayout({ children }: { children: React.ReactNode 
       <header className="fixed top-0 left-0 right-0 z-50 border-b border-slate-200 bg-white/95 backdrop-blur-sm">
         <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2 shrink-0">
-            <Image src="/logo-light.png" alt="Ventix" width={120} height={32} className="h-8 w-auto" priority />
+            <Image src="/icon.png" alt="Ventix" width={32} height={32} className="h-8 w-8" priority />
+            <span className="text-base font-bold text-slate-900 tracking-tight">Ventix</span>
           </Link>
 
           <nav className="hidden md:flex items-center gap-1">
@@ -74,7 +75,8 @@ export default function LandingLayout({ children }: { children: React.ReactNode 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-10">
             <div className="col-span-2 md:col-span-1">
               <div className="flex items-center gap-2 mb-3">
-                <Image src="/logo-light.png" alt="Ventix" width={100} height={28} className="h-7 w-auto" />
+                <Image src="/icon.png" alt="Ventix" width={28} height={28} className="h-7 w-7" />
+                <span className="text-sm font-bold text-slate-700 tracking-tight">Ventix</span>
               </div>
               <p className="text-xs text-slate-500 leading-relaxed max-w-xs">
                 POS y CRM para kioscos, almacenes y comercios argentinos. Con facturación ARCA y modo offline.

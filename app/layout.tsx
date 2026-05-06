@@ -9,6 +9,13 @@ export const metadata: Metadata = {
   title: { default: 'Ventix', template: '%s | Ventix' },
   description: 'Sistema de gestión para kioscos, almacenes y negocios argentinos',
   manifest: '/manifest.json',
+  icons: {
+    icon: [
+      { url: '/favicon-32.png', sizes: '32x32', type: 'image/png' },
+      { url: '/favicon-192.png', sizes: '192x192', type: 'image/png' },
+    ],
+    apple: { url: '/icon.png', sizes: '180x180' },
+  },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

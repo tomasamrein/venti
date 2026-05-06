@@ -6,8 +6,9 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
       <div className="w-full flex flex-col items-center">
         {/* Logo */}
         <div className="text-center mb-8">
-          <div className="flex items-center justify-center mb-2">
-            <Image src="/logo-light.png" alt="Ventix" width={140} height={40} className="h-10 w-auto dark:invert" priority />
+          <div className="flex items-center justify-center gap-2.5 mb-2">
+            <Image src="/icon.png" alt="Ventix" width={40} height={40} className="h-10 w-10" priority />
+            <span className="text-2xl font-extrabold text-slate-900 dark:text-slate-100 tracking-tight">Ventix</span>
           </div>
           <p className="text-sm text-muted-foreground">Tu sistema de gestión</p>
         </div>
