@@ -8,9 +8,10 @@ export async function POST(req: NextRequest) {
     process.env.VAPID_PUBLIC_KEY!,
     process.env.VAPID_PRIVATE_KEY!,
   )
-  // Internal endpoint — validate with service role key header
+  // Internal endpoint — validate with dedicated internal secret
   const authHeader = req.headers.get('authorization')
-  if (authHeader !== `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`) {
+  const internalSecret = process.env.INTERNAL_PUSH_SECRET ?? process.env.SUPABASE_SERVICE_ROLE_KEY
+  if (!internalSecret || authHeader !== `Bearer ${internalSecret}`) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
   }
 

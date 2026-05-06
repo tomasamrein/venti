@@ -20,7 +20,11 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: true, skipped: 'missing_type_or_id' })
   }
 
-  // Verify signature only when secret is configured (allows local testing)
+  // Verify signature — required in production, optional only in local dev
+  if (process.env.NODE_ENV === 'production' && !process.env.MP_WEBHOOK_SECRET) {
+    console.error('[MP Webhook] MP_WEBHOOK_SECRET is not set in production — rejecting all webhooks')
+    return NextResponse.json({ error: 'Not configured' }, { status: 503 })
+  }
   if (process.env.MP_WEBHOOK_SECRET) {
     const xSignature = req.headers.get('x-signature') ?? ''
     const xRequestId = req.headers.get('x-request-id') ?? ''

@@ -46,7 +46,8 @@ export async function POST(request: Request) {
   // Resolve category names → ids (create if missing)
   const categoryNames = [...new Set(
     rows.map((r: unknown) => (r as Record<string, unknown>).category as string)
-      .filter(Boolean)
+      .filter((c): c is string => Boolean(c) && c.trim().length > 0)
+      .map(c => c.trim())
   )]
 
   const categoryMap: Record<string, string> = {}

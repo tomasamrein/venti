@@ -54,8 +54,12 @@ function LoginForm() {
         if (res.ok && json.init_point) {
           window.location.href = json.init_point
           return
+        } else {
+          toast.error(json.error || 'No se pudo iniciar el checkout')
         }
-      } catch { /* fall through to normal redirect */ }
+      } catch {
+        toast.error('Error de conexión al checkout')
+      }
     }
 
     router.push(redirectTo)

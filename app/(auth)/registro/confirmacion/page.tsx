@@ -28,24 +28,30 @@ function ConfirmacionInner() {
       }
 
       // Find the org of this user
-      const { data: member } = await supabase
+      const { data: member, error: memberError } = await supabase
         .from('organization_members')
         .select('organization_id, organizations(slug)')
         .eq('user_id', user.id)
         .eq('role', 'owner')
-        .single()
+        .maybeSingle()
 
-      if (!member) { setStatus('error'); return }
+      if (memberError || !member) { setStatus('error'); return }
 
       const slug = (member.organizations as { slug: string } | null)?.slug ?? ''
       setOrgSlug(slug)
 
       // Link the MP subscription to this org via API
-      await fetch('/api/checkout/confirm', {
+      const confirmRes = await fetch('/api/checkout/confirm', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ preapproval_id: preapprovalId, org_id: member.organization_id }),
       })
+
+      if (!confirmRes.ok) {
+        console.error('[confirmacion] confirm failed:', confirmRes.status)
+        setStatus('error')
+        return
+      }
 
       setStatus('ok')
 

@@ -76,21 +76,18 @@ export default function CuentaCorrientePage() {
     setLoading(true)
     const supabase = createClient()
 
-    const currentBalance = account?.balance ?? 0
-    const signedAmount = type === 'charge' ? -amt : amt
-    const newBalance = currentBalance + signedAmount
-
-    const { error } = await supabase.from('current_account_transactions').insert({
-      account_id: accountId,
-      organization_id: orgId,
-      type,
-      amount: signedAmount,
-      balance_after: newBalance,
-      description: description || (type === 'charge' ? 'Cargo manual' : 'Pago recibido'),
-      created_by: userId,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { error } = await (supabase.rpc as any)('record_account_transaction', {
+      p_account_id: accountId,
+      p_organization_id: orgId,
+      p_type: type,
+      p_amount: amt,
+      p_description: description || null,
+      p_sale_id: null,
+      p_created_by: userId,
     })
 
-    if (error) { toast.error('Error al registrar'); setLoading(false); return }
+    if (error) { toast.error(error.message || 'Error al registrar'); setLoading(false); return }
 
     toast.success(type === 'charge' ? 'Cargo registrado' : 'Pago registrado')
     setAmount('')

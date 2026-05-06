@@ -34,8 +34,14 @@ export function PaymentModal({ open, total, hasCustomer, onClose, onConfirm }: P
   const [amount, setAmount] = useState(total)
   const change = method === 'cash' ? Math.max(0, amount - total) : 0
 
+  const handleMethodChange = (val: string | null) => {
+    setMethod(val || 'cash')
+    setAmount(total)
+  }
+
   const handleConfirm = () => {
-    onConfirm(method, amount)
+    const finalAmount = method === 'cash' ? amount : total
+    onConfirm(method, finalAmount)
     onClose()
   }
 
@@ -53,7 +59,7 @@ export function PaymentModal({ open, total, hasCustomer, onClose, onConfirm }: P
           {/* Payment method selector */}
           <div>
             <Label className="text-sm font-medium mb-3 block">Seleccionar método</Label>
-            <Select value={method} onValueChange={(val) => setMethod(val || 'cash')}>
+            <Select value={method} onValueChange={handleMethodChange}>
               <SelectTrigger className="rounded-xl h-11">
                 <SelectValue />
               </SelectTrigger>

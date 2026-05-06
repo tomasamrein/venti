@@ -13,49 +13,52 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { createClient } from '@/lib/supabase/client'
-import type { ArcaSettings } from '@/types/arca'
+import { useOrg } from '@/hooks/use-org'
+import { getArcaConfig, saveArcaConfig, testArcaConnection } from './actions'
 
-interface Props {
-  params: Promise<{ orgSlug: string }>
+interface LocalSettings {
+  cuit: string
+  punto_venta: number
+  environment: 'homologation' | 'production'
+  // cert/key are write-only inputs — never stored in state after initial load
+  cert_pem: string
+  key_pem: string
 }
 
-export default function ConfiguracionFacturacionPage({ params }: Props) {
-  const [orgId, setOrgId] = useState('')
-  const [settings, setSettings] = useState<Partial<ArcaSettings>>({
-    environment: 'homologation',
+export default function ConfiguracionFacturacionPage() {
+  const { org } = useOrg()
+  const orgId = org.id
+
+  const [settings, setSettings] = useState<LocalSettings>({
+    cuit: '',
     punto_venta: 1,
+    environment: 'homologation',
+    cert_pem: '',
+    key_pem: '',
   })
+  const [hasCert, setHasCert] = useState(false)
+  const [certSubject, setCertSubject] = useState<string | undefined>()
   const [saving, setSaving] = useState(false)
   const [testing, setTesting] = useState(false)
   const [testResult, setTestResult] = useState<{ ok: boolean; message: string } | null>(null)
   const [showKey, setShowKey] = useState(false)
   const [p12Loading, setP12Loading] = useState(false)
-  const fileRef = useRef<HTMLInputElement>(null)
   const [p12Password, setP12Password] = useState('')
+  const fileRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
-    params.then(async p => {
-      const supabase = createClient()
-      const { data: org } = await supabase
-        .from('organizations')
-        .select('id, settings')
-        .eq('slug', p.orgSlug)
-        .single()
-      if (!org) return
-      setOrgId(org.id)
-      const arca = (org.settings as Record<string, unknown>)?.arca as ArcaSettings | undefined
-      if (arca) {
-        setSettings({
-          cuit: arca.cuit,
-          punto_venta: arca.punto_venta,
-          environment: arca.environment,
-          cert_pem: arca.cert_pem,
-          key_pem: arca.key_pem,
-        })
-      }
+    if (!orgId) return
+    getArcaConfig(orgId).then(cfg => {
+      setSettings(s => ({
+        ...s,
+        cuit: cfg.cuit ?? '',
+        punto_venta: cfg.punto_venta ?? 1,
+        environment: cfg.environment ?? 'homologation',
+      }))
+      setHasCert(cfg.hasCert)
+      setCertSubject(cfg.certSubject)
     })
-  }, [params])
+  }, [orgId])
 
   async function handleP12Upload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
@@ -68,8 +71,10 @@ export default function ConfiguracionFacturacionPage({ params }: Props) {
       const res = await fetch('/api/arca/authorize', { method: 'PUT', body: form })
       const json = await res.json()
       if (!res.ok) { toast.error(json.error ?? 'Error al procesar el certificado'); return }
+      // Store PEM in local state only for submission — never shown back to user
       setSettings(s => ({ ...s, cert_pem: json.certPem, key_pem: json.keyPem }))
-      toast.success('Certificado cargado correctamente')
+      setHasCert(true)
+      toast.success('Certificado listo para guardar')
     } catch {
       toast.error('Error al procesar el archivo')
     } finally {
@@ -85,69 +90,40 @@ export default function ConfiguracionFacturacionPage({ params }: Props) {
       return
     }
     setSaving(true)
-    try {
-      const supabase = createClient()
-      const { data: org } = await supabase
-        .from('organizations')
-        .select('settings')
-        .eq('id', orgId)
-        .single()
+    const result = await saveArcaConfig(orgId, {
+      cuit: settings.cuit,
+      punto_venta: settings.punto_venta,
+      environment: settings.environment,
+      cert_pem: settings.cert_pem || undefined,
+      key_pem: settings.key_pem || undefined,
+    })
+    setSaving(false)
 
-      const currentSettings = (org?.settings ?? {}) as Record<string, unknown>
-      const newArcaSettings: Partial<ArcaSettings> = {
-        cuit: settings.cuit,
-        punto_venta: settings.punto_venta,
-        environment: settings.environment ?? 'homologation',
-        ...(settings.cert_pem && { cert_pem: settings.cert_pem }),
-        ...(settings.key_pem && { key_pem: settings.key_pem }),
-      }
-
-      // Preserve existing token cache if creds didn't change
-      const existing = currentSettings.arca as ArcaSettings | undefined
-      if (existing?.token_cache && settings.cert_pem === existing.cert_pem) {
-        newArcaSettings.token_cache = existing.token_cache
-      }
-
-      const { error } = await supabase
-        .from('organizations')
-        .update({ settings: { ...currentSettings, arca: newArcaSettings } as any })
-        .eq('id', orgId)
-
-      if (error) throw error
-      toast.success('Configuración guardada')
-      setTestResult(null)
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Error al guardar'
-      toast.error(msg)
-    } finally {
-      setSaving(false)
+    if (!result.ok) {
+      toast.error(result.error)
+      return
     }
+
+    // Clear local cert/key from state after saving (never keep them in memory)
+    setSettings(s => ({ ...s, cert_pem: '', key_pem: '' }))
+    setTestResult(null)
+    toast.success('Configuración guardada')
+
+    // Refresh cert status
+    getArcaConfig(orgId).then(cfg => {
+      setHasCert(cfg.hasCert)
+      setCertSubject(cfg.certSubject)
+    })
   }
 
   async function handleTest() {
     if (!orgId) return
     setTesting(true)
     setTestResult(null)
-    try {
-      const res = await fetch('/api/arca/authorize', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ org_id: orgId }),
-      })
-      const json = await res.json()
-      if (res.ok) {
-        setTestResult({ ok: true, message: `Conexión exitosa. Token válido hasta ${new Date(json.expires_at).toLocaleTimeString('es-AR')}` })
-      } else {
-        setTestResult({ ok: false, message: json.error ?? 'Error de conexión' })
-      }
-    } catch {
-      setTestResult({ ok: false, message: 'Error de red' })
-    } finally {
-      setTesting(false)
-    }
+    const result = await testArcaConnection(orgId)
+    setTesting(false)
+    setTestResult({ ok: result.ok, message: result.message })
   }
-
-  const hasCert = !!settings.cert_pem
 
   return (
     <div className="space-y-6 max-w-2xl">
@@ -167,7 +143,7 @@ export default function ConfiguracionFacturacionPage({ params }: Props) {
             <Input
               id="cuit"
               placeholder="20-12345678-9"
-              value={settings.cuit ?? ''}
+              value={settings.cuit}
               onChange={e => setSettings(s => ({ ...s, cuit: e.target.value }))}
               className="rounded-xl font-mono"
             />
@@ -180,7 +156,7 @@ export default function ConfiguracionFacturacionPage({ params }: Props) {
               min={1}
               max={9999}
               placeholder="1"
-              value={settings.punto_venta ?? ''}
+              value={settings.punto_venta}
               onChange={e => setSettings(s => ({ ...s, punto_venta: parseInt(e.target.value) || 1 }))}
               className="rounded-xl"
             />
@@ -190,8 +166,8 @@ export default function ConfiguracionFacturacionPage({ params }: Props) {
         <div>
           <Label className="mb-1.5 block">Ambiente</Label>
           <Select
-            value={settings.environment ?? 'homologation'}
-            onValueChange={v => setSettings(s => ({ ...s, environment: v as ArcaSettings['environment'] }))}
+            value={settings.environment}
+            onValueChange={v => setSettings(s => ({ ...s, environment: v as 'homologation' | 'production' }))}
           >
             <SelectTrigger className="rounded-xl w-56">
               <SelectValue />
@@ -209,14 +185,14 @@ export default function ConfiguracionFacturacionPage({ params }: Props) {
         </div>
       </div>
 
-      {/* Certificate */}
+      {/* Certificate — write-only, keys never travel back to client */}
       <div className="rounded-xl border bg-card p-6 space-y-5">
         <div className="flex items-center justify-between">
           <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Certificado digital</h2>
           {hasCert && (
             <span className="flex items-center gap-1.5 text-xs text-emerald-600 dark:text-emerald-400">
               <CheckCircle2 className="h-3.5 w-3.5" />
-              Certificado cargado
+              {certSubject ? `Cargado: ${certSubject}` : 'Certificado cargado'}
             </span>
           )}
         </div>
@@ -243,17 +219,19 @@ export default function ConfiguracionFacturacionPage({ params }: Props) {
             </Button>
           </div>
           <p className="text-xs text-muted-foreground mt-2">
-            O pegá el PEM del certificado y clave privada manualmente:
+            O pegá el PEM del certificado y clave privada manualmente (write-only — no se muestran una vez guardados):
           </p>
         </div>
 
         <div>
-          <Label htmlFor="cert_pem" className="mb-1.5 block">Certificado (PEM)</Label>
+          <Label htmlFor="cert_pem" className="mb-1.5 block">
+            Certificado (PEM) {hasCert && !settings.cert_pem && <span className="text-muted-foreground font-normal">— dejá vacío para mantener el actual</span>}
+          </Label>
           <textarea
             id="cert_pem"
             rows={4}
             placeholder="-----BEGIN CERTIFICATE-----&#10;...&#10;-----END CERTIFICATE-----"
-            value={settings.cert_pem ?? ''}
+            value={settings.cert_pem}
             onChange={e => setSettings(s => ({ ...s, cert_pem: e.target.value }))}
             className="w-full rounded-xl border bg-background px-3 py-2 text-xs font-mono resize-none focus:outline-none focus:ring-2 focus:ring-ring"
           />
@@ -261,7 +239,9 @@ export default function ConfiguracionFacturacionPage({ params }: Props) {
 
         <div>
           <div className="flex items-center justify-between mb-1.5">
-            <Label htmlFor="key_pem">Clave privada (PEM)</Label>
+            <Label htmlFor="key_pem">
+              Clave privada (PEM) {hasCert && !settings.key_pem && <span className="text-muted-foreground font-normal">— dejá vacío para mantener la actual</span>}
+            </Label>
             <button
               type="button"
               onClick={() => setShowKey(v => !v)}
@@ -275,7 +255,7 @@ export default function ConfiguracionFacturacionPage({ params }: Props) {
             id="key_pem"
             rows={4}
             placeholder="-----BEGIN PRIVATE KEY-----&#10;...&#10;-----END PRIVATE KEY-----"
-            value={showKey ? (settings.key_pem ?? '') : (settings.key_pem ? '••••••••••••••••••••' : '')}
+            value={showKey ? settings.key_pem : (settings.key_pem ? '•'.repeat(40) : '')}
             readOnly={!showKey}
             onChange={e => showKey && setSettings(s => ({ ...s, key_pem: e.target.value }))}
             className="w-full rounded-xl border bg-background px-3 py-2 text-xs font-mono resize-none focus:outline-none focus:ring-2 focus:ring-ring"
@@ -283,7 +263,6 @@ export default function ConfiguracionFacturacionPage({ params }: Props) {
         </div>
       </div>
 
-      {/* Test result */}
       {testResult && (
         <div className={`flex items-start gap-2.5 p-4 rounded-xl border text-sm ${
           testResult.ok

@@ -147,7 +147,7 @@ export default function POSPage() {
         p_tax_amount: 0,
         p_total: total,
         p_amount_paid: amountPaid,
-        p_change_amount: method === 'cash' ? amountPaid - total : 0,
+        p_change_amount: method === 'cash' ? amountPaid - total : null,
         p_notes: null,
         p_items: itemsPayload,
       })

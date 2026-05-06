@@ -159,7 +159,7 @@ export async function getArcaToken(
   }
 
   const tra = buildTRA()
-  console.log('[ARCA] TRA XML:', tra)
+  if (process.env.NODE_ENV !== 'production') console.log('[ARCA] TRA XML:', tra)
   const cms = signTRA(tra, settings.cert_pem, settings.key_pem)
   const token = await callWSAA(cms, settings.environment)
 
