@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
+import { CreateAccountButton } from './create-account-button'
 
 interface Props {
   searchParams: Promise<{ q?: string }>
@@ -25,6 +26,7 @@ export default async function AdminUsersPage({ searchParams }: Props) {
           <h1 className="text-[22px] font-bold tracking-tight text-foreground">Usuarios</h1>
           <p className="text-[13px] text-muted-foreground mt-0.5">{profiles?.length ?? 0} resultados</p>
         </div>
+        <CreateAccountButton />
       </div>
 
       <form method="GET" className="flex gap-3">

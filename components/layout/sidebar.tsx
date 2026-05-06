@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation'
 import {
   LayoutDashboard, ShoppingCart, Package, FileText,
   Users, Briefcase, CreditCard, BarChart3, Settings,
-  Bell, DollarSign, TrendingUp, Receipt,
+  Bell, DollarSign, TrendingUp, Receipt, ShoppingBag,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -46,6 +46,7 @@ export function Sidebar({ orgSlug, className }: SidebarProps) {
       title: 'Inventario',
       items: [
         navItem('Productos', `${base}/productos`, <Package className="h-4 w-4" />),
+        navItem('Compras sugeridas', `${base}/compras`, <ShoppingBag className="h-4 w-4" />),
         navItem('Proveedores', `${base}/proveedores`, <Briefcase className="h-4 w-4" />),
       ],
     },

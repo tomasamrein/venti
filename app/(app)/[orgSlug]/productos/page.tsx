@@ -38,6 +38,7 @@ import {
 } from '@/components/ui/alert-dialog'
 import { BulkPriceUpdate } from '@/components/products/bulk-price-update'
 import { ExcelPriceImport } from '@/components/products/excel-price-import'
+import { CsvProductImport } from '@/components/products/csv-product-import'
 import { createClient } from '@/lib/supabase/client'
 import { formatARS } from '@/lib/utils/currency'
 import { useOrg } from '@/hooks/use-org'
@@ -67,6 +68,7 @@ export default function ProductosPage() {
   const [deleteId, setDeleteId] = useState<string | null>(null)
   const [bulkOpen, setBulkOpen] = useState(false)
   const [excelOpen, setExcelOpen] = useState(false)
+  const [csvOpen, setCsvOpen] = useState(false)
 
   const loadData = useCallback(async () => {
     const supabase = createClient()
@@ -164,6 +166,10 @@ export default function ProductosPage() {
               Categorías
             </Button>
           </Link>
+          <Button variant="outline" size="sm" className="gap-2" onClick={() => setCsvOpen(true)}>
+            <Upload className="h-4 w-4" />
+            Importar CSV
+          </Button>
           <Button variant="outline" size="sm" className="gap-2" onClick={() => setExcelOpen(true)}>
             <Upload className="h-4 w-4" />
             Importar Excel
@@ -433,6 +439,14 @@ export default function ProductosPage() {
         open={excelOpen}
         onClose={() => setExcelOpen(false)}
         products={products}
+        onDone={loadData}
+      />
+
+      {/* CSV product import */}
+      <CsvProductImport
+        open={csvOpen}
+        onClose={() => setCsvOpen(false)}
+        orgId={orgId}
         onDone={loadData}
       />
     </div>

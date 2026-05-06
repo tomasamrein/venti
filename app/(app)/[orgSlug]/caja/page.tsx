@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { toast } from 'sonner'
 import {
   DollarSign, Clock, TrendingUp, TrendingDown,
-  ArrowUpRight, ArrowDownRight, Plus, History
+  ArrowUpRight, ArrowDownRight, Plus, History, ExternalLink,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -245,6 +245,30 @@ export default function CajaPage() {
   const expensesAmount = movements
     .filter(m => m.type === 'expense' || m.type === 'withdrawal')
     .reduce((sum, m) => sum + Math.abs(m.amount), 0)
+
+  function shareSessionSummary() {
+    if (!session) return
+    const date = new Date().toLocaleDateString('es-AR')
+    const openedAt = format(new Date(session.opened_at), "HH:mm", { locale: es })
+    const closedAt = format(new Date(), "HH:mm", { locale: es })
+    const expected = getExpectedAmount()
+    const closing = parseFloat(closingAmount) || expected
+    const diff = closing - expected
+
+    const text = [
+      `📊 Resumen de caja — ${org.name}`,
+      `📅 ${date} | ${openedAt}hs → ${closedAt}hs`,
+      ``,
+      `💰 Apertura: ${formatARS(session.opening_amount)}`,
+      `🛒 Ventas: ${formatARS(salesAmount)}`,
+      `📤 Gastos/Retiros: ${formatARS(expensesAmount)}`,
+      `🏦 Esperado: ${formatARS(expected)}`,
+      `✅ Real contado: ${formatARS(closing)}`,
+      diff !== 0 ? `${diff >= 0 ? '➕' : '➖'} Diferencia: ${formatARS(diff)}` : `✔ Sin diferencia`,
+    ].join('\n')
+
+    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank')
+  }
 
   const movementTypeLabel: Record<string, string> = {
     sale: 'Venta',
@@ -597,6 +621,16 @@ export default function CajaPage() {
                 Diferencia: {formatARS(parseFloat(closingAmount) - getExpectedAmount())}
               </div>
             )}
+
+            <Button
+              variant="outline"
+              className="w-full rounded-xl gap-2 text-emerald-700 border-emerald-200 hover:bg-emerald-50 dark:border-emerald-800 dark:text-emerald-400 dark:hover:bg-emerald-900/20"
+              onClick={shareSessionSummary}
+              type="button"
+            >
+              <ExternalLink className="h-4 w-4" />
+              Compartir resumen por WhatsApp
+            </Button>
 
             <div className="flex gap-3">
               <Button

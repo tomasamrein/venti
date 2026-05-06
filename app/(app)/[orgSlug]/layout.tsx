@@ -5,6 +5,7 @@ import { TopNav } from '@/components/layout/top-nav'
 import { OfflineBanner } from '@/components/shared/offline-banner'
 import { TrialBanner } from '@/components/shared/trial-banner'
 import { OrgProvider } from '@/components/providers/org-provider'
+import { SupportChat } from '@/components/layout/support-chat'
 
 interface Props {
   children: React.ReactNode
@@ -78,6 +79,7 @@ export default async function OrgLayout({ children, params }: Props) {
           <OfflineBanner />
         </div>
       </div>
+      <SupportChat />
     </OrgProvider>
   )
 }
