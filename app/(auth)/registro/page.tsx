@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
@@ -50,9 +50,36 @@ export default function RegistroPage() {
   const [step, setStep] = useState<Step>(0)
   const [loading, setLoading] = useState(false)
   const [step0Data, setStep0Data] = useState<z.infer<typeof step0Schema> | null>(null)
+  const [existingUser, setExistingUser] = useState<{ id: string; full_name: string; email: string } | null>(null)
 
   const form0 = useForm<z.infer<typeof step0Schema>>({ resolver: zodResolver(step0Schema) })
   const form1 = useForm<z.infer<typeof step1Schema>>({ resolver: zodResolver(step1Schema) })
+
+  // If already logged in without an org, skip to step 1
+  useEffect(() => {
+    const supabase = createClient()
+    supabase.auth.getUser().then(async ({ data: { user } }) => {
+      if (!user) return
+      const { data: member } = await supabase
+        .from('organization_members')
+        .select('id')
+        .eq('user_id', user.id)
+        .eq('is_active', true)
+        .maybeSingle()
+      if (member) {
+        // Already has an org — redirect away
+        router.replace('/')
+        return
+      }
+      // Logged in but no org — skip account step
+      setExistingUser({
+        id: user.id,
+        full_name: user.user_metadata?.full_name ?? '',
+        email: user.email ?? '',
+      })
+      setStep(1)
+    })
+  }, [router])
 
   function onStep0(data: z.infer<typeof step0Schema>) {
     setStep0Data(data)
@@ -60,10 +87,30 @@ export default function RegistroPage() {
   }
 
   async function onStep1(data: z.infer<typeof step1Schema>) {
-    if (!step0Data) return
     setLoading(true)
 
     try {
+      if (existingUser) {
+        // Already authenticated — just create the org
+        const res = await fetch('/api/org/create', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data),
+        })
+        const result = await res.json()
+        if (!res.ok) {
+          toast.error(result.error || 'Error al crear el negocio.')
+          setLoading(false)
+          return
+        }
+        toast.success(`¡Bienvenido a Ventix, ${existingUser.full_name || 'usuario'}!`)
+        router.push(`/${data.org_slug}/dashboard`)
+        router.refresh()
+        return
+      }
+
+      if (!step0Data) return
+
       const res = await fetch('/api/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -78,7 +125,6 @@ export default function RegistroPage() {
         return
       }
 
-      // Sign in the user after successful registration
       const supabase = createClient()
       const { error: signInError } = await supabase.auth.signInWithPassword({
         email: step0Data.email,
@@ -91,7 +137,7 @@ export default function RegistroPage() {
         return
       }
 
-      toast.success(`¡Bienvenido a Ventix, ${step0Data.full_name}! 🎉`)
+      toast.success(`¡Bienvenido a Ventix, ${step0Data.full_name}!`)
       router.push(`/${data.org_slug}/dashboard`)
       router.refresh()
     } catch {
