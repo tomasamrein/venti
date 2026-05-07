@@ -10,7 +10,7 @@ const WA_PERSONALIZADO = 'https://wa.me/5492604000000?text=Hola%2C+me+interesa+V
 
 const PLANS = [
   {
-    name: 'Inicio',
+    name: 'Esencial',
     icon: Zap,
     price: 50000,
     recommended: 'Kioscos',
@@ -31,12 +31,12 @@ const PLANS = [
     wa: false,
   },
   {
-    name: 'Estándar',
+    name: 'Avanzado',
     icon: Package,
-    price: 50000,
+    price: 80000,
     recommended: 'Almacenes, autoservicios y fotocopiadoras',
     features: [
-      'Todo lo del plan Inicio',
+      'Todo lo del plan Esencial',
       'Gestión de proveedores avanzada',
       'Venta por peso y unidades',
       'Módulo de servicios (imprenta, etc.)',
@@ -49,12 +49,12 @@ const PLANS = [
     wa: false,
   },
   {
-    name: 'Pro',
+    name: 'Premium',
     icon: Star,
-    price: 80000,
+    price: 100000,
     recommended: 'Drugstores y comercios 24hs',
     features: [
-      'Todo lo del plan Estándar',
+      'Todo lo del plan Avanzado',
       'Selector de cajero por turno',
       'Historial de ventas por empleado',
       'Notificaciones push de stock',
@@ -203,9 +203,9 @@ export default function PreciosPage() {
             <thead>
               <tr className="border-b border-slate-200 bg-slate-50">
                 <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Funcionalidad</th>
-                <th className="px-3 py-3 text-center text-xs font-semibold text-slate-500 uppercase tracking-wider">Inicio</th>
-                <th className="px-3 py-3 text-center text-xs font-semibold text-slate-500 uppercase tracking-wider">Estándar</th>
-                <th className="px-3 py-3 text-center text-xs font-semibold text-emerald-700 uppercase tracking-wider">Pro</th>
+                <th className="px-3 py-3 text-center text-xs font-semibold text-slate-500 uppercase tracking-wider">Esencial</th>
+                <th className="px-3 py-3 text-center text-xs font-semibold text-slate-500 uppercase tracking-wider">Avanzado</th>
+                <th className="px-3 py-3 text-center text-xs font-semibold text-emerald-700 uppercase tracking-wider">Premium</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
@@ -224,7 +224,7 @@ export default function PreciosPage() {
             </tbody>
           </table>
         </div>
-        <p className="text-center text-xs text-slate-400 mt-3">El plan A medida incluye todas las funciones del plan Pro más módulos personalizados.</p>
+        <p className="text-center text-xs text-slate-400 mt-3">El plan A medida incluye todas las funciones del plan Premium más módulos personalizados.</p>
       </div>
     </div>
   )

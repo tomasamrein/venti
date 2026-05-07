@@ -102,7 +102,7 @@ const FEATURES = [
 
 const PLANS = [
   {
-    name: 'Inicio',
+    name: 'Esencial',
     icon: Zap,
     price: 50000,
     recommended: 'Kioscos',
@@ -121,12 +121,12 @@ const PLANS = [
     wa: false,
   },
   {
-    name: 'Estándar',
+    name: 'Avanzado',
     icon: Package,
-    price: 50000,
+    price: 80000,
     recommended: 'Almacenes, autoservicios y fotocopiadoras',
     features: [
-      'Todo lo del plan Inicio',
+      'Todo lo del plan Esencial',
       'Gestión de proveedores',
       'Venta por peso y unidades',
       'Módulo de servicios (imprenta, etc.)',
@@ -140,12 +140,12 @@ const PLANS = [
     wa: false,
   },
   {
-    name: 'Pro',
+    name: 'Premium',
     icon: Star,
-    price: 80000,
+    price: 100000,
     recommended: 'Drugstores y comercios 24hs',
     features: [
-      'Todo lo del plan Estándar',
+      'Todo lo del plan Avanzado',
       'Selector de cajero por turno',
       'Historial de ventas por empleado',
       'Notificaciones push de stock',
