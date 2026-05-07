@@ -215,9 +215,8 @@ export default function LandingPage() {
         </div>
 
         <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-slate-900 leading-tight max-w-4xl mx-auto">
-          El sistema para{' '}
-          <span className="text-emerald-600">tu kiosco</span>
-          {' '}y más
+          El sistema más completo y moderno para{' '}
+          <span className="text-emerald-600">comercios argentinos</span>
         </h1>
 
         <p className="mt-6 text-lg text-slate-500 max-w-2xl mx-auto leading-relaxed">
