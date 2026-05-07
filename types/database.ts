@@ -1521,7 +1521,7 @@ export type Database = {
         | "mercadopago"
         | "current_account"
         | "mixed"
-      plan_type: "free_trial" | "basic" | "pro"
+      plan_type: "free_trial" | "basic" | "avanzado" | "pro"
       sale_status: "completed" | "on_hold" | "canceled" | "refunded"
       subscription_status:
         | "active"
@@ -1678,7 +1678,7 @@ export const Constants = {
         "current_account",
         "mixed",
       ],
-      plan_type: ["free_trial", "basic", "pro"],
+      plan_type: ["free_trial", "basic", "avanzado", "pro"],
       sale_status: ["completed", "on_hold", "canceled", "refunded"],
       subscription_status: [
         "active",

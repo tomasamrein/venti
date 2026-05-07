@@ -81,10 +81,6 @@ export default function SuscripcionPage() {
   const StatusIcon = statusInfo.icon
 
   async function handleCheckout(plan: Plan) {
-    if (plan.type === 'pro') {
-      window.open(`https://wa.me/5492604000000?text=Hola%2C+quiero+info+sobre+el+plan+Enterprise+de+Ventix`, '_blank')
-      return
-    }
     const email = userEmail ?? window.prompt('Ingresá tu email:')
     if (!email?.includes('@')) { toast.error('Email inválido'); return }
     setCheckoutLoading(plan.id)
@@ -174,13 +170,13 @@ export default function SuscripcionPage() {
           <div className="grid gap-3">
             {plans.filter(p => p.type !== 'free_trial').map(plan => {
               const isCurrent = subscription?.plan?.id === plan.id
-              const isPro = plan.type === 'pro'
+              const isPremium = plan.type === 'pro'
               return (
                 <div key={plan.id}
                   className={`rounded-xl border p-5 flex items-center justify-between gap-4 transition-colors ${isCurrent ? 'border-emerald-300/40 bg-emerald-600/5' : 'border-border bg-card hover:border-slate-300'}`}>
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
-                      {isPro && <Zap className="h-3.5 w-3.5 text-amber-400" />}
+                      {isPremium && <Zap className="h-3.5 w-3.5 text-amber-400" />}
                       <p className="text-[15px] font-bold">{plan.name}</p>
                       {isCurrent && (
                         <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-emerald-600/20 text-emerald-600">
@@ -193,9 +189,7 @@ export default function SuscripcionPage() {
                     </p>
                   </div>
                   <div className="text-right shrink-0">
-                    <p className="text-[20px] font-extrabold">
-                      {plan.type === 'pro' ? 'A consultar' : formatARS(plan.price_ars)}
-                    </p>
+                    <p className="text-[20px] font-extrabold">{formatARS(plan.price_ars)}</p>
                     <p className="text-[11px] text-muted-foreground">por mes</p>
                     {!isCurrent && (
                       <Button size="sm" className="mt-2 rounded-lg text-[12px] text-white"
@@ -204,7 +198,7 @@ export default function SuscripcionPage() {
                         onClick={() => handleCheckout(plan)}>
                         {checkoutLoading === plan.id
                           ? <Loader2 className="h-3 w-3 animate-spin" />
-                          : plan.type === 'pro' ? 'Consultar' : (subscription?.status === 'active' ? 'Cambiar plan' : 'Suscribirme')}
+                          : subscription?.status === 'active' ? 'Cambiar plan' : 'Suscribirme'}
                       </Button>
                     )}
                   </div>

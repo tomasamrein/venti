@@ -4,7 +4,7 @@ import { getPreApproval } from '@/lib/mercadopago/client'
 import { createAdminClient } from '@/lib/supabase/admin'
 
 const checkoutSchema = z.object({
-  plan_type: z.enum(['basic', 'pro']),
+  plan_type: z.enum(['basic', 'avanzado', 'pro']),
   email: z.string().email(),
   org_id: z.string().uuid().optional(),
 })
