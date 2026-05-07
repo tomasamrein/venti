@@ -2,7 +2,8 @@ import Link from 'next/link'
 import {
   ShoppingCart, BarChart3, Wifi, Receipt, Users, Package,
   ChevronRight, Check, TrendingDown, AlertTriangle,
-  Clock, CreditCard, Smartphone, ShoppingBag, Store, Moon, Printer, MessageCircle,
+  Clock, CreditCard, Smartphone, Zap, Star, MessageCircle,
+  ShoppingBag, Store, Moon, Printer,
 } from 'lucide-react'
 import type { Metadata } from 'next'
 
@@ -101,10 +102,10 @@ const FEATURES = [
 
 const PLANS = [
   {
-    name: 'Kiosco',
-    icon: ShoppingBag,
+    name: 'Inicio',
+    icon: Zap,
     price: 50000,
-    desc: 'Para kioscos con venta de golosinas, bebidas y snacks.',
+    recommended: 'Kioscos',
     features: [
       'POS optimizado para lector de barras',
       'Stock con alertas automáticas',
@@ -115,35 +116,36 @@ const PLANS = [
       'Soporte por WhatsApp',
     ],
     cta: 'Empezar gratis 14 días',
-    href: '/registro?rubro=kiosco',
+    href: '/registro',
     highlight: false,
     wa: false,
   },
   {
-    name: 'Almacén',
-    icon: Store,
+    name: 'Estándar',
+    icon: Package,
     price: 50000,
-    desc: 'Para almacenes y autoservicios con productos variados.',
+    recommended: 'Almacenes, autoservicios y fotocopiadoras',
     features: [
-      'Todo lo de Kiosco',
+      'Todo lo del plan Inicio',
       'Gestión de proveedores',
       'Venta por peso y unidades',
+      'Módulo de servicios (imprenta, etc.)',
       'Actualización masiva de precios',
       'Historial de precios',
       'Export CSV y Excel',
     ],
     cta: 'Empezar gratis 14 días',
-    href: '/registro?rubro=almacen',
+    href: '/registro',
     highlight: false,
     wa: false,
   },
   {
-    name: 'Drugstore',
-    icon: Moon,
+    name: 'Pro',
+    icon: Star,
     price: 80000,
-    desc: 'Para comercios 24hs con múltiples empleados por turno.',
+    recommended: 'Drugstores y comercios 24hs',
     features: [
-      'Todo lo de Almacén',
+      'Todo lo del plan Estándar',
       'Selector de cajero por turno',
       'Historial de ventas por empleado',
       'Notificaciones push de stock',
@@ -151,15 +153,15 @@ const PLANS = [
       'Onboarding asistido',
     ],
     cta: 'Empezar gratis 14 días',
-    href: '/registro?rubro=drugstore',
+    href: '/registro',
     highlight: true,
     wa: false,
   },
   {
-    name: 'Personalizado',
+    name: 'A medida',
     icon: MessageCircle,
     price: null,
-    desc: 'Para cualquier otro rubro que necesite adaptaciones específicas.',
+    recommended: 'Negocios con necesidades específicas',
     features: [
       'Todas las funciones base',
       'Módulos a medida de tu negocio',
@@ -437,7 +439,7 @@ export default function LandingPage() {
                 </div>
                 <div>
                   <p className="text-base font-bold text-slate-900">{plan.name}</p>
-                  <p className="text-xs text-slate-500 mt-0.5 leading-snug">{plan.desc}</p>
+                  <p className="text-xs text-emerald-700 font-medium mt-0.5">Recomendado para: {plan.recommended}</p>
                   <div className="flex items-baseline gap-1 mt-4">
                     {plan.price !== null ? (
                       <>

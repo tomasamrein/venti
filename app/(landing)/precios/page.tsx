@@ -1,6 +1,6 @@
 'use client'
 
-import { Check, ChevronRight, Smartphone, ShoppingBag, Store, Moon, MessageCircle, Printer } from 'lucide-react'
+import { Check, ChevronRight, Smartphone, Zap, Package, Star, MessageCircle } from 'lucide-react'
 import Link from 'next/link'
 
 const fmt = (n: number) =>
@@ -10,10 +10,10 @@ const WA_PERSONALIZADO = 'https://wa.me/5492604000000?text=Hola%2C+me+interesa+V
 
 const PLANS = [
   {
-    name: 'Kiosco',
-    icon: ShoppingBag,
+    name: 'Inicio',
+    icon: Zap,
     price: 50000,
-    desc: 'Para kioscos con venta de golosinas, bebidas y snacks.',
+    recommended: 'Kioscos',
     features: [
       'POS optimizado para lector de barras',
       'Stock con alertas automáticas',
@@ -26,35 +26,35 @@ const PLANS = [
       'Soporte por WhatsApp',
     ],
     cta: 'Empezar gratis 14 días',
-    href: '/registro?rubro=kiosco',
+    href: '/registro',
     highlight: false,
     wa: false,
   },
   {
-    name: 'Almacén',
-    icon: Store,
+    name: 'Estándar',
+    icon: Package,
     price: 50000,
-    desc: 'Para almacenes y autoservicios con productos variados.',
+    recommended: 'Almacenes, autoservicios y fotocopiadoras',
     features: [
-      'Todo lo de Kiosco',
+      'Todo lo del plan Inicio',
       'Gestión de proveedores avanzada',
       'Venta por peso y unidades',
+      'Módulo de servicios (imprenta, etc.)',
       'Actualización masiva de precios',
       'Historial de precios',
-      'Export CSV y Excel',
     ],
     cta: 'Empezar gratis 14 días',
-    href: '/registro?rubro=almacen',
+    href: '/registro',
     highlight: false,
     wa: false,
   },
   {
-    name: 'Drugstore',
-    icon: Moon,
+    name: 'Pro',
+    icon: Star,
     price: 80000,
-    desc: 'Para comercios 24hs con múltiples empleados por turno.',
+    recommended: 'Drugstores y comercios 24hs',
     features: [
-      'Todo lo de Almacén',
+      'Todo lo del plan Estándar',
       'Selector de cajero por turno',
       'Historial de ventas por empleado',
       'Notificaciones push de stock',
@@ -62,32 +62,15 @@ const PLANS = [
       'Onboarding asistido',
     ],
     cta: 'Empezar gratis 14 días',
-    href: '/registro?rubro=drugstore',
+    href: '/registro',
     highlight: true,
     wa: false,
   },
   {
-    name: 'Fotocopiadora / Librería',
-    icon: Printer,
-    price: 50000,
-    desc: 'Para fotocopiadoras, librerías y papelerías con servicios de imprenta.',
-    features: [
-      'Todo lo de Kiosco',
-      'Módulo de servicios de imprenta',
-      'Listas escolares por escuela/grado',
-      'Fotocopias, anillado y laminado',
-      'Gestión de encargos',
-    ],
-    cta: 'Empezar gratis 14 días',
-    href: '/registro?rubro=fotocopiadora',
-    highlight: false,
-    wa: false,
-  },
-  {
-    name: 'Personalizado',
+    name: 'A medida',
     icon: MessageCircle,
     price: null,
-    desc: 'Para cualquier otro rubro que necesite adaptaciones específicas.',
+    recommended: 'Negocios con necesidades específicas',
     features: [
       'Todas las funciones base',
       'Módulos a medida de tu negocio',
@@ -102,21 +85,20 @@ const PLANS = [
   },
 ]
 
-const COMPARISON = [
-  ['POS con escáner de barras',         true,  true,  true,  true],
-  ['Facturación ARCA (A, B, C)',         true,  true,  true,  true],
-  ['Stock y alertas automáticas',        true,  true,  true,  true],
-  ['Clientes y cuentas corrientes',      true,  true,  true,  true],
-  ['Reportes y dashboard',               true,  true,  true,  true],
-  ['Modo offline',                       true,  true,  true,  true],
-  ['Gestión de proveedores',             false, true,  true,  false],
-  ['Historial de precios',               false, true,  true,  false],
-  ['Selector de cajero por turno',       false, false, true,  false],
-  ['Notificaciones push',                false, false, true,  false],
-  ['Módulo servicios de imprenta',       false, false, false, true],
-  ['Listas escolares',                   false, false, false, true],
-  ['Onboarding asistido',                false, false, true,  false],
-] as [string, boolean, boolean, boolean, boolean][]
+const COMPARISON: [string, boolean, boolean, boolean][] = [
+  ['POS con escáner de barras',         true,  true,  true ],
+  ['Facturación ARCA (A, B, C)',         true,  true,  true ],
+  ['Stock y alertas automáticas',        true,  true,  true ],
+  ['Clientes y cuentas corrientes',      true,  true,  true ],
+  ['Reportes y dashboard',               true,  true,  true ],
+  ['Modo offline',                       true,  true,  true ],
+  ['Gestión de proveedores',             false, true,  true ],
+  ['Historial de precios',               false, true,  true ],
+  ['Módulo de servicios (imprenta)',      false, true,  true ],
+  ['Selector de cajero por turno',       false, false, true ],
+  ['Notificaciones push',                false, false, true ],
+  ['Onboarding asistido',                false, false, true ],
+]
 
 export default function PreciosPage() {
   return (
@@ -126,12 +108,12 @@ export default function PreciosPage() {
           Planes y precios
         </h1>
         <p className="mt-4 text-base text-slate-600 max-w-xl mx-auto">
-          Cada rubro tiene su precio. 14 días de prueba gratis en todos los planes. Sin tarjeta de crédito.
+          14 días de prueba gratis en todos los planes. Sin tarjeta de crédito.
         </p>
       </div>
 
       {/* Plan cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 max-w-5xl mx-auto">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 max-w-6xl mx-auto">
         {PLANS.map(plan => {
           const Icon = plan.icon
           return (
@@ -153,7 +135,9 @@ export default function PreciosPage() {
               </div>
               <div>
                 <p className="text-lg font-bold text-slate-900">{plan.name}</p>
-                <p className="text-sm text-slate-500 mt-0.5 leading-snug">{plan.desc}</p>
+                <p className="text-xs text-emerald-700 font-medium mt-0.5 leading-snug">
+                  Recomendado para: {plan.recommended}
+                </p>
                 <div className="flex items-baseline gap-1 mt-4">
                   {plan.price !== null ? (
                     <>
@@ -173,7 +157,7 @@ export default function PreciosPage() {
                   </li>
                 ))}
               </ul>
-              <div className="space-y-2">
+              <div>
                 <a
                   href={plan.href}
                   target={plan.wa ? '_blank' : undefined}
@@ -193,14 +177,6 @@ export default function PreciosPage() {
                   )}
                   {plan.cta} {!plan.wa && <ChevronRight className="h-4 w-4" />}
                 </a>
-                {!plan.wa && (
-                  <Link
-                    href={`/registro${plan.href.includes('?') ? plan.href.slice(plan.href.indexOf('?')) : ''}`}
-                    className="w-full inline-flex items-center justify-center h-9 rounded-lg text-sm font-medium text-emerald-700 hover:text-emerald-800 transition-colors"
-                  >
-                    Empezar gratis 14 días <ChevronRight className="h-3.5 w-3.5 ml-1" />
-                  </Link>
-                )}
               </div>
             </div>
           )
@@ -219,25 +195,24 @@ export default function PreciosPage() {
         </div>
       </div>
 
-      {/* Feature comparison — Kiosco / Almacén / Drugstore / Fotocopiadora */}
+      {/* Feature comparison */}
       <div className="mt-16 max-w-4xl mx-auto">
-        <h2 className="text-xl font-bold text-slate-900 mb-6 text-center">Comparativa por rubro</h2>
+        <h2 className="text-xl font-bold text-slate-900 mb-6 text-center">¿Qué incluye cada plan?</h2>
         <div className="rounded-xl border border-slate-200 overflow-hidden bg-white">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-slate-200 bg-slate-50">
                 <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Funcionalidad</th>
-                <th className="px-3 py-3 text-center text-xs font-semibold text-slate-500 uppercase tracking-wider">Kiosco</th>
-                <th className="px-3 py-3 text-center text-xs font-semibold text-slate-500 uppercase tracking-wider">Almacén</th>
-                <th className="px-3 py-3 text-center text-xs font-semibold text-emerald-700 uppercase tracking-wider">Drugstore</th>
-                <th className="px-3 py-3 text-center text-xs font-semibold text-blue-700 uppercase tracking-wider">Fotocopiadora</th>
+                <th className="px-3 py-3 text-center text-xs font-semibold text-slate-500 uppercase tracking-wider">Inicio</th>
+                <th className="px-3 py-3 text-center text-xs font-semibold text-slate-500 uppercase tracking-wider">Estándar</th>
+                <th className="px-3 py-3 text-center text-xs font-semibold text-emerald-700 uppercase tracking-wider">Pro</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {COMPARISON.map(([feat, kiosco, almacen, drugstore, foto]) => (
+              {COMPARISON.map(([feat, inicio, estandar, pro]) => (
                 <tr key={feat} className="hover:bg-slate-50">
                   <td className="px-4 py-3 text-slate-700 text-xs">{feat}</td>
-                  {[kiosco, almacen, drugstore, foto].map((val, i) => (
+                  {[inicio, estandar, pro].map((val, i) => (
                     <td key={i} className="px-3 py-3 text-center">
                       {val
                         ? <Check className="h-4 w-4 text-emerald-600 mx-auto" />
@@ -249,6 +224,7 @@ export default function PreciosPage() {
             </tbody>
           </table>
         </div>
+        <p className="text-center text-xs text-slate-400 mt-3">El plan A medida incluye todas las funciones del plan Pro más módulos personalizados.</p>
       </div>
     </div>
   )
