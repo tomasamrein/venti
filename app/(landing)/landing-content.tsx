@@ -104,7 +104,7 @@ const PLANS = [
   {
     name: 'Esencial',
     icon: Zap,
-    price: 50000,
+    price: 49999,
     recommended: 'Kioscos',
     features: [
       'POS optimizado para lector de barras',
@@ -123,7 +123,7 @@ const PLANS = [
   {
     name: 'Avanzado',
     icon: Package,
-    price: 80000,
+    price: 79999,
     recommended: 'Almacenes, autoservicios y fotocopiadoras',
     features: [
       'Todo lo del plan Esencial',
@@ -142,7 +142,7 @@ const PLANS = [
   {
     name: 'Premium',
     icon: Star,
-    price: 100000,
+    price: 99999,
     recommended: 'Drugstores y comercios 24hs',
     features: [
       'Todo lo del plan Avanzado',
