@@ -2,20 +2,24 @@
 
 import { useState, useEffect } from 'react'
 import { toast } from 'sonner'
-import { Clock, ShoppingCart, Grid3X3 } from 'lucide-react'
+import { Clock, ShoppingCart, Grid3X3, Printer } from 'lucide-react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { ProductGrid } from '@/components/pos/product-grid'
 import { CartSummary } from '@/components/pos/cart-summary'
 import { PaymentModal } from '@/components/pos/payment-modal'
 import { SaleTicket } from '@/components/pos/sale-ticket'
+import { CopyServicePanel } from '@/components/pos/copy-service-panel'
+import { EmployeeSwitcher } from '@/components/pos/employee-switcher'
 import { useCartStore } from '@/stores/cart-store'
+import { usePosStore } from '@/stores/pos-store'
 import { useBarcodeScanner } from '@/hooks/use-barcode-scanner'
 import { useOrg } from '@/hooks/use-org'
 import { useCashSession } from '@/hooks/use-cash-session'
 import type { Database } from '@/types/database'
 
 type Product = Database['public']['Tables']['products']['Row']
+type MobileTab = 'products' | 'services' | 'cart'
 
 interface SaleData {
   id: string
@@ -36,12 +40,17 @@ interface SaleData {
 export default function POSPage() {
   const { org, branch, userId } = useOrg()
   const { session, isOpen } = useCashSession()
+  const { activeCashierName } = usePosStore()
+
+  const businessType = org.business_type
+  const isFotocopiadora = businessType === 'fotocopiadora'
+  const isDrugstore = businessType === 'drugstore'
 
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
   const [paymentOpen, setPaymentOpen] = useState(false)
   const [ticketData, setTicketData] = useState<SaleData | null>(null)
-  const [mobileTab, setMobileTab] = useState<'products' | 'cart'>('products')
+  const [mobileTab, setMobileTab] = useState<MobileTab>('products')
 
   const cartItems = useCartStore(s => s.items)
   const cartDiscount = useCartStore(s => s.discount_pct)
@@ -96,12 +105,13 @@ export default function POSPage() {
         customer_id: customerId ?? null,
         label,
         items: cartItems.map(i => ({
-          id: i.id,
+          id: i.product_id ?? i.id,
           name: i.name,
           price_sell: i.price_sell,
           cart_quantity: i.cart_quantity,
           barcode: i.barcode,
           tax_rate: i.tax_rate,
+          is_service: i.is_service,
         })),
         created_by: userId,
       })
@@ -123,15 +133,20 @@ export default function POSPage() {
     const discountAmount = subtotal * (cartDiscount / 100)
 
     const itemsPayload = cartItems.map(item => ({
-      product_id: item.id,
+      product_id: item.is_service ? null : item.product_id,
       name: item.name,
       barcode: item.barcode,
-      unit_price: item.price_sell ?? 0,
+      unit_price: item.price_sell,
       quantity: item.cart_quantity,
-      discount_pct: item.cart_discount_pct ?? 0,
-      tax_rate: item.tax_rate ?? 21,
-      subtotal: (item.price_sell ?? 0) * item.cart_quantity,
+      discount_pct: item.cart_discount_pct,
+      tax_rate: item.tax_rate,
+      subtotal: item.price_sell * item.cart_quantity,
     }))
+
+    // For drugstore: attach active cashier to notes
+    const saleNotes = isDrugstore && activeCashierName
+      ? `[Cajero: ${activeCashierName}]`
+      : null
 
     try {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -148,7 +163,7 @@ export default function POSPage() {
         p_total: total,
         p_amount_paid: amountPaid,
         p_change_amount: method === 'cash' ? amountPaid - total : null,
-        p_notes: null,
+        p_notes: saleNotes,
         p_items: itemsPayload,
       })
 
@@ -177,10 +192,9 @@ export default function POSPage() {
         org_name: org.name,
       })
 
-      // Refresh product stock optimistically
       setProducts(prev =>
         prev.map(p => {
-          const sold = cartItems.find(i => i.id === p.id)
+          const sold = cartItems.find(i => i.product_id === p.id)
           if (!sold || !p.track_stock) return p
           return { ...p, stock_current: (p.stock_current ?? 0) - sold.cart_quantity }
         })
@@ -195,11 +209,23 @@ export default function POSPage() {
   }
 
   const cartCount = cartItems.reduce((s, i) => s + i.cart_quantity, 0)
+  const showProductsArea = mobileTab === 'products' || mobileTab === 'services'
 
   return (
     <div className="h-[calc(100vh-3.5rem)] flex flex-col md:flex-row gap-0 md:gap-4 md:p-4">
-      {/* Products area — full width on mobile, flex-1 on desktop */}
+      {/* Products + services area */}
       <div className={`flex-1 flex flex-col overflow-hidden md:rounded-2xl md:border md:border-border/60 md:bg-card relative ${mobileTab === 'cart' ? 'hidden md:flex' : 'flex'}`}>
+        {/* Drugstore: employee switcher in top bar */}
+        {isDrugstore && (
+          <div className="flex items-center gap-2 px-4 py-2 border-b border-border/60 bg-card/80 shrink-0">
+            <span className="text-xs text-muted-foreground">Cajero:</span>
+            <EmployeeSwitcher orgId={org.id} />
+            {!activeCashierName && (
+              <span className="text-xs text-amber-600 dark:text-amber-400">← Seleccioná un cajero</span>
+            )}
+          </div>
+        )}
+
         {!loading && !isOpen && (
           <div className="absolute top-3 left-1/2 -translate-x-1/2 z-20 bg-yellow-50 dark:bg-yellow-950/50 border border-yellow-300 dark:border-yellow-800 text-yellow-800 dark:text-yellow-300 text-sm px-4 py-2 rounded-full flex items-center gap-2 whitespace-nowrap">
             <Clock className="h-4 w-4 shrink-0" />
@@ -209,11 +235,22 @@ export default function POSPage() {
             </Link>
           </div>
         )}
-        <ProductGrid products={products} loading={loading} />
+
+        {/* Product grid — hidden on mobile when "services" tab is active */}
+        <div className={`flex-1 overflow-hidden ${isFotocopiadora && mobileTab === 'services' ? 'hidden md:block' : 'block'}`}>
+          <ProductGrid products={products} loading={loading} />
+        </div>
+
+        {/* Copy services panel — fotocopiadora only */}
+        {isFotocopiadora && (
+          <div className={`shrink-0 ${mobileTab === 'services' ? 'block' : 'hidden md:block'}`}>
+            <CopyServicePanel orgId={org.id} />
+          </div>
+        )}
       </div>
 
-      {/* Cart — hidden on mobile unless mobileTab='cart', fixed w-80 on desktop */}
-      <div className={`md:w-80 md:shrink-0 flex-1 flex flex-col ${mobileTab === 'products' ? 'hidden md:flex' : 'flex'}`}>
+      {/* Cart */}
+      <div className={`md:w-80 md:shrink-0 flex-1 flex flex-col ${mobileTab === 'cart' ? 'flex' : 'hidden md:flex'}`}>
         <CartSummary
           onCheckout={handleCheckout}
           onHold={handleHoldSale}
@@ -231,6 +268,17 @@ export default function POSPage() {
           <Grid3X3 className="h-5 w-5" />
           Productos
         </button>
+
+        {isFotocopiadora && (
+          <button
+            onClick={() => setMobileTab('services')}
+            className={`flex-1 flex flex-col items-center justify-center gap-0.5 text-xs font-medium transition-colors ${mobileTab === 'services' ? 'text-emerald-600' : 'text-muted-foreground'}`}
+          >
+            <Printer className="h-5 w-5" />
+            Servicios
+          </button>
+        )}
+
         <button
           onClick={() => setMobileTab('cart')}
           className={`flex-1 flex flex-col items-center justify-center gap-0.5 text-xs font-medium transition-colors relative ${mobileTab === 'cart' ? 'text-emerald-600' : 'text-muted-foreground'}`}
@@ -247,7 +295,6 @@ export default function POSPage() {
         </button>
       </div>
 
-      {/* Bottom padding on mobile so content isn't hidden behind tab bar */}
       <div className="md:hidden h-14 shrink-0" />
 
       <PaymentModal

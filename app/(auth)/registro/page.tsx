@@ -1,20 +1,40 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { toast } from 'sonner'
-import { Loader2, Building2, User, Check, ArrowRight, ArrowLeft, Sparkles, Store, Shield } from 'lucide-react'
+import {
+  Loader2, Building2, User, Check, ArrowRight, ArrowLeft, Sparkles,
+  Store, Shield, ShoppingBag, Printer, HelpCircle,
+} from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 
-const steps = ['Tu cuenta', 'Tu negocio'] as const
-type Step = 0 | 1
+type BusinessType = 'kiosco' | 'almacen' | 'drugstore' | 'fotocopiadora' | 'otro'
+
+const BUSINESS_TYPES: {
+  value: BusinessType
+  label: string
+  description: string
+  icon: React.ElementType
+}[] = [
+  { value: 'kiosco',        label: 'Kiosco',                    description: 'Golosinas, bebidas y snacks',    icon: ShoppingBag },
+  { value: 'almacen',       label: 'Almacén / Autoservicio',    description: 'Productos variados y fiambrería', icon: Store },
+  { value: 'drugstore',     label: 'Drugstore',                 description: 'Perfumería y productos 24hs',    icon: Shield },
+  { value: 'fotocopiadora', label: 'Fotocopiadora / Librería',  description: 'Copias, útiles y encuadernado',  icon: Printer },
+  { value: 'otro',          label: 'Personalizado',             description: 'Necesito algo específico',       icon: HelpCircle },
+]
+
+const WA_PERSONALIZADO = 'https://wa.me/5492604000000?text=Hola%2C+me+interesa+Ventix+para+mi+negocio+y+quiero+saber+si+tienen+soporte+para+mi+rubro.'
+
+const steps = ['Tu cuenta', 'Tu negocio', 'Tu local'] as const
+type Step = 0 | 1 | 2
 
 const step0Schema = z.object({
   full_name: z.string().min(2, 'Ingresá tu nombre'),
@@ -22,13 +42,13 @@ const step0Schema = z.object({
   password: z.string().min(8, 'Mínimo 8 caracteres'),
 })
 
-const step1Schema = z.object({
+const step2Schema = z.object({
   org_name: z.string().min(2, 'Ingresá el nombre de tu negocio'),
   org_slug: z.string().min(2, 'Mínimo 2 caracteres').regex(/^[a-z0-9-]+$/, 'Solo minúsculas, números y guiones'),
   branch_name: z.string().min(2, 'Ingresá el nombre de la sucursal'),
 })
 
-type FormData = z.infer<typeof step0Schema> & z.infer<typeof step1Schema>
+type FormData = z.infer<typeof step0Schema> & z.infer<typeof step2Schema> & { business_type: BusinessType }
 
 function slugify(text: string) {
   return text
@@ -45,17 +65,21 @@ const features = [
   { icon: Sparkles, text: '14 días gratis' },
 ]
 
-export default function RegistroPage() {
+function RegistroContent() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [step, setStep] = useState<Step>(0)
   const [loading, setLoading] = useState(false)
   const [step0Data, setStep0Data] = useState<z.infer<typeof step0Schema> | null>(null)
+  const rubroParam = searchParams.get('rubro') as BusinessType | null
+  const [businessType, setBusinessType] = useState<BusinessType | null>(
+    rubroParam && BUSINESS_TYPES.some(b => b.value === rubroParam) ? rubroParam : null
+  )
   const [existingUser, setExistingUser] = useState<{ id: string; full_name: string; email: string } | null>(null)
 
   const form0 = useForm<z.infer<typeof step0Schema>>({ resolver: zodResolver(step0Schema) })
-  const form1 = useForm<z.infer<typeof step1Schema>>({ resolver: zodResolver(step1Schema) })
+  const form2 = useForm<z.infer<typeof step2Schema>>({ resolver: zodResolver(step2Schema) })
 
-  // If already logged in without an org, skip to step 1
   useEffect(() => {
     const supabase = createClient()
     supabase.auth.getUser().then(async ({ data: { user } }) => {
@@ -67,11 +91,9 @@ export default function RegistroPage() {
         .eq('is_active', true)
         .maybeSingle()
       if (member) {
-        // Already has an org — redirect away
         router.replace('/')
         return
       }
-      // Logged in but no org — skip account step
       setExistingUser({
         id: user.id,
         full_name: user.user_metadata?.full_name ?? '',
@@ -86,16 +108,21 @@ export default function RegistroPage() {
     setStep(1)
   }
 
-  async function onStep1(data: z.infer<typeof step1Schema>) {
+  function onStep1() {
+    if (!businessType) return
+    setStep(2)
+  }
+
+  async function onStep2(data: z.infer<typeof step2Schema>) {
+    if (!businessType) return
     setLoading(true)
 
     try {
       if (existingUser) {
-        // Already authenticated — just create the org
         const res = await fetch('/api/org/create', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(data),
+          body: JSON.stringify({ ...data, business_type: businessType }),
         })
         const result = await res.json()
         if (!res.ok) {
@@ -114,7 +141,7 @@ export default function RegistroPage() {
       const res = await fetch('/api/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...step0Data, ...data }),
+        body: JSON.stringify({ ...step0Data, ...data, business_type: businessType }),
       })
 
       const result = await res.json()
@@ -148,14 +175,14 @@ export default function RegistroPage() {
 
   return (
     <div className="w-full max-w-5xl mx-auto flex flex-col lg:flex-row items-center gap-8 lg:gap-16">
-      {/* Left side - Branding (hidden on mobile, shown on lg) */}
+      {/* Left side - Branding */}
       <div className="hidden lg:flex flex-col gap-6 flex-1 max-w-sm">
         <div>
           <h2 className="text-2xl font-bold text-foreground mb-2">
             Empezá a gestionar tu negocio hoy
           </h2>
           <p className="text-muted-foreground">
-            Unite a cientos de kioscos y almacenes que ya usan Ventix para simplificar su día a día.
+            Unite a cientos de negocios que ya usan Ventix para simplificar su día a día.
           </p>
         </div>
         <div className="space-y-4">
@@ -173,11 +200,11 @@ export default function RegistroPage() {
       {/* Right side - Form */}
       <div className="w-full max-w-md flex-shrink-0">
         {/* Progress Steps */}
-        <div className="flex items-center gap-3 mb-6">
+        <div className="flex items-center gap-2 mb-6">
           {steps.map((label, i) => (
             <div key={i} className="flex items-center gap-2 flex-1">
               <div className={`
-                w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300
+                w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300 shrink-0
                 ${i < step
                   ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30'
                   : i === step
@@ -187,7 +214,7 @@ export default function RegistroPage() {
               `}>
                 {i < step ? <Check className="h-4 w-4" /> : i + 1}
               </div>
-              <span className={`text-sm ${i === step ? 'text-foreground font-semibold' : 'text-muted-foreground'}`}>
+              <span className={`text-xs ${i === step ? 'text-foreground font-semibold' : 'text-muted-foreground'} hidden sm:block`}>
                 {label}
               </span>
               {i < steps.length - 1 && (
@@ -202,28 +229,22 @@ export default function RegistroPage() {
           {/* Header */}
           <div className="px-6 pt-6 pb-4">
             <div className="flex items-center gap-2.5 mb-1">
-              {step === 0 ? (
-                <div className="w-9 h-9 rounded-xl bg-emerald-500/10 flex items-center justify-center">
-                  <User className="h-5 w-5 text-emerald-500" />
-                </div>
-              ) : (
-                <div className="w-9 h-9 rounded-xl bg-emerald-500/10 flex items-center justify-center">
-                  <Building2 className="h-5 w-5 text-emerald-500" />
-                </div>
-              )}
+              <div className="w-9 h-9 rounded-xl bg-emerald-500/10 flex items-center justify-center">
+                {step === 0 ? <User className="h-5 w-5 text-emerald-500" /> : <Building2 className="h-5 w-5 text-emerald-500" />}
+              </div>
               <div>
                 <h3 className="text-lg font-bold text-foreground">
-                  {step === 0 ? 'Creá tu cuenta' : 'Tu negocio'}
+                  {step === 0 ? 'Creá tu cuenta' : step === 1 ? '¿Qué tipo de negocio tenés?' : 'Datos de tu negocio'}
                 </h3>
                 <p className="text-xs text-muted-foreground">
-                  {step === 0 ? '14 días gratis, sin tarjeta requerida' : 'Podés cambiarlo después'}
+                  {step === 0 ? '14 días gratis, sin tarjeta requerida' : step === 1 ? 'El sistema se adapta a tu rubro' : 'Podés cambiarlo después'}
                 </p>
               </div>
             </div>
           </div>
 
-          {/* Form Body */}
-          {step === 0 ? (
+          {/* Step 0 — Account */}
+          {step === 0 && (
             <form onSubmit={form0.handleSubmit(onStep0)}>
               <div className="px-6 space-y-4">
                 <div className="space-y-1.5">
@@ -243,7 +264,7 @@ export default function RegistroPage() {
                   <Input
                     id="reg_email"
                     type="email"
-                    placeholder="juan@mikiosco.com"
+                    placeholder="juan@minegocio.com"
                     className="h-11 rounded-xl bg-muted/50 border-border/60 focus:bg-background transition-colors"
                     {...form0.register('email')}
                   />
@@ -282,26 +303,130 @@ export default function RegistroPage() {
                 </p>
               </div>
             </form>
-          ) : (
-            <form onSubmit={form1.handleSubmit(onStep1)}>
+          )}
+
+          {/* Step 1 — Business Type */}
+          {step === 1 && (
+            <div>
+              <div className="px-6 pb-2">
+                <div className="grid grid-cols-2 gap-3">
+                  {BUSINESS_TYPES.map(({ value, label, description, icon: Icon }) => {
+                    const selected = businessType === value
+                    return (
+                      <button
+                        key={value}
+                        type="button"
+                        onClick={() => setBusinessType(value)}
+                        className={`
+                          relative flex flex-col items-start gap-2 p-4 rounded-xl border-2 text-left transition-all duration-150
+                          ${selected
+                            ? 'border-emerald-500 bg-emerald-500/8 dark:bg-emerald-500/10'
+                            : 'border-border/60 bg-muted/30 hover:border-border hover:bg-muted/60'
+                          }
+                        `}
+                      >
+                        {selected && (
+                          <span className="absolute top-2.5 right-2.5 w-5 h-5 rounded-full bg-emerald-500 flex items-center justify-center">
+                            <Check className="h-3 w-3 text-white" />
+                          </span>
+                        )}
+                        <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${selected ? 'bg-emerald-500/15' : 'bg-background'}`}>
+                          <Icon className={`h-5 w-5 ${selected ? 'text-emerald-500' : 'text-muted-foreground'}`} />
+                        </div>
+                        <div>
+                          <p className={`text-sm font-semibold leading-tight ${selected ? 'text-foreground' : 'text-foreground/80'}`}>
+                            {label}
+                          </p>
+                          <p className="text-xs text-muted-foreground mt-0.5 leading-snug">{description}</p>
+                        </div>
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
+              <div className="px-6 pt-4 pb-6 space-y-3">
+                {businessType === 'otro' ? (
+                  <a
+                    href={WA_PERSONALIZADO}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full h-11 rounded-xl bg-green-600 hover:bg-green-500 text-white font-semibold shadow-lg shadow-green-600/25 transition-all duration-200 flex items-center justify-center gap-2"
+                  >
+                    <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+                      <path d="M12 0C5.373 0 0 5.373 0 12c0 2.025.503 3.94 1.386 5.619L0 24l6.545-1.371A11.945 11.945 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.885 0-3.65-.49-5.19-1.352l-.37-.216-3.885.813.827-3.789-.24-.388A9.96 9.96 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/>
+                    </svg>
+                    Consultar por WhatsApp
+                  </a>
+                ) : (
+                  <Button
+                    type="button"
+                    onClick={onStep1}
+                    disabled={!businessType}
+                    className="w-full h-11 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold shadow-lg shadow-emerald-600/25 hover:shadow-emerald-500/30 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Continuar
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                )}
+                {businessType === 'otro' && (
+                  <p className="text-center text-xs text-muted-foreground px-2">
+                    El plan personalizado tiene un precio especial según tu rubro. Te contactamos por WhatsApp para cotizarlo.
+                  </p>
+                )}
+                {!existingUser && (
+                  <button
+                    type="button"
+                    onClick={() => setStep(0)}
+                    className="flex items-center justify-center gap-1.5 w-full text-sm text-muted-foreground hover:text-foreground transition-colors py-1"
+                  >
+                    <ArrowLeft className="h-3.5 w-3.5" />
+                    Volver
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Step 2 — Business Info */}
+          {step === 2 && (
+            <form onSubmit={form2.handleSubmit(onStep2)}>
               <div className="px-6 space-y-4">
+                {/* Selected type badge */}
+                {businessType && (() => {
+                  const bt = BUSINESS_TYPES.find(b => b.value === businessType)!
+                  const Icon = bt.icon
+                  return (
+                    <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
+                      <Icon className="h-4 w-4 text-emerald-500 shrink-0" />
+                      <span className="text-sm font-medium text-emerald-700 dark:text-emerald-400">{bt.label}</span>
+                      <button
+                        type="button"
+                        onClick={() => setStep(1)}
+                        className="ml-auto text-xs text-muted-foreground hover:text-foreground underline"
+                      >
+                        cambiar
+                      </button>
+                    </div>
+                  )
+                })()}
                 <div className="space-y-1.5">
                   <Label htmlFor="org_name" className="text-sm font-medium">Nombre del negocio</Label>
                   <Input
                     id="org_name"
-                    placeholder="Kiosco El Sol"
+                    placeholder="Fotocopiadora El Centro"
                     className="h-11 rounded-xl bg-muted/50 border-border/60 focus:bg-background transition-colors"
-                    {...form1.register('org_name')}
+                    {...form2.register('org_name')}
                     onChange={(e) => {
-                      form1.setValue('org_name', e.target.value)
-                      const currentSlug = form1.getValues('org_slug')
-                      if (!currentSlug || currentSlug === slugify(form1.getValues('org_name'))) {
-                        form1.setValue('org_slug', slugify(e.target.value))
+                      form2.setValue('org_name', e.target.value)
+                      const currentSlug = form2.getValues('org_slug')
+                      if (!currentSlug || currentSlug === slugify(form2.getValues('org_name'))) {
+                        form2.setValue('org_slug', slugify(e.target.value))
                       }
                     }}
                   />
-                  {form1.formState.errors.org_name && (
-                    <p className="text-xs text-destructive">{form1.formState.errors.org_name.message}</p>
+                  {form2.formState.errors.org_name && (
+                    <p className="text-xs text-destructive">{form2.formState.errors.org_name.message}</p>
                   )}
                 </div>
                 <div className="space-y-1.5">
@@ -312,14 +437,14 @@ export default function RegistroPage() {
                     </span>
                     <Input
                       id="org_slug"
-                      placeholder="kiosco-el-sol"
+                      placeholder="foto-el-centro"
                       className="h-11 rounded-l-none rounded-r-xl bg-muted/50 border-border/60 focus:bg-background transition-colors font-mono"
-                      {...form1.register('org_slug')}
-                      onChange={(e) => form1.setValue('org_slug', slugify(e.target.value))}
+                      {...form2.register('org_slug')}
+                      onChange={(e) => form2.setValue('org_slug', slugify(e.target.value))}
                     />
                   </div>
-                  {form1.formState.errors.org_slug && (
-                    <p className="text-xs text-destructive">{form1.formState.errors.org_slug.message}</p>
+                  {form2.formState.errors.org_slug && (
+                    <p className="text-xs text-destructive">{form2.formState.errors.org_slug.message}</p>
                   )}
                 </div>
                 <div className="space-y-1.5">
@@ -329,10 +454,10 @@ export default function RegistroPage() {
                     placeholder="Local principal"
                     autoComplete="off"
                     className="h-11 rounded-xl bg-muted/50 border-border/60 focus:bg-background transition-colors"
-                    {...form1.register('branch_name')}
+                    {...form2.register('branch_name')}
                   />
-                  {form1.formState.errors.branch_name && (
-                    <p className="text-xs text-destructive">{form1.formState.errors.branch_name.message}</p>
+                  {form2.formState.errors.branch_name && (
+                    <p className="text-xs text-destructive">{form2.formState.errors.branch_name.message}</p>
                   )}
                 </div>
               </div>
@@ -348,7 +473,7 @@ export default function RegistroPage() {
                 </Button>
                 <button
                   type="button"
-                  onClick={() => setStep(0)}
+                  onClick={() => setStep(1)}
                   className="flex items-center justify-center gap-1.5 w-full text-sm text-muted-foreground hover:text-foreground transition-colors py-1"
                 >
                   <ArrowLeft className="h-3.5 w-3.5" />
@@ -360,5 +485,13 @@ export default function RegistroPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function RegistroPage() {
+  return (
+    <Suspense>
+      <RegistroContent />
+    </Suspense>
   )
 }

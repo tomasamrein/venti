@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { z } from 'zod'
 
+const BUSINESS_TYPES = ['kiosco', 'almacen', 'drugstore', 'fotocopiadora', 'otro'] as const
+
 const registerSchema = z.object({
   full_name: z.string().min(2),
   email: z.string().email(),
@@ -9,6 +11,7 @@ const registerSchema = z.object({
   org_name: z.string().min(2),
   org_slug: z.string().min(2).regex(/^[a-z0-9-]+$/),
   branch_name: z.string().min(2),
+  business_type: z.enum(BUSINESS_TYPES).default('kiosco'),
 })
 
 export async function POST(request: Request) {
@@ -146,6 +149,7 @@ export async function POST(request: Request) {
       .insert({
         name: data.org_name,
         slug: data.org_slug,
+        business_type: data.business_type,
         trial_ends_at: trialEnds.toISOString(),
       })
       .select('id')

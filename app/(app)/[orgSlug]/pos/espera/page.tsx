@@ -32,11 +32,13 @@ interface Props {
 type PendingSaleRow = Database['public']['Tables']['pending_sales']['Row']
 
 interface CartItemLike {
-  id: string
+  id: string              // product_id for products, cart key for services
   name: string
   price_sell: number
   cart_quantity: number
   barcode?: string | null
+  tax_rate?: number
+  is_service?: boolean
 }
 
 export default function EsperaPage({ params }: Props) {
@@ -46,7 +48,8 @@ export default function EsperaPage({ params }: Props) {
   const [loading, setLoading] = useState(true)
   const [deleteId, setDeleteId] = useState<string | null>(null)
 
-  const restoreCart = useCartStore(s => s.addItem)
+  const addProductItem = useCartStore(s => s.addItem)
+  const addServiceItem = useCartStore(s => s.addServiceItem)
   const clearCart = useCartStore(s => s.clear)
 
   useEffect(() => {
@@ -87,7 +90,32 @@ export default function EsperaPage({ params }: Props) {
 
     clearCart()
     for (const item of items) {
-      restoreCart(item as any, item.cart_quantity)
+      if (item.is_service) {
+        addServiceItem({
+          name: item.name,
+          price_sell: item.price_sell,
+          quantity: item.cart_quantity,
+          tax_rate: item.tax_rate ?? 21,
+          organization_id: sale.organization_id,
+        })
+      } else {
+        addProductItem({
+          id: item.id,
+          name: item.name,
+          price_sell: item.price_sell,
+          tax_rate: item.tax_rate ?? 21,
+          barcode: item.barcode ?? null,
+          track_stock: false,
+          allow_negative: true,
+          organization_id: sale.organization_id,
+          // required Product Row fields — defaults, stock handled server-side by RPC
+          category_id: null, sku: null, unit: 'un', description: null,
+          price_cost: null, price_sell_b: null, stock_current: 0, stock_min: 0,
+          stock_max: null, image_url: null, brand: null, is_active: true,
+          is_featured: false, label_template: {},
+          created_at: new Date().toISOString(), updated_at: new Date().toISOString(),
+        } as Database['public']['Tables']['products']['Row'], item.cart_quantity)
+      }
     }
 
     // Delete from pending

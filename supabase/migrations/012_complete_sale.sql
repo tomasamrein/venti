@@ -65,6 +65,12 @@ BEGIN
     END IF;
   END IF;
 
+  -- Guard: change_amount must not be negative
+  IF p_change_amount IS NOT NULL AND p_change_amount < 0 THEN
+    RAISE EXCEPTION 'El vuelto no puede ser negativo'
+      USING ERRCODE = 'P0001';
+  END IF;
+
   -- Compute next sale number for this org (atomic via row lock on max+1)
   SELECT COALESCE(MAX(sale_number), 0) + 1 INTO v_sale_number
     FROM sales WHERE organization_id = p_org_id;

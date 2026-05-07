@@ -4,7 +4,7 @@ import { createContext, type ReactNode } from 'react'
 import type { Database } from '@/types/database'
 
 type Org = Pick<Database['public']['Tables']['organizations']['Row'],
-  'id' | 'name' | 'slug' | 'timezone' | 'currency' | 'settings' | 'is_active' | 'trial_ends_at'>
+  'id' | 'name' | 'slug' | 'timezone' | 'currency' | 'settings' | 'is_active' | 'trial_ends_at' | 'business_type'>
 
 type Branch = Pick<Database['public']['Tables']['branches']['Row'],
   'id' | 'name' | 'is_main'>

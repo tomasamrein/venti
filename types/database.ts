@@ -647,6 +647,7 @@ export type Database = {
       organizations: {
         Row: {
           address: string | null
+          business_type: 'kiosco' | 'almacen' | 'drugstore' | 'fotocopiadora' | 'otro'
           created_at: string
           cuit: string | null
           currency: string
@@ -664,6 +665,7 @@ export type Database = {
         }
         Insert: {
           address?: string | null
+          business_type?: 'kiosco' | 'almacen' | 'drugstore' | 'fotocopiadora' | 'otro'
           created_at?: string
           cuit?: string | null
           currency?: string
@@ -681,6 +683,7 @@ export type Database = {
         }
         Update: {
           address?: string | null
+          business_type?: 'kiosco' | 'almacen' | 'drugstore' | 'fotocopiadora' | 'otro'
           created_at?: string
           cuit?: string | null
           currency?: string
