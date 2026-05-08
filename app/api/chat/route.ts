@@ -78,55 +78,51 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Servicio de chat no configurado' }, { status: 503 })
   }
 
-  // Fetch org + plan context
+  // Fetch org + plan context (failures are non-fatal — fall back to generic prompt)
   let systemPrompt: string
-  if (orgId) {
-    const { data: orgData } = await supabase
-      .from('organizations')
-      .select('name, business_type, settings')
-      .eq('id', orgId)
-      .single()
+  try {
+    if (!orgId) throw new Error('no orgId')
 
-    const { data: subData } = await supabase
-      .from('subscriptions')
-      .select('subscription_plans(name, type)')
-      .eq('organization_id', orgId)
-      .in('status', ['active', 'trialing'])
-      .order('created_at', { ascending: false })
-      .limit(1)
-      .single()
-
-    // Get org owner name via profiles table directly
-    const { data: ownerMember } = await supabase
-      .from('organization_members')
-      .select('user_id')
-      .eq('organization_id', orgId)
-      .eq('role', 'owner')
-      .eq('is_active', true)
-      .limit(1)
-      .single()
+    const [{ data: orgData }, { data: subData }, { data: ownerMember }] = await Promise.all([
+      supabase.from('organizations').select('name, business_type').eq('id', orgId).single(),
+      supabase
+        .from('subscriptions')
+        .select('plan_id, subscription_plans!inner(name, type)')
+        .eq('organization_id', orgId)
+        .in('status', ['active', 'trialing'])
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .single(),
+      supabase
+        .from('organization_members')
+        .select('user_id')
+        .eq('organization_id', orgId)
+        .eq('role', 'owner')
+        .eq('is_active', true)
+        .limit(1)
+        .single(),
+    ])
 
     let ownerName: string | null = null
     if (ownerMember?.user_id) {
       const { data: ownerProfile } = await supabase
-        .from('profiles')
-        .select('full_name')
-        .eq('id', ownerMember.user_id)
-        .single()
+        .from('profiles').select('full_name').eq('id', ownerMember.user_id).single()
       ownerName = ownerProfile?.full_name ?? null
     }
 
-    const plan = subData?.subscription_plans as { name: string; type: string } | null
+    const plan = (subData as { subscription_plans: { name: string; type: string } } | null)
+      ?.subscription_plans ?? null
 
     systemPrompt = buildSystemPrompt({
       orgName: orgData?.name ?? 'tu negocio',
-      businessType: orgData?.business_type ?? null,
+      businessType: (orgData as { business_type?: string | null } | null)?.business_type ?? null,
       planName: plan?.name ?? 'gratuito',
       planType: plan?.type ?? 'free_trial',
       ownerName,
       userName: userName ?? null,
     })
-  } else {
+  } catch (e) {
+    console.error('[chat] context fetch failed, using generic prompt:', e)
     systemPrompt = buildSystemPrompt({
       orgName: 'tu negocio',
       businessType: null,

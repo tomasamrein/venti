@@ -48,7 +48,12 @@ export function SupportChat() {
         }),
       })
       const data = await res.json()
-      setMessages(prev => [...prev, { role: 'model', content: data.reply || 'Sin respuesta' }])
+      if (!res.ok || data.error) {
+        console.error('[chat] API error:', data.error, res.status)
+        setMessages(prev => [...prev, { role: 'model', content: 'Hubo un error al procesar tu consulta. Intentá de nuevo.' }])
+      } else {
+        setMessages(prev => [...prev, { role: 'model', content: data.reply || 'No pude generar una respuesta.' }])
+      }
     } catch {
       setMessages(prev => [...prev, { role: 'model', content: 'Error de conexión. Intentá de nuevo.' }])
     }
