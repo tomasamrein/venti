@@ -1,7 +1,8 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
-import { MessageCircle, X, Send, Loader2, Bot, User } from 'lucide-react'
+import { useState, useRef, useEffect, useContext } from 'react'
+import { X, Send, Loader2, Bot, User } from 'lucide-react'
+import { OrgContext } from '@/components/providers/org-provider'
 
 interface Message {
   role: 'user' | 'model'
@@ -9,7 +10,9 @@ interface Message {
 }
 
 export function SupportChat() {
+  const ctx = useContext(OrgContext)
   const [open, setOpen] = useState(false)
+  const [dismissed, setDismissed] = useState(false)
   const [messages, setMessages] = useState<Message[]>([
     { role: 'model', content: '¡Hola! Soy el asistente de Ventix 👋 ¿En qué te puedo ayudar?' }
   ])
@@ -38,7 +41,11 @@ export function SupportChat() {
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: newMessages.slice(-10) }),
+        body: JSON.stringify({
+          messages: newMessages.slice(-10),
+          orgId: ctx?.org.id,
+          userName: ctx?.userFullName,
+        }),
       })
       const data = await res.json()
       setMessages(prev => [...prev, { role: 'model', content: data.reply || 'Sin respuesta' }])
@@ -122,12 +129,42 @@ export function SupportChat() {
         </div>
       )}
 
+      {/* Tooltip "¿Necesitás ayuda?" */}
+      {!open && !dismissed && (
+        <div className="flex items-center gap-2 animate-in fade-in slide-in-from-right-4 duration-300">
+          <div className="relative bg-card text-foreground text-sm font-medium px-3 py-2 rounded-xl shadow-md border border-border whitespace-nowrap">
+            ¿Necesitás ayuda?
+            {/* triangle */}
+            <span className="absolute right-[-6px] top-1/2 -translate-y-1/2 w-0 h-0 border-t-[6px] border-t-transparent border-b-[6px] border-b-transparent border-l-[6px] border-l-border" />
+            <span className="absolute right-[-5px] top-1/2 -translate-y-1/2 w-0 h-0 border-t-[6px] border-t-transparent border-b-[6px] border-b-transparent border-l-[6px] border-l-card" />
+          </div>
+          <button
+            onClick={() => setDismissed(true)}
+            className="w-4 h-4 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center shadow hover:bg-red-600 transition-colors shrink-0"
+            aria-label="Cerrar"
+          >
+            1
+          </button>
+        </div>
+      )}
+
       {/* Floating button */}
       <button
-        onClick={() => setOpen(v => !v)}
-        className="w-14 h-14 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-600/30 flex items-center justify-center transition-all duration-200 hover:scale-105"
+        onClick={() => { setOpen(v => !v); setDismissed(true) }}
+        className="relative w-14 h-14 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-600/30 flex items-center justify-center transition-all duration-200 hover:scale-105"
       >
-        {open ? <X className="h-6 w-6" /> : <MessageCircle className="h-6 w-6" />}
+        {open ? (
+          <X className="h-6 w-6" />
+        ) : (
+          <>
+            <Bot className="h-7 w-7" />
+            {!dismissed && (
+              <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center shadow">
+                1
+              </span>
+            )}
+          </>
+        )}
       </button>
     </div>
   )
