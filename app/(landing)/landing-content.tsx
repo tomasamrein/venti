@@ -1,14 +1,15 @@
 import Link from 'next/link'
 import {
   ShoppingCart, BarChart3, Wifi, Receipt, Users, Package,
-  ChevronRight, Check, TrendingDown, AlertTriangle,
+  ChevronRight, ChevronDown, Check, TrendingDown, AlertTriangle,
   Clock, CreditCard, Smartphone, Zap, Star,
   ShieldCheck, HeadphonesIcon, Rocket, Globe,
+  MessageCircle, WifiOff, FileText, FileSpreadsheet, QrCode, Bot,
 } from 'lucide-react'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Ventix — Sistema POS para kioscos, almacenes y drugstores en Argentina',
+  title: 'Ventix - El sistema #1 para comercios',
   description: 'El sistema de punto de venta para kioscos, almacenes y drugstores argentinos. Facturación ARCA, stock, cuentas corrientes y reportes. 14 días gratis.',
   openGraph: {
     title: 'Ventix — Sistema POS para negocios argentinos',
@@ -18,16 +19,14 @@ export const metadata: Metadata = {
 }
 
 const TECH = [
-  { name: 'Mercado Pago', color: '#009ee3', abbr: 'MP' },
-  { name: 'ARCA / AFIP',  color: '#1a56a4', abbr: 'ARCA' },
-  { name: 'WhatsApp',     color: '#25d366', abbr: 'WA' },
-  { name: 'Supabase',     color: '#3ecf8e', abbr: 'SB' },
-  { name: 'PWA',          color: '#5a0fc8', abbr: 'PWA' },
-  { name: 'Offline',      color: '#f59e0b', abbr: 'OFF' },
-  { name: 'PDF',          color: '#ef4444', abbr: 'PDF' },
-  { name: 'Excel / CSV',  color: '#16a34a', abbr: 'XLS' },
-  { name: 'Código QR',    color: '#0f172a', abbr: 'QR' },
-  { name: 'Chat IA',      color: '#8b5cf6', abbr: 'AI' },
+  { name: 'Mercado Pago', color: '#009ee3', icon: CreditCard },
+  { name: 'ARCA / AFIP', color: '#1a56a4', icon: ShieldCheck },
+  { name: 'WhatsApp', color: '#25d366', icon: MessageCircle },
+  { name: 'Offline', color: '#f59e0b', icon: WifiOff },
+  { name: 'PDF', color: '#ef4444', icon: FileText },
+  { name: 'Excel / CSV', color: '#16a34a', icon: FileSpreadsheet },
+  { name: 'Código QR', color: '#0f172a', icon: QrCode },
+  { name: 'Chat IA', color: '#8b5cf6', icon: Bot },
 ]
 
 const WHY = [
@@ -44,7 +43,7 @@ const WHY = [
   {
     icon: Globe,
     title: 'Funciona en cualquier dispositivo',
-    desc: 'La misma experiencia en la PC del mostrador, en la tablet de la caja y en tu celular desde donde estés.',
+    desc: 'Podes utilizarlo desde la PC y desde tu celular, o tablet.',
   },
   {
     icon: Wifi,
@@ -53,13 +52,13 @@ const WHY = [
   },
   {
     icon: HeadphonesIcon,
-    title: 'Soporte real por WhatsApp',
-    desc: 'No hay chatbot de primer nivel ni formularios. Te respondemos por WhatsApp con alguien que conoce el sistema.',
+    title: 'Soporte 24/7',
+    desc: 'Cualquier duda que tengas podrás resolverla con nuestro chatbot IA. Además cuentas con soporte por WhatsApp en horario comercial.',
   },
   {
     icon: CreditCard,
     title: 'Sin permanencia',
-    desc: '14 días gratis para probar todo. Después elegís el plan que necesitás. Cancelás cuando querés, sin penalidades.',
+    desc: '14 días gratis para probar todo. Después elegís el plan que necesitás. Cancelás cuando querés, al instante.',
   },
 ]
 
@@ -139,7 +138,7 @@ const PLANS = [
       'Actualización masiva de precios',
       'Historial de precios',
     ],
-    cta: 'Empezar gratis 14 días',
+    cta: 'Suscribirme',
     href: '/registro',
     highlight: true,
     wa: false,
@@ -156,8 +155,8 @@ const PLANS = [
       'Notificaciones push de stock',
       'Soporte prioritario',
     ],
-    cta: 'Empezar gratis 14 días',
-    href: '/registro',
+    cta: 'Contactanos',
+    href: '/contacto',
     highlight: false,
     wa: false,
   },
@@ -234,20 +233,18 @@ export default function LandingPage() {
       {/* Tech carousel */}
       <div className="w-full overflow-hidden border-y border-slate-100 bg-white py-4">
         <div className="flex gap-6 animate-marquee whitespace-nowrap">
-          {[...TECH, ...TECH].map((t, i) => (
-            <div
-              key={i}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-slate-200 bg-slate-50 shrink-0"
-            >
-              <span
-                className="w-5 h-5 rounded-full flex items-center justify-center text-white text-[9px] font-black shrink-0"
-                style={{ background: t.color }}
+          {[...TECH, ...TECH].map((t, i) => {
+            const Icon = t.icon
+            return (
+              <div
+                key={i}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-slate-200 bg-slate-50 shrink-0"
               >
-                {t.abbr.slice(0, 2)}
-              </span>
-              <span className="text-xs font-medium text-slate-600">{t.name}</span>
-            </div>
-          ))}
+                <Icon className="w-4 h-4 shrink-0" style={{ color: t.color }} />
+                <span className="text-xs font-medium text-slate-600">{t.name}</span>
+              </div>
+            )
+          })}
         </div>
       </div>
 
@@ -392,7 +389,7 @@ export default function LandingPage() {
           <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-slate-900">
             Planes simples, sin sorpresas
           </h2>
-          <p className="mt-3 text-base text-slate-500">14 días de prueba gratis en todos los planes. Sin tarjeta de crédito.</p>
+          <p className="mt-3 text-base text-slate-500">Probá el plan Simple gratis 14 días. Sin tarjeta de crédito.</p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-4xl mx-auto">
@@ -401,9 +398,8 @@ export default function LandingPage() {
             return (
               <div
                 key={plan.name}
-                className={`relative rounded-xl border p-6 flex flex-col gap-5 bg-white ${
-                  plan.highlight ? 'border-emerald-400 shadow-md shadow-emerald-100' : 'border-slate-200'
-                }`}
+                className={`relative rounded-xl border p-6 flex flex-col gap-5 bg-white ${plan.highlight ? 'border-emerald-400 shadow-md shadow-emerald-100' : 'border-slate-200'
+                  }`}
               >
                 {plan.highlight && (
                   <div className="absolute -top-3 left-1/2 -translate-x-1/2">
@@ -442,11 +438,10 @@ export default function LandingPage() {
 
                 <a
                   href={plan.href}
-                  className={`inline-flex items-center justify-center gap-1.5 h-10 rounded-lg text-sm font-semibold transition-colors ${
-                    plan.highlight
-                      ? 'bg-emerald-600 text-white hover:bg-emerald-700'
-                      : 'border border-slate-200 text-slate-700 hover:bg-slate-50'
-                  }`}
+                  className={`inline-flex items-center justify-center gap-1.5 h-10 rounded-lg text-sm font-semibold transition-colors ${plan.highlight
+                    ? 'bg-emerald-600 text-white hover:bg-emerald-700'
+                    : 'border border-slate-200 text-slate-700 hover:bg-slate-50'
+                    }`}
                 >
                   {plan.cta} <ChevronRight className="h-3.5 w-3.5" />
                 </a>
@@ -473,10 +468,13 @@ export default function LandingPage() {
         </h2>
         <div className="space-y-3">
           {FAQS.map(faq => (
-            <div key={faq.q} className="rounded-xl border border-slate-200 bg-white p-5">
-              <p className="text-sm font-semibold text-slate-900 mb-2">{faq.q}</p>
-              <p className="text-sm text-slate-500 leading-relaxed">{faq.a}</p>
-            </div>
+            <details key={faq.q} className="group rounded-xl border border-slate-200 bg-white">
+              <summary className="flex items-center justify-between p-5 cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+                <span className="text-sm font-semibold text-slate-900 pr-4">{faq.q}</span>
+                <ChevronDown className="h-4 w-4 text-slate-400 shrink-0 transition-transform group-open:rotate-180" />
+              </summary>
+              <p className="px-5 pb-5 text-sm text-slate-500 leading-relaxed">{faq.a}</p>
+            </details>
           ))}
         </div>
       </section>

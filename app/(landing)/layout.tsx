@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import Image from 'next/image'
-import { MessageCircle } from 'lucide-react'
+import { Mail } from 'lucide-react'
 
 export const metadata: Metadata = {
   title: { default: 'Ventix — Software para negocios argentinos', template: '%s | Ventix' },
@@ -25,7 +25,9 @@ export default function LandingLayout({ children }: { children: React.ReactNode 
       <header className="fixed top-0 left-0 right-0 z-50 border-b border-slate-200 bg-white/95 backdrop-blur-sm">
         <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2 shrink-0">
-            <Image src="/isotipo.png" alt="Ventix" width={32} height={32} className="h-8 w-8" priority />
+            <div className="h-8 w-8 rounded-lg bg-white shadow-sm border border-slate-100 flex items-center justify-center overflow-hidden shrink-0">
+              <Image src="/isotipo.png" alt="Ventix" width={28} height={28} className="h-7 w-7 object-contain" priority />
+            </div>
             <span className="text-base font-bold text-slate-900 tracking-tight">Ventix</span>
           </Link>
 
@@ -75,20 +77,20 @@ export default function LandingLayout({ children }: { children: React.ReactNode 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-10">
             <div className="col-span-2 md:col-span-1">
               <div className="flex items-center gap-2 mb-3">
-                <Image src="/isotipo.png" alt="Ventix" width={28} height={28} className="h-7 w-7" />
+                <div className="h-7 w-7 rounded-lg bg-white shadow-sm border border-slate-100 flex items-center justify-center overflow-hidden shrink-0">
+                <Image src="/isotipo.png" alt="Ventix" width={24} height={24} className="h-6 w-6 object-contain" />
+              </div>
                 <span className="text-sm font-bold text-slate-700 tracking-tight">Ventix</span>
               </div>
               <p className="text-xs text-slate-500 leading-relaxed max-w-xs">
                 POS y CRM para kioscos, almacenes y comercios argentinos. Con facturación ARCA y modo offline.
               </p>
               <a
-                href="https://wa.me/5493437479134?text=Hola%2C%20quiero%20saber%20más%20sobre%20Ventix"
-                target="_blank"
-                rel="noopener noreferrer"
+                href="mailto:contacto@ventix.com.ar"
                 className="inline-flex items-center gap-1.5 mt-4 text-xs text-emerald-600 hover:text-emerald-700 transition-colors font-medium"
               >
-                <MessageCircle className="h-3.5 w-3.5" />
-                Consultar por WhatsApp
+                <Mail className="h-3.5 w-3.5" />
+                Consultar por correo
               </a>
             </div>
 
@@ -140,12 +142,16 @@ export default function LandingLayout({ children }: { children: React.ReactNode 
           </div>
 
           <div className="pt-6 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3">
-            <p className="text-xs text-slate-400">© 2026 Ventix. Hecho en Argentina.</p>
-            <div className="flex items-center gap-4">
+            <p className="text-xs text-slate-400">© 2026 Ventix. Hecho en Argentina. Por Tomás Amrein.</p>
+            <div className="flex items-center gap-3">
               <span className="text-xs text-slate-400">Pagos con</span>
-              <span className="text-xs font-semibold text-slate-500">Mercado Pago</span>
-              <span className="text-xs text-slate-400">·</span>
-              <span className="text-xs font-semibold text-slate-500">ARCA / AFIP</span>
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-bold text-white" style={{ background: '#009ee3' }}>
+                MP
+              </span>
+              <span className="text-xs text-slate-300">·</span>
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-bold text-white" style={{ background: '#1a56a4' }}>
+                ARCA
+              </span>
             </div>
           </div>
         </div>
