@@ -3,7 +3,7 @@ import {
   ShoppingCart, BarChart3, Wifi, Receipt, Users, Package,
   ChevronRight, Check, TrendingDown, AlertTriangle,
   Clock, CreditCard, Smartphone, Zap, Star,
-  ShoppingBag, Store, Moon,
+  ShieldCheck, HeadphonesIcon, Rocket, Globe,
 } from 'lucide-react'
 import type { Metadata } from 'next'
 
@@ -17,33 +17,51 @@ export const metadata: Metadata = {
   },
 }
 
-const RUBROS = [
-  {
-    icon: ShoppingBag,
-    name: 'Kiosco',
-    desc: 'Ventas rápidas con escáner de barras, control de stock y facturación ARCA.',
-    badge: 'Más popular',
-    badgeColor: 'bg-emerald-600 text-white',
-    href: '/registro?rubro=kiosco',
-  },
-  {
-    icon: Store,
-    name: 'Almacén / Autoservicio',
-    desc: 'Ideal para almacenes con fiambrería, gestión de proveedores y cuentas corrientes.',
-    badge: null,
-    badgeColor: '',
-    href: '/registro?rubro=almacen',
-  },
-  {
-    icon: Moon,
-    name: 'Drugstore',
-    desc: 'Pensado para comercios 24hs. Turnos de empleados, perfumería y venta nocturna.',
-    badge: null,
-    badgeColor: '',
-    href: '/registro?rubro=drugstore',
-  },
+const TECH = [
+  { name: 'Mercado Pago', color: '#009ee3', abbr: 'MP' },
+  { name: 'ARCA / AFIP',  color: '#1a56a4', abbr: 'ARCA' },
+  { name: 'WhatsApp',     color: '#25d366', abbr: 'WA' },
+  { name: 'Supabase',     color: '#3ecf8e', abbr: 'SB' },
+  { name: 'PWA',          color: '#5a0fc8', abbr: 'PWA' },
+  { name: 'Offline',      color: '#f59e0b', abbr: 'OFF' },
+  { name: 'PDF',          color: '#ef4444', abbr: 'PDF' },
+  { name: 'Excel / CSV',  color: '#16a34a', abbr: 'XLS' },
+  { name: 'Código QR',    color: '#0f172a', abbr: 'QR' },
+  { name: 'Chat IA',      color: '#8b5cf6', abbr: 'AI' },
 ]
 
+const WHY = [
+  {
+    icon: Rocket,
+    title: 'Listo en minutos',
+    desc: 'Creás la cuenta, cargás tus productos y ya estás vendiendo. Sin técnicos, sin instalaciones, sin días perdidos.',
+  },
+  {
+    icon: ShieldCheck,
+    title: 'Hecho para Argentina',
+    desc: 'Facturación ARCA, cobros con Mercado Pago y precios en pesos. No es un sistema genérico traducido — es local.',
+  },
+  {
+    icon: Globe,
+    title: 'Funciona en cualquier dispositivo',
+    desc: 'La misma experiencia en la PC del mostrador, en la tablet de la caja y en tu celular desde donde estés.',
+  },
+  {
+    icon: Wifi,
+    title: 'Sin internet no parás',
+    desc: 'El POS sigue funcionando offline. Las ventas se sincronizan solas cuando vuelve la conexión.',
+  },
+  {
+    icon: HeadphonesIcon,
+    title: 'Soporte real por WhatsApp',
+    desc: 'No hay chatbot de primer nivel ni formularios. Te respondemos por WhatsApp con alguien que conoce el sistema.',
+  },
+  {
+    icon: CreditCard,
+    title: 'Sin permanencia',
+    desc: '14 días gratis para probar todo. Después elegís el plan que necesitás. Cancelás cuando querés, sin penalidades.',
+  },
+]
 
 const PAINS = [
   { icon: TrendingDown, text: 'No sabés cuánto vendiste realmente hasta que contás la caja a fin del día' },
@@ -211,58 +229,51 @@ export default function LandingPage() {
         </div>
         <p className="mt-4 text-xs text-slate-400">14 días gratis · Sin permanencia · Cancelás cuando querés</p>
 
-        {/* Rubros chips */}
-        <div className="mt-8 flex items-center justify-center gap-2 flex-wrap">
-          {RUBROS.map(r => {
-            const Icon = r.icon
-            return (
-              <div key={r.name} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-slate-200 bg-white text-xs font-medium text-slate-600">
-                <Icon className="h-3.5 w-3.5 text-slate-400" />
-                {r.name}
-                {r.badge && (
-                  <span className={`ml-1 px-1.5 py-0.5 rounded-full text-[10px] font-bold ${r.badgeColor}`}>{r.badge}</span>
-                )}
-              </div>
-            )
-          })}
-        </div>
       </section>
 
-      {/* Rubros section */}
-      <section className="max-w-6xl mx-auto px-4 py-12">
-        <div className="text-center mb-8">
-          <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-slate-900">
-            Adaptado a tu tipo de negocio
+      {/* Tech carousel */}
+      <div className="w-full overflow-hidden border-y border-slate-100 bg-white py-4">
+        <div className="flex gap-6 animate-marquee whitespace-nowrap">
+          {[...TECH, ...TECH].map((t, i) => (
+            <div
+              key={i}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-slate-200 bg-slate-50 shrink-0"
+            >
+              <span
+                className="w-5 h-5 rounded-full flex items-center justify-center text-white text-[9px] font-black shrink-0"
+                style={{ background: t.color }}
+              >
+                {t.abbr.slice(0, 2)}
+              </span>
+              <span className="text-xs font-medium text-slate-600">{t.name}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Por qué elegirnos */}
+      <section className="max-w-6xl mx-auto px-4 py-20">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-slate-900">
+            ¿Por qué elegirnos?
           </h2>
-          <p className="mt-2 text-sm text-slate-500 max-w-lg mx-auto">
-            Cada rubro tiene su propio flujo. No es un sistema genérico — está pensado para lo que necesita cada comercio.
+          <p className="mt-3 text-base text-slate-500 max-w-xl mx-auto">
+            No somos otro SaaS genérico. Ventix fue construido específicamente para el comercio argentino.
           </p>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {RUBROS.map(r => {
-            const Icon = r.icon
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          {WHY.map(w => {
+            const Icon = w.icon
             return (
-              <Link
-                key={r.name}
-                href={r.href}
-                className="group rounded-xl border border-slate-200 bg-white p-5 flex flex-col gap-3 hover:border-emerald-300 hover:shadow-sm transition-all"
-              >
-                <div className="flex items-start justify-between">
-                  <div className="w-10 h-10 rounded-lg bg-emerald-50 flex items-center justify-center group-hover:bg-emerald-100 transition-colors">
-                    <Icon className="h-5 w-5 text-emerald-600" />
-                  </div>
-                  {r.badge && (
-                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${r.badgeColor}`}>{r.badge}</span>
-                  )}
+              <div key={w.title} className="rounded-xl border border-slate-200 bg-white p-6 flex flex-col gap-4 hover:border-emerald-200 hover:shadow-sm transition-all">
+                <div className="w-10 h-10 rounded-lg bg-emerald-50 flex items-center justify-center shrink-0">
+                  <Icon className="h-5 w-5 text-emerald-600" />
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-slate-900">{r.name}</p>
-                  <p className="text-xs text-slate-500 mt-1 leading-relaxed">{r.desc}</p>
+                  <p className="text-sm font-bold text-slate-900">{w.title}</p>
+                  <p className="text-sm text-slate-500 mt-1.5 leading-relaxed">{w.desc}</p>
                 </div>
-                <span className="mt-auto text-xs text-emerald-600 font-medium flex items-center gap-1 group-hover:gap-2 transition-all">
-                  Ver plan <ChevronRight className="h-3 w-3" />
-                </span>
-              </Link>
+              </div>
             )
           })}
         </div>
