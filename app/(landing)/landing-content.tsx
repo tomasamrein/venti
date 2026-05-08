@@ -4,7 +4,7 @@ import {
   ChevronRight, ChevronDown, Check, TrendingDown, AlertTriangle,
   Clock, CreditCard, Smartphone, Zap, Star,
   ShieldCheck, HeadphonesIcon, Rocket, Globe,
-  MessageCircle, WifiOff, FileText, FileSpreadsheet, QrCode, Bot,
+  FileText, FileSpreadsheet, Bot,
 } from 'lucide-react'
 import type { Metadata } from 'next'
 
@@ -18,15 +18,12 @@ export const metadata: Metadata = {
   },
 }
 
-const TECH = [
-  { name: 'Mercado Pago', color: '#009ee3', icon: CreditCard },
-  { name: 'ARCA / AFIP', color: '#1a56a4', icon: ShieldCheck },
-  { name: 'WhatsApp', color: '#25d366', icon: MessageCircle },
-  { name: 'Offline', color: '#f59e0b', icon: WifiOff },
-  { name: 'PDF', color: '#ef4444', icon: FileText },
-  { name: 'Excel / CSV', color: '#16a34a', icon: FileSpreadsheet },
-  { name: 'Código QR', color: '#0f172a', icon: QrCode },
-  { name: 'Chat IA', color: '#8b5cf6', icon: Bot },
+const INTEGRATIONS = [
+  { name: 'Mercado Pago', icon: CreditCard, color: '#009ee3' },
+  { name: 'Chatbot IA', icon: Bot, color: '#8b5cf6' },
+  { name: 'ARCA / AFIP', icon: ShieldCheck, color: '#1a56a4' },
+  { name: 'Excel & CSV', icon: FileSpreadsheet, color: '#16a34a' },
+  { name: 'Facturas PDF', icon: FileText, color: '#ef4444' },
 ]
 
 const WHY = [
@@ -230,18 +227,15 @@ export default function LandingPage() {
 
       </section>
 
-      {/* Tech carousel */}
-      <div className="w-full overflow-hidden border-y border-slate-100 bg-white py-4">
-        <div className="flex gap-6 animate-marquee whitespace-nowrap">
-          {[...TECH, ...TECH].map((t, i) => {
-            const Icon = t.icon
+      {/* Integrations strip */}
+      <div className="w-full border-y border-slate-100 bg-white py-5">
+        <div className="max-w-4xl mx-auto px-4 flex flex-wrap items-center justify-center gap-3">
+          {INTEGRATIONS.map(item => {
+            const Icon = item.icon
             return (
-              <div
-                key={i}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-slate-200 bg-slate-50 shrink-0"
-              >
-                <Icon className="w-4 h-4 shrink-0" style={{ color: t.color }} />
-                <span className="text-xs font-medium text-slate-600">{t.name}</span>
+              <div key={item.name} className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-slate-200 bg-slate-50">
+                <Icon className="w-4 h-4 shrink-0" style={{ color: item.color }} />
+                <span className="text-xs font-medium text-slate-600">{item.name}</span>
               </div>
             )
           })}

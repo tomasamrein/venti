@@ -38,7 +38,7 @@ const PLANS = [
       'Historial de cambios de precio',
       'Export CSV y Excel',
     ],
-    cta: 'Empezar gratis 14 días',
+    cta: 'Suscribirme',
     href: '/registro',
     highlight: true,
   },
@@ -55,8 +55,8 @@ const PLANS = [
       'Notificaciones push de stock',
       'Soporte prioritario',
     ],
-    cta: 'Empezar gratis 14 días',
-    href: '/registro',
+    cta: 'Contactanos',
+    href: '/contacto',
     highlight: false,
   },
 ]
@@ -85,7 +85,7 @@ export default function PreciosPage() {
           Planes y precios
         </h1>
         <p className="mt-4 text-base text-slate-600 max-w-xl mx-auto">
-          14 días de prueba gratis en todos los planes. Sin tarjeta de crédito.
+          Probá el plan Simple gratis 14 días. Sin tarjeta de crédito.
         </p>
       </div>
 

@@ -142,17 +142,7 @@ export default function LandingLayout({ children }: { children: React.ReactNode 
           </div>
 
           <div className="pt-6 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3">
-            <p className="text-xs text-slate-400">© 2026 Ventix. Hecho en Argentina. Por Tomás Amrein.</p>
-            <div className="flex items-center gap-3">
-              <span className="text-xs text-slate-400">Pagos con</span>
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-bold text-white" style={{ background: '#009ee3' }}>
-                MP
-              </span>
-              <span className="text-xs text-slate-300">·</span>
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-bold text-white" style={{ background: '#1a56a4' }}>
-                ARCA
-              </span>
-            </div>
+            <p className="text-xs text-slate-400">© 2026 Ventix. Por Tomás Amrein.</p>
           </div>
         </div>
       </footer>

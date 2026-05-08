@@ -120,7 +120,7 @@ const SECTIONS = [
     icon: Building2,
     iconColor: 'text-emerald-700',
     iconBg: 'bg-emerald-100',
-    title: 'Multi-sucursal (Plan Enterprise)',
+    title: 'Multi-sucursal (Plan Profesional)',
     desc: 'Manejás toda la cadena desde un solo lugar.',
     features: [
       'Sucursales ilimitadas',
