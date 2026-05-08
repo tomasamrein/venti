@@ -182,7 +182,7 @@ const FAQS = [
   },
   {
     q: '¿Los 14 días de prueba son gratis de verdad?',
-    a: 'Sí. Sin tarjeta de crédito. Accedés a todas las funcionalidades del plan Single. Al terminar el trial te avisamos para que elijas si seguís o no.',
+    a: 'Sí. Sin tarjeta de crédito. Accedés a todas las funcionalidades del plan Simple. Al terminar el trial te avisamos para que elijas si seguís o no.',
   },
 ]
 

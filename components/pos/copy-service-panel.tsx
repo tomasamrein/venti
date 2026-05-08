@@ -31,16 +31,13 @@ interface ServiceFormState {
 
 interface CopyServicePanelProps {
   orgId: string
-  // Prices can be persisted in org.settings.service_prices; passed from parent
   servicePrices?: Record<string, number>
 }
 
 export function CopyServicePanel({ orgId, servicePrices = {} }: CopyServicePanelProps) {
   const addServiceItem = useCartStore(s => s.addServiceItem)
 
-  // Which service card is expanded for editing
   const [expanded, setExpanded] = useState<string | null>(null)
-  // Per-service form values (quantity + price)
   const [forms, setForms] = useState<Record<string, ServiceFormState>>(() =>
     Object.fromEntries(
       SERVICE_DEFS.map(s => [
@@ -49,11 +46,22 @@ export function CopyServicePanel({ orgId, servicePrices = {} }: CopyServicePanel
       ])
     )
   )
-  // Flash "added" confirmation
   const [added, setAdded] = useState<string | null>(null)
 
   function updateForm(serviceId: string, field: keyof ServiceFormState, value: string) {
     setForms(prev => ({ ...prev, [serviceId]: { ...prev[serviceId], [field]: value } }))
+  }
+
+  async function persistPrice(serviceId: string, price: number) {
+    try {
+      await fetch('/api/org/settings', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orgId, settings: { service_prices: { ...servicePrices, [serviceId]: price } } }),
+      })
+    } catch {
+      // Non-critical: price is still applied in-session
+    }
   }
 
   function handleAdd(service: ServiceDef) {
@@ -66,8 +74,10 @@ export function CopyServicePanel({ orgId, servicePrices = {} }: CopyServicePanel
 
     addServiceItem({ name: service.name, price_sell: price, quantity, organization_id: orgId })
 
+    // Persist price if it changed from the stored value
+    const storedPrice = servicePrices[service.id] ?? service.defaultPrice
+    if (price !== storedPrice) persistPrice(service.id, price)
 
-    // Flash confirmation and reset quantity
     toast.success(`${service.name} (x${quantity}) agregado`)
     setAdded(service.id)
     setTimeout(() => setAdded(null), 1200)

@@ -43,7 +43,7 @@ export default function POSPage() {
   const { activeCashierName } = usePosStore()
 
   const businessType = org.business_type
-  const isFotocopiadora = businessType === 'fotocopiadora'
+  const isFotocopiadora = !!(org.settings as any)?.copy_service_enabled
   const isDrugstore = businessType === 'drugstore'
 
   const [products, setProducts] = useState<Product[]>([])

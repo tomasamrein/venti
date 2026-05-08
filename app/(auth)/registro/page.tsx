@@ -24,14 +24,11 @@ const BUSINESS_TYPES: {
   description: string
   icon: React.ElementType
 }[] = [
-  { value: 'kiosco',        label: 'Kiosco',                    description: 'Golosinas, bebidas y snacks',    icon: ShoppingBag },
-  { value: 'almacen',       label: 'Almacén / Autoservicio',    description: 'Productos variados y fiambrería', icon: Store },
-  { value: 'drugstore',     label: 'Drugstore',                 description: 'Perfumería y productos 24hs',    icon: Shield },
-  { value: 'fotocopiadora', label: 'Fotocopiadora / Librería',  description: 'Copias, útiles y encuadernado',  icon: Printer },
-  { value: 'otro',          label: 'Personalizado',             description: 'Necesito algo específico',       icon: HelpCircle },
+  { value: 'kiosco',   label: 'Kiosco',                 description: 'Golosinas, bebidas y snacks',     icon: ShoppingBag },
+  { value: 'almacen',  label: 'Almacén / Autoservicio', description: 'Productos variados y fiambrería', icon: Store },
+  { value: 'drugstore',label: 'Drugstore',               description: 'Perfumería y productos 24hs',     icon: Shield },
+  { value: 'otro',     label: 'Otro comercio',           description: 'Minimarket, librería u otro',     icon: HelpCircle },
 ]
-
-const WA_PERSONALIZADO = 'https://wa.me/5492604000000?text=Hola%2C+me+interesa+Ventix+para+mi+negocio+y+quiero+saber+si+tienen+soporte+para+mi+rubro.'
 
 const steps = ['Tu cuenta', 'Tu negocio', 'Tu local'] as const
 type Step = 0 | 1 | 2
@@ -345,35 +342,15 @@ function RegistroContent() {
                 </div>
               </div>
               <div className="px-6 pt-4 pb-6 space-y-3">
-                {businessType === 'otro' ? (
-                  <a
-                    href={WA_PERSONALIZADO}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-full h-11 rounded-xl bg-green-600 hover:bg-green-500 text-white font-semibold shadow-lg shadow-green-600/25 transition-all duration-200 flex items-center justify-center gap-2"
-                  >
-                    <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
-                      <path d="M12 0C5.373 0 0 5.373 0 12c0 2.025.503 3.94 1.386 5.619L0 24l6.545-1.371A11.945 11.945 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.885 0-3.65-.49-5.19-1.352l-.37-.216-3.885.813.827-3.789-.24-.388A9.96 9.96 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/>
-                    </svg>
-                    Consultar por WhatsApp
-                  </a>
-                ) : (
-                  <Button
-                    type="button"
-                    onClick={onStep1}
-                    disabled={!businessType}
-                    className="w-full h-11 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold shadow-lg shadow-emerald-600/25 hover:shadow-emerald-500/30 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    Continuar
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
-                )}
-                {businessType === 'otro' && (
-                  <p className="text-center text-xs text-muted-foreground px-2">
-                    El plan personalizado tiene un precio especial según tu rubro. Te contactamos por WhatsApp para cotizarlo.
-                  </p>
-                )}
+                <Button
+                  type="button"
+                  onClick={onStep1}
+                  disabled={!businessType}
+                  className="w-full h-11 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold shadow-lg shadow-emerald-600/25 hover:shadow-emerald-500/30 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Continuar
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
                 {!existingUser && (
                   <button
                     type="button"

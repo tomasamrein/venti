@@ -2,8 +2,8 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import {
   ShoppingCart, Receipt, Package, Users, BarChart3, Wifi,
-  CreditCard, Bell, Building2,
-  Smartphone, ChevronRight, Check,
+  CreditCard, Bell, Building2, Truck, ShieldCheck, Bot,
+  ChevronRight, Check,
 } from 'lucide-react'
 
 export const metadata: Metadata = {
@@ -155,6 +155,49 @@ const SECTIONS = [
       'Sincronización automática al recuperar internet',
       'Instalable como app en el celular (PWA)',
       'Carga instantánea en visitas repetidas',
+    ],
+  },
+  {
+    icon: Truck,
+    iconColor: 'text-indigo-600',
+    iconBg: 'bg-indigo-100',
+    title: 'Proveedores',
+    desc: 'Controlá de quién comprás y a qué precio.',
+    features: [
+      'Registro de proveedores con CUIL/CUIT',
+      'Vinculación de proveedores a productos',
+      'Precio de costo por proveedor',
+      'Proveedor principal por producto',
+      'Historial de compras por proveedor',
+    ],
+  },
+  {
+    icon: ShieldCheck,
+    iconColor: 'text-slate-600',
+    iconBg: 'bg-slate-100',
+    title: 'Equipo y roles',
+    desc: 'Cada empleado tiene acceso a lo que necesita, nada más.',
+    features: [
+      'Roles: Dueño, Administrador y Cajero',
+      'Invitación de empleados por email',
+      'Cajero: solo vende, no ve reportes ni precios',
+      'Admin: configura todo menos suscripción',
+      'Dueño: acceso total',
+      'Registro de vendedor en cada venta',
+      'Cambio de cajero activo sin cerrar sesión',
+    ],
+  },
+  {
+    icon: Bot,
+    iconColor: 'text-violet-600',
+    iconBg: 'bg-violet-100',
+    title: 'Chatbot IA de soporte',
+    desc: 'Resolvés cualquier duda sin esperar a nadie.',
+    features: [
+      'Asistente IA disponible 24/7 en la app',
+      'Responde preguntas sobre el sistema',
+      'Guía paso a paso para cada función',
+      'Conocimiento completo del sistema',
     ],
   },
 ]
