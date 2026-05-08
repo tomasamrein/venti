@@ -11,6 +11,14 @@ export default async function RootPage() {
     const { data: { user } } = await supabase.auth.getUser()
 
     if (user) {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('is_super_admin')
+        .eq('id', user.id)
+        .single()
+
+      if (profile?.is_super_admin) redirect('/admin')
+
       const { data: member } = await supabase
         .from('organization_members')
         .select('organizations(slug)')
