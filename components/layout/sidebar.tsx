@@ -39,7 +39,7 @@ export function Sidebar({ orgSlug, className }: SidebarProps) {
       items: [
         navItem('Dashboard', `${base}/dashboard`, <LayoutDashboard className="h-4 w-4" />),
         navItem('Punto de Venta', `${base}/pos`, <ShoppingCart className="h-4 w-4" />),
-        navItem('Ventas', `${base}/ventas`, <TrendingUp className="h-4 w-4" />),
+        navItem('Caja', `${base}/caja`, <DollarSign className="h-4 w-4" />),
       ],
     },
     {
@@ -53,7 +53,6 @@ export function Sidebar({ orgSlug, className }: SidebarProps) {
     {
       title: 'Finanzas',
       items: [
-        navItem('Caja', `${base}/caja`, <DollarSign className="h-4 w-4" />),
         navItem('Gastos', `${base}/gastos`, <Receipt className="h-4 w-4" />),
         navItem('Facturación', `${base}/facturacion`, <FileText className="h-4 w-4" />),
       ],
@@ -68,6 +67,7 @@ export function Sidebar({ orgSlug, className }: SidebarProps) {
     {
       title: 'Análisis',
       items: [
+        navItem('Ventas', `${base}/ventas`, <TrendingUp className="h-4 w-4" />),
         navItem('Reportes', `${base}/reportes`, <BarChart3 className="h-4 w-4" />),
       ],
     },

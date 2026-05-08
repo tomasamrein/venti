@@ -36,7 +36,7 @@ export function TopProductsTable({ products }: TopProductsTableProps) {
               <span className="text-sm font-semibold text-emerald-700">{formatARS(p.total)}</span>
             </div>
           </div>
-          <div className="h-1.5 rounded-full bg-slate-100 overflow-hidden">
+          <div className="h-1.5 rounded-full bg-muted overflow-hidden">
             <div
               className="h-full rounded-full bg-emerald-500"
               style={{ width: `${(p.quantity / maxQty) * 100}%` }}
