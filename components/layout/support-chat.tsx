@@ -134,43 +134,36 @@ export function SupportChat() {
         </div>
       )}
 
-      {/* Tooltip "¿Necesitás ayuda?" */}
-      {!open && !dismissed && (
-        <div className="flex items-center gap-2 animate-in fade-in slide-in-from-right-4 duration-300">
-          <div className="relative bg-card text-foreground text-sm font-medium px-3 py-2 rounded-xl shadow-md border border-border whitespace-nowrap">
+      {/* Fila: tooltip a la izquierda + botón a la derecha */}
+      <div className="flex items-center gap-3">
+        {/* Tooltip "¿Necesitás ayuda?" */}
+        {!open && !dismissed && (
+          <div className="relative bg-card text-foreground text-sm font-medium px-3 py-2 rounded-xl shadow-md border border-border whitespace-nowrap animate-in fade-in slide-in-from-left-4 duration-300">
             ¿Necesitás ayuda?
-            {/* triangle */}
             <span className="absolute right-[-6px] top-1/2 -translate-y-1/2 w-0 h-0 border-t-[6px] border-t-transparent border-b-[6px] border-b-transparent border-l-[6px] border-l-border" />
             <span className="absolute right-[-5px] top-1/2 -translate-y-1/2 w-0 h-0 border-t-[6px] border-t-transparent border-b-[6px] border-b-transparent border-l-[6px] border-l-card" />
           </div>
-          <button
-            onClick={() => setDismissed(true)}
-            className="w-4 h-4 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center shadow hover:bg-red-600 transition-colors shrink-0"
-            aria-label="Cerrar"
-          >
-            1
-          </button>
-        </div>
-      )}
-
-      {/* Floating button */}
-      <button
-        onClick={() => { setOpen(v => !v); setDismissed(true) }}
-        className="relative w-14 h-14 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-600/30 flex items-center justify-center transition-all duration-200 hover:scale-105"
-      >
-        {open ? (
-          <X className="h-6 w-6" />
-        ) : (
-          <>
-            <Bot className="h-7 w-7" />
-            {!dismissed && (
-              <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center shadow">
-                1
-              </span>
-            )}
-          </>
         )}
-      </button>
+
+        {/* Floating button */}
+        <button
+          onClick={() => { setOpen(v => !v); setDismissed(true) }}
+          className="relative w-14 h-14 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-600/30 flex items-center justify-center transition-all duration-200 hover:scale-105"
+        >
+          {open ? (
+            <X className="h-6 w-6" />
+          ) : (
+            <>
+              <Bot className="h-7 w-7" />
+              {!dismissed && (
+                <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center shadow">
+                  1
+                </span>
+              )}
+            </>
+          )}
+        </button>
+      </div>
     </div>
   )
 }
