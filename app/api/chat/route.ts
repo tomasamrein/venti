@@ -5,11 +5,9 @@ const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions'
 
 const PLAN_FEATURES: Record<string, string> = {
   free_trial: 'período de prueba gratuito de 14 días con acceso completo',
-  esencial: 'plan Esencial con POS, productos, caja, clientes y ventas',
-  avanzado: 'plan Avanzado con todo lo del Esencial más reportes avanzados, múltiples sucursales y facturación ARCA',
-  premium: 'plan Premium con todas las funcionalidades sin límites',
-  basic: 'plan Básico con POS, productos, caja, clientes y ventas',
-  pro: 'plan Pro con reportes avanzados, múltiples sucursales y facturación ARCA',
+  basic: 'plan Simple — POS, stock, clientes, cuentas corrientes y export de ventas para contador. Sin facturación ARCA.',
+  pro: 'plan Avanzado — todo lo del Simple más facturación ARCA, reportes, proveedores e historial de precios.',
+  professional: 'plan Profesional — todo lo del Avanzado más múltiples sucursales, gestión de equipo con roles y notificaciones push.',
 }
 
 function buildSystemPrompt(context: {

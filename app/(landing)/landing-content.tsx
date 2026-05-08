@@ -2,8 +2,8 @@ import Link from 'next/link'
 import {
   ShoppingCart, BarChart3, Wifi, Receipt, Users, Package,
   ChevronRight, Check, TrendingDown, AlertTriangle,
-  Clock, CreditCard, Smartphone, Zap, Star, MessageCircle,
-  ShoppingBag, Store, Moon, Printer,
+  Clock, CreditCard, Smartphone, Zap, Star,
+  ShoppingBag, Store, Moon,
 } from 'lucide-react'
 import type { Metadata } from 'next'
 
@@ -42,17 +42,8 @@ const RUBROS = [
     badgeColor: '',
     href: '/registro?rubro=drugstore',
   },
-  {
-    icon: Printer,
-    name: 'Fotocopiadora / Librería',
-    desc: 'Módulo de servicios de imprenta, listas escolares y encuadernado incluido.',
-    badge: 'Nuevo',
-    badgeColor: 'bg-blue-600 text-white',
-    href: '/registro?rubro=fotocopiadora',
-  },
 ]
 
-const WA_PERSONALIZADO = 'https://wa.me/5492604000000?text=Hola%2C+me+interesa+Ventix+para+mi+negocio+y+quiero+saber+si+tienen+soporte+para+mi+rubro.'
 
 const PAINS = [
   { icon: TrendingDown, text: 'No sabés cuánto vendiste realmente hasta que contás la caja a fin del día' },
@@ -102,18 +93,16 @@ const FEATURES = [
 
 const PLANS = [
   {
-    name: 'Esencial',
+    name: 'Simple',
     icon: Zap,
-    price: 49999,
-    recommended: 'Kioscos',
+    price: 30000,
     features: [
-      'POS optimizado para lector de barras',
+      'POS con escáner de barras',
       'Stock con alertas automáticas',
-      'Facturación ARCA (A, B y C)',
       'Clientes y cuentas corrientes',
-      'Reportes y dashboard',
+      'Export de ventas para tu contador',
       'Funciona offline',
-      'Soporte por WhatsApp',
+      'Chatbot IA + soporte WhatsApp',
     ],
     cta: 'Empezar gratis 14 días',
     href: '/registro',
@@ -123,34 +112,14 @@ const PLANS = [
   {
     name: 'Avanzado',
     icon: Package,
-    price: 79999,
-    recommended: 'Almacenes, autoservicios y fotocopiadoras',
+    price: 50000,
     features: [
-      'Todo lo del plan Esencial',
+      'Todo lo del plan Simple',
+      'Facturación ARCA (A, B y C)',
+      'Reportes y dashboard',
       'Gestión de proveedores',
-      'Venta por peso y unidades',
-      'Módulo de servicios (imprenta, etc.)',
       'Actualización masiva de precios',
       'Historial de precios',
-      'Export CSV y Excel',
-    ],
-    cta: 'Empezar gratis 14 días',
-    href: '/registro',
-    highlight: false,
-    wa: false,
-  },
-  {
-    name: 'Premium',
-    icon: Star,
-    price: 99999,
-    recommended: 'Drugstores y comercios 24hs',
-    features: [
-      'Todo lo del plan Avanzado',
-      'Selector de cajero por turno',
-      'Historial de ventas por empleado',
-      'Notificaciones push de stock',
-      'Soporte prioritario',
-      'Onboarding asistido',
     ],
     cta: 'Empezar gratis 14 días',
     href: '/registro',
@@ -158,21 +127,21 @@ const PLANS = [
     wa: false,
   },
   {
-    name: 'A medida',
-    icon: MessageCircle,
-    price: null,
-    recommended: 'Negocios con necesidades específicas',
+    name: 'Profesional',
+    icon: Star,
+    price: 100000,
     features: [
-      'Todas las funciones base',
-      'Módulos a medida de tu negocio',
-      'Precio según complejidad',
-      'Implementación asistida',
-      'Soporte dedicado',
+      'Todo lo del plan Avanzado',
+      'Múltiples sucursales',
+      'Gestión de equipo con roles',
+      'Historial de ventas por empleado',
+      'Notificaciones push de stock',
+      'Soporte prioritario',
     ],
-    cta: 'Consultar por WhatsApp',
-    href: WA_PERSONALIZADO,
+    cta: 'Empezar gratis 14 días',
+    href: '/registro',
     highlight: false,
-    wa: true,
+    wa: false,
   },
 ]
 
@@ -222,7 +191,7 @@ export default function LandingPage() {
         </h1>
 
         <p className="mt-6 text-lg text-slate-500 max-w-2xl mx-auto leading-relaxed">
-          Ventix está diseñado para kioscos, pero también funciona para almacenes, drugstores y fotocopiadoras.
+          Ventix está diseñado para kioscos, almacenes y drugstores.
           Facturación ARCA, stock automático y caja en segundos.
         </p>
 
@@ -410,12 +379,12 @@ export default function LandingPage() {
       <section className="max-w-6xl mx-auto px-4 py-16 bg-slate-50 rounded-2xl" id="precios">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-slate-900">
-            Precio por rubro, sin sorpresas
+            Planes simples, sin sorpresas
           </h2>
           <p className="mt-3 text-base text-slate-500">14 días de prueba gratis en todos los planes. Sin tarjeta de crédito.</p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-4xl mx-auto">
           {PLANS.map(plan => {
             const Icon = plan.icon
             return (
@@ -439,8 +408,7 @@ export default function LandingPage() {
                 </div>
                 <div>
                   <p className="text-base font-bold text-slate-900">{plan.name}</p>
-                  <p className="text-xs text-emerald-700 font-medium mt-0.5">Recomendado para: {plan.recommended}</p>
-                  <div className="flex items-baseline gap-1 mt-4">
+                  <div className="flex items-baseline gap-1 mt-3">
                     {plan.price !== null ? (
                       <>
                         <span className="text-3xl font-bold tracking-tight text-slate-900">{fmt(plan.price)}</span>
@@ -463,23 +431,13 @@ export default function LandingPage() {
 
                 <a
                   href={plan.href}
-                  target={plan.wa ? '_blank' : undefined}
-                  rel={plan.wa ? 'noopener noreferrer' : undefined}
                   className={`inline-flex items-center justify-center gap-1.5 h-10 rounded-lg text-sm font-semibold transition-colors ${
-                    plan.wa
-                      ? 'bg-green-600 text-white hover:bg-green-700'
-                      : plan.highlight
-                        ? 'bg-emerald-600 text-white hover:bg-emerald-700'
-                        : 'border border-slate-200 text-slate-700 hover:bg-slate-50'
+                    plan.highlight
+                      ? 'bg-emerald-600 text-white hover:bg-emerald-700'
+                      : 'border border-slate-200 text-slate-700 hover:bg-slate-50'
                   }`}
                 >
-                  {plan.wa && (
-                    <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347zM12 0C5.373 0 0 5.373 0 12c0 2.025.503 3.94 1.386 5.619L0 24l6.545-1.371A11.945 11.945 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.885 0-3.65-.49-5.19-1.352l-.37-.216-3.885.813.827-3.789-.24-.388A9.96 9.96 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/>
-                    </svg>
-                  )}
-                  {plan.cta}
-                  {!plan.wa && <ChevronRight className="h-3.5 w-3.5" />}
+                  {plan.cta} <ChevronRight className="h-3.5 w-3.5" />
                 </a>
               </div>
             )
