@@ -11,11 +11,14 @@ import { PaymentModal } from '@/components/pos/payment-modal'
 import { SaleTicket } from '@/components/pos/sale-ticket'
 import { CopyServicePanel } from '@/components/pos/copy-service-panel'
 import { EmployeeSwitcher } from '@/components/pos/employee-switcher'
+import { OfflineBanner } from '@/components/shared/offline-banner'
 import { useCartStore } from '@/stores/cart-store'
 import { usePosStore } from '@/stores/pos-store'
 import { useBarcodeScanner } from '@/hooks/use-barcode-scanner'
+import { useOffline } from '@/hooks/use-offline'
 import { useOrg } from '@/hooks/use-org'
 import { useCashSession } from '@/hooks/use-cash-session'
+import { db } from '@/lib/offline/db'
 import type { Database } from '@/types/database'
 
 type Product = Database['public']['Tables']['products']['Row']
@@ -41,6 +44,7 @@ export default function POSPage() {
   const { org, branch, userId } = useOrg()
   const { session, isOpen } = useCashSession()
   const { activeCashierName } = usePosStore()
+  const isOffline = useOffline(org.id)
 
   const businessType = org.business_type
   const isFotocopiadora = !!(org.settings as any)?.copy_service_enabled
@@ -61,6 +65,17 @@ export default function POSPage() {
   const addItem = useCartStore(s => s.addItem)
 
   useEffect(() => {
+    if (isOffline) {
+      db.products
+        .where('organization_id').equals(org.id)
+        .filter(p => p.is_active)
+        .sortBy('name')
+        .then(data => {
+          setProducts(data as unknown as Product[])
+          setLoading(false)
+        })
+      return
+    }
     const supabase = createClient()
     supabase
       .from('products')
@@ -72,7 +87,7 @@ export default function POSPage() {
         setProducts(data || [])
         setLoading(false)
       })
-  }, [org.id])
+  }, [org.id, isOffline])
 
   useBarcodeScanner((barcode) => {
     const product = products.find(p => p.barcode === barcode)
@@ -86,6 +101,7 @@ export default function POSPage() {
 
   const handleCheckout = () => {
     if (cartItems.length === 0) return toast.error('El carrito está vacío')
+    if (isOffline) return toast.warning('Sin conexión — reconectá para completar la venta')
     if (!isOpen) return toast.error('No hay caja abierta. Abrí la caja primero.')
     setPaymentOpen(true)
   }
@@ -213,6 +229,7 @@ export default function POSPage() {
 
   return (
     <div className="h-[calc(100vh-3.5rem)] flex flex-col md:flex-row gap-0 md:gap-4 md:p-4">
+      <OfflineBanner />
       {/* Products + services area */}
       <div className={`flex-1 flex flex-col overflow-hidden md:rounded-2xl md:border md:border-border/60 md:bg-card relative ${mobileTab === 'cart' ? 'hidden md:flex' : 'flex'}`}>
         {/* Drugstore: employee switcher in top bar */}
