@@ -3,7 +3,8 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
-import { ArrowLeft, Save, Package } from 'lucide-react'
+import { ArrowLeft, Save, Package, Camera } from 'lucide-react'
+import { CameraScanner } from '@/components/pos/camera-scanner'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -53,6 +54,7 @@ export function ProductForm({ orgSlug, orgId, product }: ProductFormProps) {
   const [isFeatured, setIsFeatured] = useState(product?.is_featured ?? false)
   const [isActive, setIsActive] = useState(product?.is_active ?? true)
 
+  const [cameraOpen, setCameraOpen] = useState(false)
   const isNew = !product
 
   const margin = priceCost && priceSell
@@ -230,14 +232,31 @@ export function ProductForm({ orgSlug, orgId, product }: ProductFormProps) {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="barcode" className="mb-2 block">Código de barras</Label>
-                  <Input
-                    id="barcode"
-                    value={barcode}
-                    onChange={e => setBarcode(e.target.value)}
-                    placeholder="EAN13, QR..."
-                    className="rounded-xl font-mono"
-                  />
+                  <div className="flex gap-2">
+                    <Input
+                      id="barcode"
+                      value={barcode}
+                      onChange={e => setBarcode(e.target.value)}
+                      placeholder="EAN13, QR..."
+                      className="rounded-xl font-mono flex-1"
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      className="rounded-xl shrink-0"
+                      onClick={() => setCameraOpen(true)}
+                      title="Escanear con cámara"
+                    >
+                      <Camera className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
+                <CameraScanner
+                  open={cameraOpen}
+                  onScan={code => { setBarcode(code); setCameraOpen(false) }}
+                  onClose={() => setCameraOpen(false)}
+                />
                 <div>
                   <Label htmlFor="sku" className="mb-2 block">SKU interno</Label>
                   <Input
