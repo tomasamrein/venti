@@ -1,8 +1,47 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
+import { Ratelimit } from '@upstash/ratelimit'
+import { Redis } from '@upstash/redis'
+
+const RATE_LIMITED_PATHS: Record<string, { requests: number; window: string }> = {
+  '/api/invitations': { requests: 10, window: '1 m' },
+  '/api/arca/invoice': { requests: 30, window: '1 m' },
+  '/api/arca/credit-note': { requests: 10, window: '1 m' },
+  '/api/checkout': { requests: 5, window: '1 m' },
+}
+
+let redis: Redis | null = null
+try {
+  if (process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN) {
+    redis = new Redis({
+      url: process.env.UPSTASH_REDIS_REST_URL,
+      token: process.env.UPSTASH_REDIS_REST_TOKEN,
+    })
+  }
+} catch {}
+
+async function checkRateLimit(request: NextRequest, pathname: string): Promise<boolean> {
+  if (!redis) return true
+  const config = RATE_LIMITED_PATHS[pathname]
+  if (!config || request.method !== 'POST') return true
+
+  const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? '127.0.0.1'
+  const limiter = new Ratelimit({
+    redis,
+    limiter: Ratelimit.slidingWindow(config.requests, config.window as `${number} ${'s' | 'm' | 'h' | 'd'}`),
+  })
+  const { success } = await limiter.limit(`${pathname}:${ip}`)
+  return success
+}
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
+
+  // Rate limiting check for sensitive API routes
+  const allowed = await checkRateLimit(request, pathname)
+  if (!allowed) {
+    return NextResponse.json({ error: 'Demasiados intentos. Esperá un momento.' }, { status: 429 })
+  }
 
   let supabaseResponse = NextResponse.next({ request })
 
