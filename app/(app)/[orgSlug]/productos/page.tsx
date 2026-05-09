@@ -231,11 +231,9 @@ export default function ProductosPage() {
                 <MoreHorizontal className="h-4 w-4" />
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem asChild>
-                  <Link href={`/${orgSlug}/productos/categorias`} className="flex items-center gap-2 cursor-pointer">
-                    <Tag className="h-4 w-4" />
-                    Categorías
-                  </Link>
+                <DropdownMenuItem onClick={() => router.push(`/${orgSlug}/productos/categorias`)} className="gap-2 cursor-pointer">
+                  <Tag className="h-4 w-4" />
+                  Categorías
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => setCsvOpen(true)} className="gap-2 cursor-pointer">
                   <Upload className="h-4 w-4" />
