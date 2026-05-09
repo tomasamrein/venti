@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import {
   Plus, Search, Package, TrendingUp, TrendingDown,
-  MoreHorizontal, Pencil, Trash2, AlertTriangle, Upload, Tag, Send,
+  MoreHorizontal, Pencil, Trash2, AlertTriangle, Upload, Tag, Send, Smartphone,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -37,6 +37,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
 import { BulkPriceUpdate } from '@/components/products/bulk-price-update'
+import { RemoteScannerModal } from '@/components/pos/remote-scanner-modal'
 import { ExcelPriceImport } from '@/components/products/excel-price-import'
 import { CsvProductImport } from '@/components/products/csv-product-import'
 import { createClient } from '@/lib/supabase/client'
@@ -79,6 +80,9 @@ export default function ProductosPage() {
   const [bulkOpen, setBulkOpen] = useState(false)
   const [excelOpen, setExcelOpen] = useState(false)
   const [csvOpen, setCsvOpen] = useState(false)
+  const [remoteScannerOpen, setRemoteScannerOpen] = useState(false)
+  const [remoteScanSessionId] = useState(() => crypto.randomUUID())
+  const [lastRemoteScan, setLastRemoteScan] = useState<string | null>(null)
 
   const loadData = useCallback(async () => {
     const supabase = createClient()
@@ -153,6 +157,20 @@ export default function ProductosPage() {
     setDeleteId(null)
   }
 
+  // Remote scanner: cuando llega un código, lo pone en el buscador
+  useEffect(() => {
+    const supabase = createClient()
+    const channel = supabase
+      .channel(`scanner:${remoteScanSessionId}`)
+      .on('broadcast', { event: 'scan' }, ({ payload }) => {
+        const code = payload.barcode as string
+        setLastRemoteScan(code)
+        setSearch(code)
+      })
+      .subscribe()
+    return () => { supabase.removeChannel(channel) }
+  }, [remoteScanSessionId])
+
   const filtered = products.filter(p => {
     const matchSearch = !search ||
       p.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -205,6 +223,10 @@ export default function ProductosPage() {
         <div className="flex items-center gap-2">
           {/* Secondary actions — hidden on mobile, visible md+ */}
           <div className="hidden md:flex items-center gap-2">
+            <Button variant="outline" size="sm" className="gap-2" onClick={() => setRemoteScannerOpen(true)}>
+              <Smartphone className="h-4 w-4" />
+              Escáner remoto
+            </Button>
             <Link href={`/${orgSlug}/productos/categorias`}>
               <Button variant="outline" size="sm" className="gap-2">
                 <Tag className="h-4 w-4" />
@@ -231,6 +253,11 @@ export default function ProductosPage() {
                 <MoreHorizontal className="h-4 w-4" />
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => setRemoteScannerOpen(true)} className="gap-2 cursor-pointer">
+                  <Smartphone className="h-4 w-4" />
+                  Escáner remoto
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={() => router.push(`/${orgSlug}/productos/categorias`)} className="gap-2 cursor-pointer">
                   <Tag className="h-4 w-4" />
                   Categorías
@@ -547,6 +574,14 @@ export default function ProductosPage() {
         onClose={() => setCsvOpen(false)}
         orgId={orgId}
         onDone={loadData}
+      />
+
+      <RemoteScannerModal
+        open={remoteScannerOpen}
+        onClose={() => setRemoteScannerOpen(false)}
+        sessionId={remoteScanSessionId}
+        orgSlug={orgSlug}
+        lastScan={lastRemoteScan}
       />
     </div>
   )

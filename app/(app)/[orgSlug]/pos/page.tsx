@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { toast } from 'sonner'
-import { Clock, ShoppingCart, Grid3X3, Printer, Camera, Smartphone } from 'lucide-react'
+import { Clock, ShoppingCart, Grid3X3, Printer, ScanBarcode, Smartphone } from 'lucide-react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { ProductGrid } from '@/components/pos/product-grid'
@@ -11,7 +11,7 @@ import { PaymentModal } from '@/components/pos/payment-modal'
 import { SaleTicket } from '@/components/pos/sale-ticket'
 import { CopyServicePanel } from '@/components/pos/copy-service-panel'
 import { EmployeeSwitcher } from '@/components/pos/employee-switcher'
-import { CameraScanner } from '@/components/pos/camera-scanner'
+import { UsbScannerInput } from '@/components/pos/usb-scanner-input'
 import { RemoteScannerModal } from '@/components/pos/remote-scanner-modal'
 import { OfflineBanner } from '@/components/shared/offline-banner'
 import { Button } from '@/components/ui/button'
@@ -59,7 +59,7 @@ export default function POSPage() {
   const [paymentOpen, setPaymentOpen] = useState(false)
   const [ticketData, setTicketData] = useState<SaleData | null>(null)
   const [mobileTab, setMobileTab] = useState<MobileTab>('products')
-  const [cameraOpen, setCameraOpen] = useState(false)
+  const [usbInputOpen, setUsbInputOpen] = useState(false)
   const [remoteScannerOpen, setRemoteScannerOpen] = useState(false)
   const [remoteScanSessionId] = useState(() => crypto.randomUUID())
   const [lastRemoteScan, setLastRemoteScan] = useState<string | null>(null)
@@ -309,10 +309,10 @@ export default function POSPage() {
               size="icon"
               variant="secondary"
               className="h-10 w-10 rounded-full shadow-md"
-              onClick={() => setCameraOpen(true)}
-              title="Escanear con cámara"
+              onClick={() => setUsbInputOpen(true)}
+              title="Ingresar código manualmente / Escáner USB"
             >
-              <Camera className="h-4 w-4" />
+              <ScanBarcode className="h-4 w-4" />
             </Button>
             <Button
               size="icon"
@@ -398,10 +398,10 @@ export default function POSPage() {
         />
       )}
 
-      <CameraScanner
-        open={cameraOpen}
+      <UsbScannerInput
+        open={usbInputOpen}
         onScan={handleBarcodeFound}
-        onClose={() => setCameraOpen(false)}
+        onClose={() => setUsbInputOpen(false)}
       />
 
       <RemoteScannerModal
