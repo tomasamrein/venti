@@ -1,9 +1,13 @@
 export interface ArcaSettings {
   cuit: string
   punto_venta: number
-  cert_pem: string
-  key_pem: string
   environment: 'homologation' | 'production'
+  // Stored in Supabase Vault — absent from DB settings, populated at runtime by server actions
+  cert_pem?: string
+  key_pem?: string
+  // Vault secret IDs stored in organizations.settings.arca
+  vault_cert_id?: string
+  vault_key_id?: string
   token_cache?: ArcaTokenCache
 }
 

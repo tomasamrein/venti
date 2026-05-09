@@ -12,6 +12,20 @@ export async function POST(req: NextRequest) {
 
     const invoiceReq = (await req.json()) as InvoiceRequest
 
+    // Server-side total validation — never trust the client's number for fiscal docs
+    const computedTotal = invoiceReq.items.reduce((sum, i) => sum + i.subtotal, 0)
+    const roundedComputed = Math.round(computedTotal * 100) / 100
+    const roundedSent = Math.round(invoiceReq.total * 100) / 100
+    if (Math.abs(roundedComputed - roundedSent) > 0.02) {
+      return NextResponse.json(
+        { error: `Total inválido: calculado ${roundedComputed}, recibido ${roundedSent}` },
+        { status: 422 }
+      )
+    }
+    // Override with server-computed values to be safe
+    invoiceReq.total = roundedComputed
+    invoiceReq.subtotal = Math.round(invoiceReq.items.reduce((s, i) => s + i.subtotal / (1 + (i.tax_rate ?? 21) / 100), 0) * 100) / 100
+
     // Verify membership (RLS would also block, but we want a clear 403)
     const { data: member } = await supabase
       .from('organization_members')
@@ -45,10 +59,24 @@ export async function POST(req: NextRequest) {
       .eq('id', invoiceReq.org_id)
       .single()
 
-    const arcaSettings = (org?.settings as Record<string, unknown>)?.arca as ArcaSettings | undefined
-    if (!arcaSettings?.cert_pem || !arcaSettings?.key_pem) {
+    const arcaDb = (org?.settings as Record<string, unknown>)?.arca as ArcaSettings | undefined
+    if (!arcaDb?.vault_cert_id) {
       return NextResponse.json({ error: 'Credenciales ARCA no configuradas' }, { status: 422 })
     }
+
+    // Fetch cert+key from vault (never stored in settings after migration)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: vaultCreds, error: vaultErr } = await (admin.rpc as any)('get_arca_cert_key', {
+      p_org_id: invoiceReq.org_id,
+    })
+    if (vaultErr || !vaultCreds) {
+      return NextResponse.json({ error: 'Error al leer credenciales ARCA' }, { status: 500 })
+    }
+    const { cert_pem, key_pem } = Array.isArray(vaultCreds) ? vaultCreds[0] : vaultCreds
+    if (!cert_pem || !key_pem) {
+      return NextResponse.json({ error: 'Credenciales ARCA incompletas en vault' }, { status: 422 })
+    }
+    const arcaSettings: ArcaSettings = { ...arcaDb, cert_pem, key_pem }
 
     // Pre-create draft invoice so we have a stable id even if persistence fails after CAE
     const { data: draft, error: draftErr } = await admin
@@ -96,11 +124,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: message, draft_id: draft.id }, { status: 502 })
     }
 
-    // Persist updated token cache (best-effort)
+    // Persist updated token cache — strip cert/key, they live in vault
+    const { cert_pem: _c, key_pem: _k, ...cacheableSettings } = updatedSettings
     await admin
       .from('organizations')
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      .update({ settings: { ...(org!.settings as object), arca: updatedSettings } as any })
+      .update({ settings: { ...(org!.settings as object), arca: cacheableSettings } as any })
       .eq('id', invoiceReq.org_id)
 
     const today = new Date().toISOString().slice(0, 10)

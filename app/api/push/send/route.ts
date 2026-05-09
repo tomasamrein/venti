@@ -10,7 +10,11 @@ export async function POST(req: NextRequest) {
   )
   // Internal endpoint — validate with dedicated internal secret
   const authHeader = req.headers.get('authorization')
-  const internalSecret = process.env.INTERNAL_PUSH_SECRET ?? process.env.SUPABASE_SERVICE_ROLE_KEY
+  const internalSecret = process.env.INTERNAL_PUSH_SECRET
+  if (!internalSecret) {
+    console.error('[push/send] INTERNAL_PUSH_SECRET no configurado')
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+  }
   if (!internalSecret || authHeader !== `Bearer ${internalSecret}`) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
   }

@@ -24,7 +24,7 @@ async function assertOwner(orgId: string) {
   return user
 }
 
-// ─── Read ARCA settings (never returns cert_pem / key_pem to the client) ────
+// ─── Read ARCA settings (never returns cert/key to the client) ───────────────
 
 export async function getArcaConfig(orgId: string): Promise<{
   cuit?: string
@@ -35,27 +35,39 @@ export async function getArcaConfig(orgId: string): Promise<{
 }> {
   await assertOwner(orgId)
 
-  const supabase = await createClient()
-  const { data: org } = await supabase
+  const admin = createAdminClient()
+  const { data: org } = await admin
     .from('organizations')
     .select('settings')
     .eq('id', orgId)
     .single()
 
   const arca = (org?.settings as Record<string, unknown>)?.arca as ArcaSettings | undefined
+  const hasCert = !!(arca?.vault_cert_id)
 
-  // Derive cert subject from PEM without sending the key to the client
+  // Derive cert subject from vault PEM without exposing it to the browser
   let certSubject: string | undefined
-  if (arca?.cert_pem) {
-    const match = arca.cert_pem.match(/Subject:\s*(.+)/i)
-    certSubject = match?.[1]?.trim()
+  if (hasCert) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: creds } = await (admin.rpc as any)('get_arca_cert_key', { p_org_id: orgId })
+    const certPem = Array.isArray(creds) ? creds[0]?.cert_pem : creds?.cert_pem
+    if (certPem) {
+      const match = certPem.match(/Subject:\s*(.+)/i)
+      if (!match) {
+        // Try CN= parsing for standard PEM headers
+        const cnMatch = certPem.match(/CN=([^,\n]+)/i)
+        certSubject = cnMatch?.[1]?.trim()
+      } else {
+        certSubject = match[1]?.trim()
+      }
+    }
   }
 
   return {
     cuit: arca?.cuit,
     punto_venta: arca?.punto_venta,
     environment: arca?.environment,
-    hasCert: !!arca?.cert_pem,
+    hasCert,
     certSubject,
   }
 }
@@ -90,19 +102,35 @@ export async function saveArcaConfig(
     const currentSettings = (org?.settings ?? {}) as Record<string, unknown>
     const existing = currentSettings.arca as ArcaSettings | undefined
 
-    const newArcaSettings: Partial<ArcaSettings> = {
+    // Build new arca settings without cert/key (those live in vault)
+    const newArcaSettings: ArcaSettings = {
       cuit: payload.cuit,
       punto_venta: payload.punto_venta,
       environment: payload.environment,
-      // Only overwrite cert/key if new values were provided
-      cert_pem: payload.cert_pem || existing?.cert_pem,
-      key_pem: payload.key_pem || existing?.key_pem,
+      vault_cert_id: existing?.vault_cert_id,
+      vault_key_id: existing?.vault_key_id,
     }
 
-    // Invalidate token cache if credentials changed
-    const certsChanged = payload.cert_pem && payload.cert_pem !== existing?.cert_pem
-    if (!certsChanged && existing?.token_cache) {
+    // Preserve token cache if creds didn't change
+    if (existing?.token_cache) {
       newArcaSettings.token_cache = existing.token_cache
+    }
+
+    // If new cert/key provided, move them to vault
+    if (payload.cert_pem && payload.key_pem) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data: vaultIds, error: vaultErr } = await (admin.rpc as any)('set_arca_vault_creds', {
+        p_org_id: orgId,
+        p_cert_pem: payload.cert_pem,
+        p_key_pem: payload.key_pem,
+      })
+      if (vaultErr) return { ok: false, error: vaultErr.message }
+
+      const ids = Array.isArray(vaultIds) ? vaultIds[0] : vaultIds
+      newArcaSettings.vault_cert_id = ids.vault_cert_id
+      newArcaSettings.vault_key_id  = ids.vault_key_id
+      // Invalidate token cache when creds change
+      delete newArcaSettings.token_cache
     }
 
     const { error } = await admin
@@ -133,18 +161,30 @@ export async function testArcaConnection(
       .eq('id', orgId)
       .single()
 
-    const arcaSettings = (org?.settings as Record<string, unknown>)?.arca as ArcaSettings | undefined
-    if (!arcaSettings?.cert_pem || !arcaSettings?.key_pem) {
+    const arcaDb = (org?.settings as Record<string, unknown>)?.arca as ArcaSettings | undefined
+    if (!arcaDb?.vault_cert_id) {
       return { ok: false, message: 'Credenciales ARCA no configuradas. Guardá el certificado primero.' }
     }
 
+    // Fetch creds from vault (server-side only)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: creds, error: credsErr } = await (admin.rpc as any)('get_arca_cert_key', { p_org_id: orgId })
+    if (credsErr) return { ok: false, message: credsErr.message }
+
+    const { cert_pem, key_pem } = Array.isArray(creds) ? creds[0] : creds
+    if (!cert_pem || !key_pem) {
+      return { ok: false, message: 'No se pudieron leer las credenciales del vault.' }
+    }
+
+    const arcaSettings: ArcaSettings = { ...arcaDb, cert_pem, key_pem }
     const { token, updatedSettings } = await getArcaToken(arcaSettings)
 
-    // Persist updated token cache
+    // Persist updated token cache — strip cert/key before saving to DB
+    const { cert_pem: _c, key_pem: _k, ...cacheableSettings } = updatedSettings
     await admin
       .from('organizations')
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      .update({ settings: { ...(org!.settings as object), arca: updatedSettings } as any })
+      .update({ settings: { ...(org!.settings as object), arca: cacheableSettings } as any })
       .eq('id', orgId)
 
     return {

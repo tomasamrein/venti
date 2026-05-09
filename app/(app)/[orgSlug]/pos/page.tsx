@@ -178,7 +178,7 @@ export default function POSPage() {
         p_tax_amount: 0,
         p_total: total,
         p_amount_paid: amountPaid,
-        p_change_amount: method === 'cash' ? amountPaid - total : null,
+        p_change_amount: method === 'cash' ? Math.max(0, amountPaid - total) : null,
         p_notes: saleNotes,
         p_items: itemsPayload,
       })
@@ -197,7 +197,7 @@ export default function POSPage() {
         discount_amount: discountAmount,
         total,
         amount_paid: amountPaid,
-        change_amount: method === 'cash' ? amountPaid - total : null,
+        change_amount: method === 'cash' ? Math.max(0, amountPaid - total) : null,
         completed_at: new Date().toISOString(),
         items: itemsPayload.map(i => ({
           name: i.name,

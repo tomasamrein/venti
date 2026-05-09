@@ -7,8 +7,11 @@ export async function POST(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
 
-  const { org_id, email, role } = await request.json() as { org_id: string; email: string; role: string }
-  if (!org_id || !email || !role) return NextResponse.json({ error: 'Faltan datos' }, { status: 400 })
+  const body = await request.json()
+  const { org_id, email } = body as { org_id: string; email: string; role: string }
+  const roleResult = ['owner', 'admin', 'cashier'].includes(body.role)
+  if (!org_id || !email || !roleResult) return NextResponse.json({ error: 'Faltan datos o rol inválido' }, { status: 400 })
+  const role = body.role as 'owner' | 'admin' | 'cashier'
 
   const { data: member } = await supabase.from('organization_members')
     .select('role').eq('organization_id', org_id).eq('user_id', user.id).eq('is_active', true).single()

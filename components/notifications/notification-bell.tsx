@@ -1,11 +1,12 @@
 'use client'
 
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { Bell } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
+import { useNotificationStore } from '@/stores/notification-store'
 
 interface NotificationBellProps {
   orgSlug: string
@@ -14,7 +15,7 @@ interface NotificationBellProps {
 
 export function NotificationBell({ orgSlug, organizationId }: NotificationBellProps) {
   const router = useRouter()
-  const [unreadCount, setUnreadCount] = useState(0)
+  const { unreadCount, setNotifications, addNotification } = useNotificationStore()
   const audioCtxRef = useRef<AudioContext | null>(null)
 
   function playAlert() {
@@ -37,13 +38,16 @@ export function NotificationBell({ orgSlug, organizationId }: NotificationBellPr
   useEffect(() => {
     const supabase = createClient()
 
-    // Load initial unread count
+    // Load initial notifications into store
     supabase
       .from('notifications')
-      .select('id', { count: 'exact', head: true })
+      .select('id, type, title, body, data, is_read, created_at')
       .eq('organization_id', organizationId)
-      .eq('is_read', false)
-      .then(({ count }) => setUnreadCount(count ?? 0))
+      .order('created_at', { ascending: false })
+      .limit(50)
+      .then(({ data }) => {
+        if (data) setNotifications(data.map(n => ({ ...n, data: (n.data as Record<string, unknown>) ?? undefined })))
+      })
 
     // Real-time: listen for new notifications
     const channel = supabase
@@ -52,8 +56,8 @@ export function NotificationBell({ orgSlug, organizationId }: NotificationBellPr
         'postgres_changes',
         { event: 'INSERT', schema: 'public', table: 'notifications', filter: `organization_id=eq.${organizationId}` },
         (payload) => {
-          const n = payload.new as { title: string; body: string | null; type: string }
-          setUnreadCount(c => c + 1)
+          const n = payload.new as { id: string; type: string; title: string; body: string | null; data?: Record<string, unknown>; is_read: boolean; created_at: string }
+          addNotification({ ...n, body: n.body ?? null, data: n.data ?? undefined })
           playAlert()
           toast(n.title, {
             description: n.body ?? undefined,
@@ -67,10 +71,13 @@ export function NotificationBell({ orgSlug, organizationId }: NotificationBellPr
         () => {
           supabase
             .from('notifications')
-            .select('id', { count: 'exact', head: true })
+            .select('id, type, title, body, data, is_read, created_at')
             .eq('organization_id', organizationId)
-            .eq('is_read', false)
-            .then(({ count }) => setUnreadCount(count ?? 0))
+            .order('created_at', { ascending: false })
+            .limit(50)
+            .then(({ data }) => {
+              if (data) setNotifications(data.map(n => ({ ...n, data: (n.data as Record<string, unknown>) ?? undefined })))
+            })
         }
       )
       .subscribe()

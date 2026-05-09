@@ -160,6 +160,7 @@ export async function getArcaToken(
 
   const tra = buildTRA()
   if (process.env.NODE_ENV !== 'production') console.log('[ARCA] TRA XML:', tra)
+  if (!settings.cert_pem || !settings.key_pem) throw new Error('Credenciales ARCA no disponibles')
   const cms = signTRA(tra, settings.cert_pem, settings.key_pem)
   const token = await callWSAA(cms, settings.environment)
 

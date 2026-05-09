@@ -2,14 +2,19 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { getPreApproval } from '@/lib/mercadopago/client'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { createClient } from '@/lib/supabase/server'
 
 const checkoutSchema = z.object({
   plan_type: z.enum(['basic', 'avanzado', 'pro']),
   email: z.string().email(),
-  org_id: z.string().uuid().optional(),
+  org_id: z.string().uuid().nullish().transform(v => v ?? undefined),
 })
 
 export async function POST(req: NextRequest) {
+  if (!process.env.MP_ACCESS_TOKEN) {
+    return NextResponse.json({ error: 'Integración con Mercado Pago no configurada. Contactanos por WhatsApp.' }, { status: 503 })
+  }
+
   try {
     const json = await req.json()
     const parsed = checkoutSchema.safeParse(json)
@@ -34,8 +39,24 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Plan no requiere suscripción paga' }, { status: 400 })
     }
 
-    // If org_id provided, validate it has no active subscription already
+    // If org_id provided, validate caller owns the org and check existing subscription
     if (org_id) {
+      const supabase = await createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) {
+        return NextResponse.json({ error: 'Sesión requerida para actualizar una organización' }, { status: 401 })
+      }
+      const { data: member } = await supabase
+        .from('organization_members')
+        .select('role')
+        .eq('organization_id', org_id)
+        .eq('user_id', user.id)
+        .eq('is_active', true)
+        .single()
+      if (!member || member.role !== 'owner') {
+        return NextResponse.json({ error: 'Solo el owner puede cambiar el plan' }, { status: 403 })
+      }
+
       const { data: existing } = await admin
         .from('subscriptions')
         .select('status, mp_subscription_id')
