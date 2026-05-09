@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { formatARS } from '@/lib/utils/currency'
-import { TrendingUp, ShoppingCart, Package, AlertTriangle, DollarSign } from 'lucide-react'
+import { TrendingUp, ShoppingCart, Package, AlertTriangle, DollarSign, Download } from 'lucide-react'
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from 'recharts'
@@ -158,13 +158,21 @@ export default function ReportesPage() {
           <h1 className="text-[28px] font-extrabold tracking-[-0.03em]">Reportes</h1>
           <p className="text-[14px] text-muted-foreground mt-1">{PERIOD_LABELS[period]}</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
           {(['7d', '30d', 'year'] as Period[]).map(p => (
             <button key={p} onClick={() => setPeriod(p)}
               className={`h-8 px-3 rounded-lg text-[13px] font-medium transition-colors ${period === p ? 'bg-emerald-600/20 text-emerald-600 border border-emerald-300/30' : 'text-muted-foreground hover:text-foreground hover:bg-muted/40'}`}>
               {PERIOD_LABELS[p]}
             </button>
           ))}
+          <a
+            href={`/api/exports/business?org=${orgSlug}`}
+            download
+            className="h-8 px-3 rounded-lg text-[13px] font-medium transition-colors border border-border/60 text-muted-foreground hover:text-foreground hover:bg-muted/40 inline-flex items-center gap-1.5"
+          >
+            <Download className="h-3.5 w-3.5" />
+            XLSX
+          </a>
         </div>
       </div>
 

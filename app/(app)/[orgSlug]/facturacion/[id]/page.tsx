@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, Printer, Share2, CheckCircle2, XCircle, FileDown } from 'lucide-react'
+import { ArrowLeft, Printer, Share2, CheckCircle2, XCircle, FileDown, AlertTriangle } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -46,6 +46,7 @@ export default function FacturaDetailPage({ params }: Props) {
   const [loading, setLoading] = useState(true)
   const [shareOpen, setShareOpen] = useState(false)
   const [downloading, setDownloading] = useState(false)
+  const [voiding, setVoiding] = useState(false)
 
   async function handleDownloadPDF() {
     if (!invoice) return
@@ -103,6 +104,27 @@ export default function FacturaDetailPage({ params }: Props) {
     })
   }, [params])
 
+  async function handleVoid() {
+    if (!invoice) return
+    if (!confirm('¿Seguro que querés anular esta factura? Se emitirá una Nota de Crédito en ARCA. Esta acción no se puede deshacer.')) return
+    setVoiding(true)
+    try {
+      const res = await fetch('/api/arca/credit-note', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ invoice_id: invoice.id }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error)
+      setInvoice(prev => prev ? { ...prev, status: 'voided' } : prev)
+      toast.success('Factura anulada — Nota de Crédito emitida')
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Error al anular')
+    } finally {
+      setVoiding(false)
+    }
+  }
+
   if (loading) {
     return <div className="py-16 text-center text-muted-foreground">Cargando...</div>
   }
@@ -153,6 +175,18 @@ export default function FacturaDetailPage({ params }: Props) {
             >
               <Share2 className="h-4 w-4" />
               WhatsApp
+            </Button>
+          )}
+          {invoice.status === 'issued' && ['A', 'B', 'C'].includes(invoice.invoice_type) && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-2 rounded-xl text-red-500 border-red-300/40 hover:bg-red-50 dark:hover:bg-red-950/30"
+              onClick={handleVoid}
+              disabled={voiding}
+            >
+              <AlertTriangle className="h-4 w-4" />
+              {voiding ? 'Anulando...' : 'Anular'}
             </Button>
           )}
         </div>

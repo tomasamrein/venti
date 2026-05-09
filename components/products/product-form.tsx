@@ -3,8 +3,8 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
-import { ArrowLeft, Save, Package, Camera } from 'lucide-react'
-import { CameraScanner } from '@/components/pos/camera-scanner'
+import { ArrowLeft, Save, Package, ScanBarcode } from 'lucide-react'
+import { UsbScannerInput } from '@/components/pos/usb-scanner-input'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -55,7 +55,7 @@ export function ProductForm({ orgSlug, orgId, product, initialBarcode }: Product
   const [isFeatured, setIsFeatured] = useState(product?.is_featured ?? false)
   const [isActive, setIsActive] = useState(product?.is_active ?? true)
 
-  const [cameraOpen, setCameraOpen] = useState(false)
+  const [scannerOpen, setScannerOpen] = useState(false)
   const isNew = !product
 
   const margin = priceCost && priceSell
@@ -246,17 +246,17 @@ export function ProductForm({ orgSlug, orgId, product, initialBarcode }: Product
                       variant="outline"
                       size="icon"
                       className="rounded-xl shrink-0"
-                      onClick={() => setCameraOpen(true)}
-                      title="Escanear con cámara"
+                      onClick={() => setScannerOpen(true)}
+                      title="Escanear código (USB o manual)"
                     >
-                      <Camera className="h-4 w-4" />
+                      <ScanBarcode className="h-4 w-4" />
                     </Button>
                   </div>
                 </div>
-                <CameraScanner
-                  open={cameraOpen}
-                  onScan={code => { setBarcode(code); setCameraOpen(false) }}
-                  onClose={() => setCameraOpen(false)}
+                <UsbScannerInput
+                  open={scannerOpen}
+                  onScan={code => { setBarcode(code); setScannerOpen(false) }}
+                  onClose={() => setScannerOpen(false)}
                 />
                 <div>
                   <Label htmlFor="sku" className="mb-2 block">SKU interno</Label>
