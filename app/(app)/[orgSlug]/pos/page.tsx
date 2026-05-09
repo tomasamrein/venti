@@ -288,7 +288,7 @@ export default function POSPage() {
           <Button
             size="icon"
             variant="secondary"
-            className="absolute bottom-16 md:bottom-3 right-3 h-10 w-10 rounded-full shadow-md z-10"
+            className="absolute bottom-16 md:bottom-3 left-3 h-10 w-10 rounded-full shadow-md z-10"
             onClick={() => setCameraOpen(true)}
             title="Escanear con cámara"
           >
