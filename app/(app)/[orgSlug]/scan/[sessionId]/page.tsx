@@ -17,6 +17,8 @@ export default function RemoteScanPage({ params }: Props) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const controlsRef = useRef<{ stop: () => void } | null>(null)
   const channelRef = useRef<ReturnType<ReturnType<typeof createClient>['channel']> | null>(null)
+  const lastScanRef = useRef<{ code: string; ts: number } | null>(null)
+  const COOLDOWN_MS = 2500
 
   useEffect(() => {
     const supabase = createClient()
@@ -37,12 +39,16 @@ export default function RemoteScanPage({ params }: Props) {
         async (result) => {
           if (!result || !channelRef.current) return
           const code = result.getText()
+          const now = Date.now()
+          const last = lastScanRef.current
+          if (last && last.code === code && now - last.ts < COOLDOWN_MS) return
+          lastScanRef.current = { code, ts: now }
           await channelRef.current.send({
             type: 'broadcast',
             event: 'scan',
             payload: { barcode: code },
           })
-          setScans(prev => [{ code, ts: Date.now() }, ...prev.slice(0, 9)])
+          setScans(prev => [{ code, ts: now }, ...prev.slice(0, 9)])
           toast.success(`Enviado: ${code}`, { duration: 1500 })
         }
       )
