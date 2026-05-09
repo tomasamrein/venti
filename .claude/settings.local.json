@@ -4,7 +4,32 @@
       "Bash(npx tsc *)",
       "mcp__claude_ai_Supabase__execute_sql",
       "mcp__claude_ai_Supabase__list_migrations",
-      "mcp__claude_ai_Supabase__apply_migration"
+      "mcp__claude_ai_Supabase__apply_migration",
+      "Bash(git commit *)",
+      "Bash(git push *)",
+      "Bash(python3 -c ' *)",
+      "Bash(identify public/icon.png public/logo-light.png public/logo-dark.png)",
+      "Bash(npx next *)",
+      "Bash(grep -v \"^$\")",
+      "Bash(git add *)",
+      "Bash(grep -E \"\\\\.\\(tsx|ts\\)$\")",
+      "Bash(echo \"\")",
+      "Bash(echo \"GEMINI_API_KEY=\")",
+      "Read(//d/Programacion/2026/ventix/**)",
+      "Read(//d/Programacion/2026/ventix//**)",
+      "Bash(python3 *)",
+      "Bash(find /d/Programacion/2026/ventix/ventix/app/\\\\\\(app\\\\\\)/[orgSlug] -name \"page.tsx\" -o -name \"page.tsx\")",
+      "Bash(xargs grep *)",
+      "mcp__claude_ai_Supabase__get_project",
+      "mcp__claude_ai_Supabase__search_docs",
+      "Bash(node -e \"const lucide = require\\('lucide-react'\\); console.log\\('HeadphonesIcon:', !!lucide.HeadphonesIcon, 'Headphones:', !!lucide.Headphones\\)\")",
+      "Bash(git rm *)",
+      "mcp__claude_ai_Vercel__list_teams",
+      "mcp__claude_ai_Vercel__list_projects",
+      "mcp__claude_ai_Vercel__list_deployments",
+      "mcp__claude_ai_Vercel__web_fetch_vercel_url",
+      "Bash(node -e \"require\\('web-push'\\); console.log\\('ok'\\)\")",
+      "mcp__claude_ai_Supabase__list_extensions"
     ]
   }
 }

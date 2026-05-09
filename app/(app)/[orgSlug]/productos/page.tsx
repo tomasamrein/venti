@@ -202,29 +202,63 @@ export default function ProductosPage() {
             {products.length} producto{products.length !== 1 ? 's' : ''} en el catálogo
           </p>
         </div>
-        <div className="flex gap-2">
-          <Link href={`/${orgSlug}/productos/categorias`}>
-            <Button variant="outline" size="sm" className="gap-2">
-              <Tag className="h-4 w-4" />
-              Categorías
+        <div className="flex items-center gap-2">
+          {/* Secondary actions — hidden on mobile, visible md+ */}
+          <div className="hidden md:flex items-center gap-2">
+            <Link href={`/${orgSlug}/productos/categorias`}>
+              <Button variant="outline" size="sm" className="gap-2">
+                <Tag className="h-4 w-4" />
+                Categorías
+              </Button>
+            </Link>
+            <Button variant="outline" size="sm" className="gap-2" onClick={() => setCsvOpen(true)}>
+              <Upload className="h-4 w-4" />
+              Importar CSV
             </Button>
-          </Link>
-          <Button variant="outline" size="sm" className="gap-2" onClick={() => setCsvOpen(true)}>
-            <Upload className="h-4 w-4" />
-            Importar CSV
-          </Button>
-          <Button variant="outline" size="sm" className="gap-2" onClick={() => setExcelOpen(true)}>
-            <Upload className="h-4 w-4" />
-            Importar Excel
-          </Button>
-          <Button variant="outline" size="sm" className="gap-2" onClick={() => setBulkOpen(true)}>
-            <TrendingUp className="h-4 w-4" />
-            Actualizar precios
-          </Button>
+            <Button variant="outline" size="sm" className="gap-2" onClick={() => setExcelOpen(true)}>
+              <Upload className="h-4 w-4" />
+              Importar Excel
+            </Button>
+            <Button variant="outline" size="sm" className="gap-2" onClick={() => setBulkOpen(true)}>
+              <TrendingUp className="h-4 w-4" />
+              Actualizar precios
+            </Button>
+          </div>
+          {/* Mobile: overflow dropdown */}
+          <div className="md:hidden">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm">
+                  <MoreHorizontal className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem asChild>
+                  <Link href={`/${orgSlug}/productos/categorias`} className="flex items-center gap-2 cursor-pointer">
+                    <Tag className="h-4 w-4" />
+                    Categorías
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setCsvOpen(true)} className="gap-2 cursor-pointer">
+                  <Upload className="h-4 w-4" />
+                  Importar CSV
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setExcelOpen(true)} className="gap-2 cursor-pointer">
+                  <Upload className="h-4 w-4" />
+                  Importar Excel
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setBulkOpen(true)} className="gap-2 cursor-pointer">
+                  <TrendingUp className="h-4 w-4" />
+                  Actualizar precios
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
           <Link href={`/${orgSlug}/productos/nuevo`}>
             <Button size="sm" className="gap-2 bg-emerald-600 hover:bg-emerald-600">
               <Plus className="h-4 w-4" />
-              Nuevo producto
+              <span className="hidden sm:inline">Nuevo producto</span>
+              <span className="sm:hidden">Nuevo</span>
             </Button>
           </Link>
         </div>
