@@ -1,11 +1,12 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import { QRCodeSVG } from 'qrcode.react'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import {
+  Sheet, SheetContent, SheetHeader, SheetTitle,
+} from '@/components/ui/sheet'
 import { Button } from '@/components/ui/button'
-import { createClient } from '@/lib/supabase/client'
-import { Smartphone, Check, Copy } from 'lucide-react'
+import { Smartphone, Copy, CheckCircle2, Wifi } from 'lucide-react'
 import { toast } from 'sonner'
 
 interface Props {
@@ -13,35 +14,15 @@ interface Props {
   onClose: () => void
   sessionId: string
   orgSlug: string
-  onBarcode: (barcode: string) => void
+  lastScan: string | null
 }
 
-export function RemoteScannerModal({ open, onClose, sessionId, orgSlug, onBarcode }: Props) {
-  const [lastScan, setLastScan] = useState<string | null>(null)
+export function RemoteScannerModal({ open, onClose, sessionId, orgSlug, lastScan }: Props) {
   const [origin, setOrigin] = useState('')
 
-  useEffect(() => {
-    setOrigin(window.location.origin)
-  }, [])
+  useEffect(() => { setOrigin(window.location.origin) }, [])
 
   const url = `${origin}/${orgSlug}/scan/${sessionId}`
-
-  const handleBarcode = useCallback((code: string) => {
-    setLastScan(code)
-    onBarcode(code)
-  }, [onBarcode])
-
-  useEffect(() => {
-    if (!open) return
-    const supabase = createClient()
-    const channel = supabase
-      .channel(`scanner:${sessionId}`)
-      .on('broadcast', { event: 'scan' }, ({ payload }) => {
-        handleBarcode(payload.barcode as string)
-      })
-      .subscribe()
-    return () => { supabase.removeChannel(channel) }
-  }, [open, sessionId, handleBarcode])
 
   function copy() {
     navigator.clipboard.writeText(url)
@@ -49,18 +30,18 @@ export function RemoteScannerModal({ open, onClose, sessionId, orgSlug, onBarcod
   }
 
   return (
-    <Dialog open={open} onOpenChange={o => !o && onClose()}>
-      <DialogContent className="max-w-sm">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Smartphone className="h-5 w-5" />
+    <Sheet open={open} onOpenChange={o => !o && onClose()}>
+      <SheetContent side="bottom" className="rounded-t-2xl px-6 py-6 max-h-[90vh] overflow-y-auto">
+        <SheetHeader>
+          <SheetTitle className="flex items-center gap-2 text-left">
+            <Smartphone className="h-5 w-5 text-emerald-600" />
             Escáner remoto
-          </DialogTitle>
-        </DialogHeader>
+          </SheetTitle>
+        </SheetHeader>
 
-        <div className="flex flex-col items-center gap-4 py-2">
+        <div className="flex flex-col items-center gap-4 pt-4">
           <p className="text-sm text-muted-foreground text-center">
-            Escaneá el QR con el celular para abrir el escáner. Los productos se agregan al carrito en tiempo real.
+            Abrí esta URL en el celular. Los códigos se agregan al carrito aunque cierres este panel.
           </p>
 
           {origin && (
@@ -69,25 +50,32 @@ export function RemoteScannerModal({ open, onClose, sessionId, orgSlug, onBarcod
             </div>
           )}
 
-          <div className="flex items-center gap-2 w-full">
+          <div className="flex items-center gap-2 w-full max-w-sm">
             <code className="flex-1 text-xs bg-muted px-3 py-2 rounded-lg truncate">{url}</code>
             <Button size="icon" variant="outline" onClick={copy} className="shrink-0">
               <Copy className="h-4 w-4" />
             </Button>
           </div>
 
-          {lastScan && (
-            <div className="flex items-center gap-2 text-sm text-emerald-600 dark:text-emerald-400">
-              <Check className="h-4 w-4" />
-              <span>Último scan: <span className="font-mono">{lastScan}</span></span>
-            </div>
-          )}
+          <div className={`flex items-center gap-2 text-sm px-4 py-2 rounded-full w-full max-w-sm justify-center
+            ${lastScan
+              ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
+              : 'bg-muted text-muted-foreground'}`}>
+            {lastScan
+              ? <><CheckCircle2 className="h-4 w-4" />Último scan: <span className="font-mono">{lastScan}</span></>
+              : <><Wifi className="h-4 w-4" />Esperando scans...</>
+            }
+          </div>
 
           <p className="text-xs text-muted-foreground text-center">
-            Dejá este dialog abierto mientras usás el celular como escáner.
+            Podés cerrar este panel — el escáner sigue activo mientras estés en el POS.
           </p>
+
+          <Button variant="outline" className="w-full max-w-sm" onClick={onClose}>
+            Cerrar
+          </Button>
         </div>
-      </DialogContent>
-    </Dialog>
+      </SheetContent>
+    </Sheet>
   )
 }

@@ -62,6 +62,7 @@ export default function POSPage() {
   const [cameraOpen, setCameraOpen] = useState(false)
   const [remoteScannerOpen, setRemoteScannerOpen] = useState(false)
   const [remoteScanSessionId] = useState(() => crypto.randomUUID())
+  const [lastRemoteScan, setLastRemoteScan] = useState<string | null>(null)
 
   const cartItems = useCartStore(s => s.items)
   const cartDiscount = useCartStore(s => s.discount_pct)
@@ -107,6 +108,20 @@ export default function POSPage() {
   }, [products, addItem])
 
   useBarcodeScanner(handleBarcodeFound)
+
+  // Remote scanner: Realtime channel stays alive for the full POS session
+  useEffect(() => {
+    const supabase = createClient()
+    const channel = supabase
+      .channel(`scanner:${remoteScanSessionId}`)
+      .on('broadcast', { event: 'scan' }, ({ payload }) => {
+        const code = payload.barcode as string
+        setLastRemoteScan(code)
+        handleBarcodeFound(code)
+      })
+      .subscribe()
+    return () => { supabase.removeChannel(channel) }
+  }, [remoteScanSessionId, handleBarcodeFound])
 
   const handleCheckout = () => {
     if (cartItems.length === 0) return toast.error('El carrito está vacío')
@@ -394,7 +409,7 @@ export default function POSPage() {
         onClose={() => setRemoteScannerOpen(false)}
         sessionId={remoteScanSessionId}
         orgSlug={org.slug}
-        onBarcode={handleBarcodeFound}
+        lastScan={lastRemoteScan}
       />
     </div>
   )
