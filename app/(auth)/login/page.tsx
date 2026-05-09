@@ -43,7 +43,6 @@ function LoginForm() {
     }
 
     if (checkout === 'basic') {
-      // Launch MP checkout immediately after login
       try {
         const res = await fetch('/api/checkout', {
           method: 'POST',
@@ -62,8 +61,35 @@ function LoginForm() {
       }
     }
 
-    router.push(redirectTo)
-    router.refresh()
+    // If explicit redirect param, honor it
+    if (redirectTo !== '/') {
+      router.push(redirectTo)
+      return
+    }
+
+    // Resolve destination: super-admin → /admin, org member → /{slug}/dashboard
+    const supabase2 = createClient()
+    const { data: { user } } = await supabase2.auth.getUser()
+    if (!user) { router.push('/'); return }
+
+    const { data: profile } = await supabase2
+      .from('profiles').select('is_super_admin').eq('id', user.id).single()
+
+    if (profile?.is_super_admin) {
+      router.push('/admin')
+      return
+    }
+
+    const { data: member } = await supabase2
+      .from('organization_members')
+      .select('organizations(slug)')
+      .eq('user_id', user.id)
+      .eq('is_active', true)
+      .limit(1)
+      .single()
+
+    const slug = (member?.organizations as { slug: string } | null)?.slug
+    router.push(slug ? `/${slug}/dashboard` : '/registro')
   }
 
   return (
