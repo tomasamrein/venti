@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { toast } from 'sonner'
-import { Clock, ShoppingCart, Grid3X3, Printer, Camera } from 'lucide-react'
+import { Clock, ShoppingCart, Grid3X3, Printer, Camera, Smartphone } from 'lucide-react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { ProductGrid } from '@/components/pos/product-grid'
@@ -12,6 +12,7 @@ import { SaleTicket } from '@/components/pos/sale-ticket'
 import { CopyServicePanel } from '@/components/pos/copy-service-panel'
 import { EmployeeSwitcher } from '@/components/pos/employee-switcher'
 import { CameraScanner } from '@/components/pos/camera-scanner'
+import { RemoteScannerModal } from '@/components/pos/remote-scanner-modal'
 import { OfflineBanner } from '@/components/shared/offline-banner'
 import { Button } from '@/components/ui/button'
 import { useCartStore } from '@/stores/cart-store'
@@ -59,6 +60,8 @@ export default function POSPage() {
   const [ticketData, setTicketData] = useState<SaleData | null>(null)
   const [mobileTab, setMobileTab] = useState<MobileTab>('products')
   const [cameraOpen, setCameraOpen] = useState(false)
+  const [remoteScannerOpen, setRemoteScannerOpen] = useState(false)
+  const [remoteScanSessionId] = useState(() => crypto.randomUUID())
 
   const cartItems = useCartStore(s => s.items)
   const cartDiscount = useCartStore(s => s.discount_pct)
@@ -285,15 +288,27 @@ export default function POSPage() {
         {/* Product grid — hidden on mobile when "services" tab is active */}
         <div className={`flex-1 overflow-hidden relative ${isFotocopiadora && mobileTab === 'services' ? 'hidden md:block' : 'block'}`}>
           <ProductGrid products={products} loading={loading} />
-          <Button
-            size="icon"
-            variant="secondary"
-            className="absolute bottom-16 md:bottom-3 left-3 h-10 w-10 rounded-full shadow-md z-10"
-            onClick={() => setCameraOpen(true)}
-            title="Escanear con cámara"
-          >
-            <Camera className="h-4 w-4" />
-          </Button>
+          {/* Camera scanner button — mobile: above tab bar; desktop: bottom-left */}
+          <div className="absolute bottom-16 md:bottom-3 left-3 flex flex-col gap-2 z-10">
+            <Button
+              size="icon"
+              variant="secondary"
+              className="h-10 w-10 rounded-full shadow-md"
+              onClick={() => setCameraOpen(true)}
+              title="Escanear con cámara"
+            >
+              <Camera className="h-4 w-4" />
+            </Button>
+            <Button
+              size="icon"
+              variant="secondary"
+              className="h-10 w-10 rounded-full shadow-md"
+              onClick={() => setRemoteScannerOpen(true)}
+              title="Escáner remoto (celular)"
+            >
+              <Smartphone className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
 
         {/* Copy services panel — fotocopiadora only */}
@@ -372,6 +387,14 @@ export default function POSPage() {
         open={cameraOpen}
         onScan={handleBarcodeFound}
         onClose={() => setCameraOpen(false)}
+      />
+
+      <RemoteScannerModal
+        open={remoteScannerOpen}
+        onClose={() => setRemoteScannerOpen(false)}
+        sessionId={remoteScanSessionId}
+        orgSlug={org.slug}
+        onBarcode={handleBarcodeFound}
       />
     </div>
   )
