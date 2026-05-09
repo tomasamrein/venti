@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { formatARS } from '@/lib/utils/currency'
-import { TrendingUp, ShoppingCart, Package, AlertTriangle, DollarSign, Download } from 'lucide-react'
+import { TrendingUp, ShoppingCart, Package, AlertTriangle, DollarSign, Download, Receipt } from 'lucide-react'
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from 'recharts'
@@ -20,6 +20,11 @@ interface TopProduct {
   name: string
   quantity: number
   revenue: number
+}
+
+interface ExpenseByCategory {
+  category: string
+  total: number
 }
 
 interface StockAlert {
@@ -41,6 +46,8 @@ export default function ReportesPage() {
   const [dayStats, setDayStats] = useState<DayStat[]>([])
   const [topProducts, setTopProducts] = useState<TopProduct[]>([])
   const [stockAlerts, setStockAlerts] = useState<StockAlert[]>([])
+  const [expensesByCategory, setExpensesByCategory] = useState<ExpenseByCategory[]>([])
+  const [totalExpenses, setTotalExpenses] = useState(0)
   const [fetching, setFetching] = useState(true)
   const [orgId, setOrgId] = useState('')
 
@@ -84,6 +91,12 @@ export default function ReportesPage() {
     const { data: saleItems } = await supabase
       .from('sale_items')
       .select('name, quantity, subtotal')
+      .eq('organization_id', oId)
+      .gte('created_at', fromDate.toISOString())
+
+    const { data: expenses } = await supabase
+      .from('expenses')
+      .select('category, amount')
       .eq('organization_id', oId)
       .gte('created_at', fromDate.toISOString())
 
@@ -139,8 +152,19 @@ export default function ReportesPage() {
     }
     const top = Object.values(productMap).sort((a, b) => b.revenue - a.revenue).slice(0, 5)
 
+    const expenseMap: Record<string, number> = {}
+    for (const e of expenses ?? []) {
+      expenseMap[e.category] = (expenseMap[e.category] ?? 0) + e.amount
+    }
+    const expCats = Object.entries(expenseMap)
+      .map(([category, total]) => ({ category, total }))
+      .sort((a, b) => b.total - a.total)
+    const expTotal = expCats.reduce((s, e) => s + e.total, 0)
+
     setDayStats(chartStats)
     setTopProducts(top)
+    setExpensesByCategory(expCats)
+    setTotalExpenses(expTotal)
     setStockAlerts((alerts ?? []) as StockAlert[])
     setFetching(false)
   }
@@ -176,11 +200,12 @@ export default function ReportesPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         {[
           { title: 'Facturado', value: formatARS(totalRevenue), icon: DollarSign, color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
           { title: 'Ventas', value: totalSales.toString(), icon: ShoppingCart, color: 'text-emerald-600', bg: 'bg-emerald-600/10' },
           { title: 'Ticket promedio', value: formatARS(avgTicket), icon: TrendingUp, color: 'text-blue-400', bg: 'bg-blue-500/10' },
+          { title: 'Gastos', value: formatARS(totalExpenses), icon: Receipt, color: 'text-red-400', bg: 'bg-red-500/10' },
         ].map(stat => {
           const Icon = stat.icon
           return (
@@ -289,6 +314,42 @@ export default function ReportesPage() {
           </div>
         </div>
       </div>
+      {(fetching || expensesByCategory.length > 0) && (
+        <div className="rounded-xl border border-border bg-card overflow-hidden">
+          <div className="px-5 py-4 border-b border-border flex items-center gap-2">
+            <Receipt className="h-4 w-4 text-muted-foreground" />
+            <h2 className="text-[14px] font-semibold">Gastos por categoría</h2>
+            {!fetching && totalExpenses > 0 && (
+              <span className="ml-auto text-[13px] font-bold text-red-400">{formatARS(totalExpenses)}</span>
+            )}
+          </div>
+          <div className="divide-y divide-border">
+            {fetching
+              ? Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="px-5 py-3 flex justify-between">
+                  <div className="h-4 w-32 rounded bg-muted/40 animate-pulse" />
+                  <div className="h-4 w-20 rounded bg-muted/40 animate-pulse" />
+                </div>
+              ))
+              : expensesByCategory.map(e => {
+                const pct = totalExpenses > 0 ? (e.total / totalExpenses) * 100 : 0
+                const label = e.category === 'general' ? 'General' :
+                  e.category.charAt(0).toUpperCase() + e.category.slice(1)
+                return (
+                  <div key={e.category} className="px-5 py-3">
+                    <div className="flex items-center justify-between mb-1.5">
+                      <p className="text-[13px] font-medium">{label}</p>
+                      <p className="text-[13px] font-bold">{formatARS(e.total)}</p>
+                    </div>
+                    <div className="h-1.5 rounded-full bg-muted/40 overflow-hidden">
+                      <div className="h-full rounded-full bg-red-400/70 transition-all" style={{ width: `${pct}%` }} />
+                    </div>
+                  </div>
+                )
+              })}
+          </div>
+        </div>
+      )}
     </div>
   )
 }
