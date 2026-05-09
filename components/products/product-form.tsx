@@ -28,9 +28,10 @@ interface ProductFormProps {
   orgSlug: string
   orgId: string
   product?: Product
+  initialBarcode?: string
 }
 
-export function ProductForm({ orgSlug, orgId, product }: ProductFormProps) {
+export function ProductForm({ orgSlug, orgId, product, initialBarcode }: ProductFormProps) {
   const router = useRouter()
   const [submitting, setSubmitting] = useState(false)
   const [categories, setCategories] = useState<{ id: string; name: string }[]>([])
@@ -38,7 +39,7 @@ export function ProductForm({ orgSlug, orgId, product }: ProductFormProps) {
   // Form fields
   const [name, setName] = useState(product?.name ?? '')
   const [description, setDescription] = useState(product?.description ?? '')
-  const [barcode, setBarcode] = useState(product?.barcode ?? '')
+  const [barcode, setBarcode] = useState(product?.barcode ?? initialBarcode ?? '')
   const [sku, setSku] = useState(product?.sku ?? '')
   const [brand, setBrand] = useState(product?.brand ?? '')
   const [unit, setUnit] = useState(product?.unit ?? 'un')

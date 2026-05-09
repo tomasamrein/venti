@@ -4,10 +4,12 @@ import { ProductForm } from '@/components/products/product-form'
 
 interface Props {
   params: Promise<{ orgSlug: string }>
+  searchParams: Promise<{ barcode?: string }>
 }
 
-export default async function NuevoProductoPage({ params }: Props) {
+export default async function NuevoProductoPage({ params, searchParams }: Props) {
   const { orgSlug } = await params
+  const { barcode } = await searchParams
   const supabase = await createClient()
 
   const { data: org } = await supabase
@@ -18,5 +20,5 @@ export default async function NuevoProductoPage({ params }: Props) {
 
   if (!org) notFound()
 
-  return <ProductForm orgSlug={orgSlug} orgId={org.id} />
+  return <ProductForm orgSlug={orgSlug} orgId={org.id} initialBarcode={barcode} />
 }

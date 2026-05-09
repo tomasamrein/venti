@@ -157,7 +157,7 @@ export default function ProductosPage() {
     setDeleteId(null)
   }
 
-  // Remote scanner: cuando llega un código, lo pone en el buscador
+  // Remote scanner: busca el producto; si no existe, redirige a nuevo con barcode pre-cargado
   useEffect(() => {
     const supabase = createClient()
     const channel = supabase
@@ -165,11 +165,17 @@ export default function ProductosPage() {
       .on('broadcast', { event: 'scan' }, ({ payload }) => {
         const code = payload.barcode as string
         setLastRemoteScan(code)
-        setSearch(code)
+        const found = products.find(p => p.barcode === code)
+        if (found) {
+          setSearch(code)
+          toast.success(`Producto encontrado: ${found.name}`)
+        } else {
+          router.push(`/${orgSlug}/productos/nuevo?barcode=${encodeURIComponent(code)}`)
+        }
       })
       .subscribe()
     return () => { supabase.removeChannel(channel) }
-  }, [remoteScanSessionId])
+  }, [remoteScanSessionId, products, orgSlug, router])
 
   const filtered = products.filter(p => {
     const matchSearch = !search ||
