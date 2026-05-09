@@ -13,12 +13,12 @@ const NAV = [
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
+  if (!user) redirect('/admin/login')
 
   const { data: profile } = await supabase
     .from('profiles').select('is_super_admin, full_name').eq('id', user.id).single()
 
-  if (!profile?.is_super_admin) redirect('/')
+  if (!profile?.is_super_admin) redirect('/admin/login')
 
   return (
     <div className="flex h-screen overflow-hidden bg-background">
@@ -51,7 +51,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         </nav>
         <div className="px-3 py-4 border-t border-border">
           <p className="text-xs text-muted-foreground px-3 mb-2 truncate">{profile.full_name ?? user.email}</p>
-          <Link href="/login" className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-destructive hover:bg-destructive/10 transition-colors">
+          <Link href="/admin/login" className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-destructive hover:bg-destructive/10 transition-colors">
             <LogOut className="h-4 w-4" />Salir
           </Link>
         </div>

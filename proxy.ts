@@ -32,6 +32,7 @@ export async function proxy(request: NextRequest) {
     pathname.startsWith('/funcionalidades') ||
     pathname.startsWith('/contacto') ||
     pathname.startsWith('/login') ||
+    pathname === '/admin/login' ||
     pathname.startsWith('/registro') ||
     pathname.startsWith('/forgot-password') ||
     pathname.startsWith('/reset-password') ||
@@ -47,7 +48,7 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL('/login', request.url))
   }
 
-  // Super-admin guard for /admin/*
+  // Super-admin guard for /admin/* (excluding /admin/login which is already public)
   if (pathname.startsWith('/admin')) {
     const { data: profile } = await supabase
       .from('profiles')
