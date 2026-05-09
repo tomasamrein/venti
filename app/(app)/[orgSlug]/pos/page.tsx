@@ -1,8 +1,8 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { toast } from 'sonner'
-import { Clock, ShoppingCart, Grid3X3, Printer } from 'lucide-react'
+import { Clock, ShoppingCart, Grid3X3, Printer, Camera } from 'lucide-react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { ProductGrid } from '@/components/pos/product-grid'
@@ -11,7 +11,9 @@ import { PaymentModal } from '@/components/pos/payment-modal'
 import { SaleTicket } from '@/components/pos/sale-ticket'
 import { CopyServicePanel } from '@/components/pos/copy-service-panel'
 import { EmployeeSwitcher } from '@/components/pos/employee-switcher'
+import { CameraScanner } from '@/components/pos/camera-scanner'
 import { OfflineBanner } from '@/components/shared/offline-banner'
+import { Button } from '@/components/ui/button'
 import { useCartStore } from '@/stores/cart-store'
 import { usePosStore } from '@/stores/pos-store'
 import { useBarcodeScanner } from '@/hooks/use-barcode-scanner'
@@ -19,6 +21,7 @@ import { useOffline } from '@/hooks/use-offline'
 import { useOrg } from '@/hooks/use-org'
 import { useCashSession } from '@/hooks/use-cash-session'
 import { db } from '@/lib/offline/db'
+import { queueMutation } from '@/lib/offline/sync'
 import type { Database } from '@/types/database'
 
 type Product = Database['public']['Tables']['products']['Row']
@@ -55,6 +58,7 @@ export default function POSPage() {
   const [paymentOpen, setPaymentOpen] = useState(false)
   const [ticketData, setTicketData] = useState<SaleData | null>(null)
   const [mobileTab, setMobileTab] = useState<MobileTab>('products')
+  const [cameraOpen, setCameraOpen] = useState(false)
 
   const cartItems = useCartStore(s => s.items)
   const cartDiscount = useCartStore(s => s.discount_pct)
@@ -89,7 +93,7 @@ export default function POSPage() {
       })
   }, [org.id, isOffline])
 
-  useBarcodeScanner((barcode) => {
+  const handleBarcodeFound = useCallback((barcode: string) => {
     const product = products.find(p => p.barcode === barcode)
     if (product) {
       addItem(product, 1)
@@ -97,11 +101,12 @@ export default function POSPage() {
     } else {
       toast.error(`Código ${barcode} no encontrado`)
     }
-  })
+  }, [products, addItem])
+
+  useBarcodeScanner(handleBarcodeFound)
 
   const handleCheckout = () => {
     if (cartItems.length === 0) return toast.error('El carrito está vacío')
-    if (isOffline) return toast.warning('Sin conexión — reconectá para completar la venta')
     if (!isOpen) return toast.error('No hay caja abierta. Abrí la caja primero.')
     setPaymentOpen(true)
   }
@@ -159,29 +164,53 @@ export default function POSPage() {
       subtotal: item.price_sell * item.cart_quantity,
     }))
 
-    // For drugstore: attach active cashier to notes
     const saleNotes = isDrugstore && activeCashierName
       ? `[Cajero: ${activeCashierName}]`
       : null
 
+    const rpcArgs = {
+      p_org_id: org.id,
+      p_branch_id: branch.id,
+      p_session_id: session.id,
+      p_customer_id: customerId ?? null,
+      p_payment_method: method as Database['public']['Enums']['payment_method'],
+      p_subtotal: subtotal,
+      p_discount_pct: cartDiscount,
+      p_discount_amount: discountAmount,
+      p_tax_amount: 0,
+      p_total: total,
+      p_amount_paid: amountPaid,
+      p_change_amount: method === 'cash' ? Math.max(0, amountPaid - total) : null,
+      p_notes: saleNotes,
+      p_items: itemsPayload,
+    }
+
+    // Offline: queue the RPC and show a local ticket
+    if (isOffline) {
+      const key = crypto.randomUUID()
+      await queueMutation('__rpc__complete_sale', 'insert', rpcArgs, key)
+      setPaymentOpen(false)
+      clearCart()
+      setTicketData({
+        id: key,
+        sale_number: null,
+        payment_method: method,
+        subtotal,
+        discount_amount: discountAmount,
+        total,
+        amount_paid: amountPaid,
+        change_amount: method === 'cash' ? Math.max(0, amountPaid - total) : null,
+        completed_at: new Date().toISOString(),
+        items: itemsPayload.map(i => ({ name: i.name, quantity: i.quantity, unit_price: i.unit_price, subtotal: i.subtotal })),
+        org_name: org.name,
+      })
+      toast.success('Venta guardada offline — se sincronizará al reconectar')
+      return
+    }
+
     try {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { data, error } = await (supabase.rpc as any)('complete_sale', {
-        p_org_id: org.id,
-        p_branch_id: branch.id,
-        p_session_id: session.id,
-        p_customer_id: customerId ?? null,
-        p_payment_method: method as Database['public']['Enums']['payment_method'],
-        p_subtotal: subtotal,
-        p_discount_pct: cartDiscount,
-        p_discount_amount: discountAmount,
-        p_tax_amount: 0,
-        p_total: total,
-        p_amount_paid: amountPaid,
-        p_change_amount: method === 'cash' ? Math.max(0, amountPaid - total) : null,
-        p_notes: saleNotes,
-        p_items: itemsPayload,
-      })
+      const { data, error } = await (supabase.rpc as any)('complete_sale', rpcArgs)
 
       if (error) throw error
       const result = Array.isArray(data) ? data[0] : data
@@ -254,8 +283,17 @@ export default function POSPage() {
         )}
 
         {/* Product grid — hidden on mobile when "services" tab is active */}
-        <div className={`flex-1 overflow-hidden ${isFotocopiadora && mobileTab === 'services' ? 'hidden md:block' : 'block'}`}>
+        <div className={`flex-1 overflow-hidden relative ${isFotocopiadora && mobileTab === 'services' ? 'hidden md:block' : 'block'}`}>
           <ProductGrid products={products} loading={loading} />
+          <Button
+            size="icon"
+            variant="secondary"
+            className="absolute bottom-3 right-3 h-10 w-10 rounded-full shadow-md z-10"
+            onClick={() => setCameraOpen(true)}
+            title="Escanear con cámara"
+          >
+            <Camera className="h-4 w-4" />
+          </Button>
         </div>
 
         {/* Copy services panel — fotocopiadora only */}
@@ -329,6 +367,12 @@ export default function POSPage() {
           sale={ticketData}
         />
       )}
+
+      <CameraScanner
+        open={cameraOpen}
+        onScan={handleBarcodeFound}
+        onClose={() => setCameraOpen(false)}
+      />
     </div>
   )
 }

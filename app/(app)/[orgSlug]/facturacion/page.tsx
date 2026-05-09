@@ -2,11 +2,12 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
-import { Plus, Receipt, Search, FileText } from 'lucide-react'
+import { Plus, Receipt, Search, FileText, XCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { createClient } from '@/lib/supabase/client'
+import { toast } from 'sonner'
 import { formatARS } from '@/lib/utils/currency'
 import type { Database } from '@/types/database'
 
@@ -95,6 +96,23 @@ export default function FacturacionPage({ params }: Props) {
     onDone: () => void
   }> | null>(null)
 
+  async function voidInvoice(invoiceId: string) {
+    if (!confirm('¿Anular esta factura? Se emitirá una Nota de Crédito en ARCA.')) return
+    try {
+      const res = await fetch('/api/arca/credit-note', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ invoice_id: invoiceId }),
+      })
+      const json = await res.json()
+      if (!res.ok) { toast.error(json.error ?? 'Error al anular'); return }
+      toast.success(`Nota de Crédito emitida — CAE: ${json.cae}`)
+      loadData()
+    } catch {
+      toast.error('Error al conectar con el servidor')
+    }
+  }
+
   async function openForm() {
     if (!InvoiceForm) {
       const mod = await import('@/components/invoices/invoice-form')
@@ -180,13 +198,22 @@ export default function FacturacionPage({ params }: Props) {
                   <td className="px-4 py-3 text-muted-foreground text-xs">
                     {new Date(inv.created_at).toLocaleDateString('es-AR')}
                   </td>
-                  <td className="px-4 py-3">
+                  <td className="px-4 py-3 flex items-center gap-2">
                     <Link
                       href={`/${orgSlug}/facturacion/${inv.id}`}
                       className="text-xs text-emerald-600 hover:underline"
                     >
                       Ver
                     </Link>
+                    {inv.status === 'issued' && inv.cae && (
+                      <button
+                        onClick={() => voidInvoice(inv.id)}
+                        title="Anular (NC)"
+                        className="text-muted-foreground hover:text-destructive transition-colors"
+                      >
+                        <XCircle className="h-3.5 w-3.5" />
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))

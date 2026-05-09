@@ -22,19 +22,27 @@ export async function drainSyncQueue() {
   for (const item of items) {
     if (item.attempts >= MAX_ATTEMPTS) continue
     try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const table = supabase.from(item.table_name as any)
-      if (item.operation === 'insert') {
+      // RPC calls queued as '__rpc__<function_name>'
+      if (item.table_name.startsWith('__rpc__')) {
+        const rpcName = item.table_name.slice(7)
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        await (table as any).insert(item.data)
-      } else if (item.operation === 'update') {
-        const { id, ...rest } = item.data as Record<string, unknown>
+        const { error } = await (supabase.rpc as any)(rpcName, item.data)
+        if (error) throw error
+      } else {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        await (table as any).update(rest).eq('id', id as string)
-      } else if (item.operation === 'delete') {
-        const { id } = item.data as Record<string, unknown>
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        await (table as any).delete().eq('id', id as string)
+        const table = supabase.from(item.table_name as any)
+        if (item.operation === 'insert') {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          await (table as any).insert(item.data)
+        } else if (item.operation === 'update') {
+          const { id, ...rest } = item.data as Record<string, unknown>
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          await (table as any).update(rest).eq('id', id as string)
+        } else if (item.operation === 'delete') {
+          const { id } = item.data as Record<string, unknown>
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          await (table as any).delete().eq('id', id as string)
+        }
       }
       if (item.id !== undefined) await db.sync_queue.delete(item.id)
     } catch {

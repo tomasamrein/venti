@@ -123,6 +123,8 @@ export interface FECAEDetRequest {
   Iva: Array<{ Id: number; BaseImp: number; Importe: number }>
   // RG 5616 — obligatorio desde 2024
   CondicionIVAReceptorId: number
+  // Comprobantes asociados (requerido para NC/ND)
+  CbtesAsoc?: Array<{ Tipo: number; PtoVta: number; Nro: number }>
 }
 
 export interface FECAEDetResponse {
@@ -181,6 +183,11 @@ export async function fecaeSolicitar(
           <ar:MonCotiz>${req.MonCotiz}</ar:MonCotiz>
           <ar:CondicionIVAReceptorId>${req.CondicionIVAReceptorId}</ar:CondicionIVAReceptorId>
           ${ivaXml}
+          ${req.CbtesAsoc?.length
+            ? `<ar:CbtesAsoc>${req.CbtesAsoc.map(a =>
+                `<ar:CbteAsoc><ar:Tipo>${a.Tipo}</ar:Tipo><ar:PtoVta>${a.PtoVta}</ar:PtoVta><ar:Nro>${a.Nro}</ar:Nro></ar:CbteAsoc>`
+              ).join('')}</ar:CbtesAsoc>`
+            : ''}
         </ar:FECAEDetRequest>
       </ar:FeDetReq>
     </ar:FeCAEReq>
