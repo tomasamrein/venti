@@ -61,7 +61,14 @@ export default function POSPage() {
   const [mobileTab, setMobileTab] = useState<MobileTab>('products')
   const [usbInputOpen, setUsbInputOpen] = useState(false)
   const [remoteScannerOpen, setRemoteScannerOpen] = useState(false)
-  const [remoteScanSessionId] = useState(() => crypto.randomUUID())
+  const [remoteScanSessionId] = useState(() => {
+    const key = 'remote_scan_session_pos'
+    const stored = sessionStorage.getItem(key)
+    if (stored) return stored
+    const id = crypto.randomUUID()
+    sessionStorage.setItem(key, id)
+    return id
+  })
   const [lastRemoteScan, setLastRemoteScan] = useState<string | null>(null)
 
   const cartItems = useCartStore(s => s.items)

@@ -81,7 +81,14 @@ export default function ProductosPage() {
   const [excelOpen, setExcelOpen] = useState(false)
   const [csvOpen, setCsvOpen] = useState(false)
   const [remoteScannerOpen, setRemoteScannerOpen] = useState(false)
-  const [remoteScanSessionId] = useState(() => crypto.randomUUID())
+  const [remoteScanSessionId] = useState(() => {
+    const key = 'remote_scan_session_productos'
+    const stored = sessionStorage.getItem(key)
+    if (stored) return stored
+    const id = crypto.randomUUID()
+    sessionStorage.setItem(key, id)
+    return id
+  })
   const [lastRemoteScan, setLastRemoteScan] = useState<string | null>(null)
 
   const loadData = useCallback(async () => {
