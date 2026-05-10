@@ -430,6 +430,7 @@ export default function POSPage() {
         sessionId={remoteScanSessionId}
         orgSlug={org.slug}
         lastScan={lastRemoteScan}
+        onScan={handleBarcodeFound}
       />
     </div>
   )

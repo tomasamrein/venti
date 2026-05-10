@@ -595,6 +595,12 @@ export default function ProductosPage() {
         sessionId={remoteScanSessionId}
         orgSlug={orgSlug}
         lastScan={lastRemoteScan}
+        onScan={(code) => {
+          setLastRemoteScan(code)
+          const found = products.find(p => p.barcode === code)
+          if (found) { setSearch(code); toast.success(`Producto encontrado: ${found.name}`) }
+          else router.push(`/${orgSlug}/productos/nuevo?barcode=${encodeURIComponent(code)}`)
+        }}
       />
     </div>
   )
