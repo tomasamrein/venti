@@ -100,8 +100,8 @@ const PLANS = [
     icon: Star,
     pricePromo: null as number | null,
     priceFull: null as number | null,
-    priceLabel: '$100.000 / sucursal',
-    features: ['Todo lo del plan Con Facturación', 'Múltiples sucursales (precio por sucursal)', 'Equipo con roles (dueño, admin, cajero)', 'Reportes por sucursal y empleado', 'Notificaciones push de stock', 'Soporte prioritario por WhatsApp'],
+    priceLabel: 'A consultar',
+    features: ['Todo lo del plan Con Facturación', 'Múltiples sucursales', 'Equipo con roles (dueño, admin, cajero)', 'Reportes por sucursal y empleado', 'Notificaciones push de stock', 'Soporte prioritario por WhatsApp'],
     cta: 'Consultanos',
     href: '/#contacto',
     highlight: false,
@@ -537,9 +537,8 @@ export default function LandingPage() {
                     <p className="text-base font-black text-slate-900">{plan.name}</p>
                     {plan.priceLabel ? (
                       <div className="mt-3">
-                        <span className="text-2xl font-black text-slate-900">{plan.priceLabel}</span>
-                        <span className="text-xs text-slate-400 ml-1">/mes</span>
-                        <p className="text-xs text-slate-400 mt-1.5">Precio según cantidad de sucursales. Consultanos para armar tu plan.</p>
+                        <span className="text-2xl font-black text-slate-900">A consultar</span>
+                        <p className="text-xs text-slate-400 mt-1.5">El precio se define según tu negocio, facturación y cantidad de sucursales. Hablanos por WhatsApp.</p>
                       </div>
                     ) : (
                       <div>
