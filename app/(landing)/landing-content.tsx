@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import {
   ShoppingCart, BarChart3, Wifi, Receipt, Users, Package,
   ChevronRight, Check, TrendingDown, AlertTriangle, Clock,
@@ -581,11 +582,7 @@ export default function LandingPage() {
 
         <AnimateIn delay={300}>
           <div className="mt-7 rounded-2xl border border-slate-200 bg-slate-50 p-5 flex items-center gap-4 max-w-2xl mx-auto">
-            <svg className="h-8 w-auto shrink-0" viewBox="0 0 120 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Mercado Pago">
-              <rect width="120" height="32" rx="6" fill="#009EE3"/>
-              <text x="8" y="22" fontFamily="Arial, sans-serif" fontSize="13" fontWeight="700" fill="white">mercado</text>
-              <text x="8" y="30" fontFamily="Arial, sans-serif" fontSize="8" fontWeight="400" fill="white" letterSpacing="2">pago</text>
-            </svg>
+            <Image src="/mercadopago-icon.png" alt="Mercado Pago" width={40} height={40} className="shrink-0" />
             <div>
               <p className="text-sm font-bold text-slate-800">Pagás con Mercado Pago</p>
               <p className="text-xs text-slate-500 mt-0.5">
