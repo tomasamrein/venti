@@ -77,6 +77,7 @@ const PLANS = [
     icon: Zap,
     pricePromo: 30000,
     priceFull: 60000,
+    priceLabel: null as string | null,
     features: ['Cobros con escáner de barras', 'Stock con alertas automáticas', 'Clientes y cuentas corrientes', 'Export de ventas para tu contador', 'Funciona sin internet', 'Chatbot de soporte con IA'],
     cta: 'Empezar gratis 14 días',
     href: '/registro',
@@ -87,6 +88,7 @@ const PLANS = [
     icon: Package,
     pricePromo: 50000,
     priceFull: 100000,
+    priceLabel: null as string | null,
     features: ['Todo lo del plan Simple', 'Facturación AFIP (A, B y C) con CAE', 'Reportes de ventas y caja', 'Gestión de proveedores', 'Actualización masiva de precios', 'Historial de cambios de precio'],
     cta: 'Suscribirme',
     href: '/registro',
@@ -95,10 +97,11 @@ const PLANS = [
   {
     name: 'Profesional',
     icon: Star,
-    pricePromo: 70000,
-    priceFull: 140000,
-    features: ['Todo lo del plan Con Facturación', 'Varias sucursales', 'Equipo con roles (dueño, admin, cajero)', 'Ventas por empleado', 'Notificaciones push de stock', 'Soporte prioritario'],
-    cta: 'Contactanos',
+    pricePromo: null as number | null,
+    priceFull: null as number | null,
+    priceLabel: '$100.000 / sucursal',
+    features: ['Todo lo del plan Con Facturación', 'Múltiples sucursales (precio por sucursal)', 'Equipo con roles (dueño, admin, cajero)', 'Reportes por sucursal y empleado', 'Notificaciones push de stock', 'Soporte prioritario por WhatsApp'],
+    cta: 'Consultanos',
     href: '/#contacto',
     highlight: false,
   },
@@ -378,6 +381,9 @@ export default function LandingPage() {
         {FEATURES_MAIN.map((feat, i) => {
           const Icon = feat.icon
           const isEven = i % 2 === 0
+          const planLabel = feat.badge
+            ? 'Plan Con Facturación y Profesional'
+            : 'Incluido en todos los planes'
           return (
             <div key={feat.num} className={`flex flex-col gap-10 ${isEven ? 'lg:flex-row' : 'lg:flex-row-reverse'} items-center`}>
               <AnimateIn from={isEven ? 'left' : 'right'} className="flex-1 space-y-5">
@@ -409,7 +415,7 @@ export default function LandingPage() {
                     <Icon className="h-8 w-8 text-emerald-600" />
                   </div>
                   <p className="text-sm font-bold text-slate-700 text-center">{feat.title}</p>
-                  <p className="text-xs text-slate-400 text-center mt-1">Incluido en todos los planes</p>
+                  <p className="text-xs text-slate-400 text-center mt-1">{planLabel}</p>
                 </div>
               </AnimateIn>
             </div>
@@ -528,16 +534,26 @@ export default function LandingPage() {
                   </div>
                   <div>
                     <p className="text-base font-black text-slate-900">{plan.name}</p>
-                    <div className="mt-3 flex items-baseline gap-1">
-                      <span className="text-3xl font-black text-slate-900">{fmt(plan.pricePromo)}</span>
-                      <span className="text-xs text-slate-400">/mes</span>
-                    </div>
-                    <div className="flex items-center gap-2 mt-1.5">
-                      <span className="text-xs text-slate-400 line-through">{fmt(plan.priceFull)}/mes</span>
-                      <span className="text-[10px] font-black text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
-                        50% off × 3m
-                      </span>
-                    </div>
+                    {plan.priceLabel ? (
+                      <div className="mt-3">
+                        <span className="text-2xl font-black text-slate-900">{plan.priceLabel}</span>
+                        <span className="text-xs text-slate-400 ml-1">/mes</span>
+                        <p className="text-xs text-slate-400 mt-1.5">Precio según cantidad de sucursales. Consultanos para armar tu plan.</p>
+                      </div>
+                    ) : (
+                      <div>
+                        <div className="mt-3 flex items-baseline gap-1">
+                          <span className="text-3xl font-black text-slate-900">{fmt(plan.pricePromo!)}</span>
+                          <span className="text-xs text-slate-400">/mes</span>
+                        </div>
+                        <div className="flex items-center gap-2 mt-1.5">
+                          <span className="text-xs text-slate-400 line-through">{fmt(plan.priceFull!)}/mes</span>
+                          <span className="text-[10px] font-black text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
+                            50% off × 3m
+                          </span>
+                        </div>
+                      </div>
+                    )}
                   </div>
                   <ul className="space-y-2.5 flex-1">
                     {plan.features.map(feat => (
@@ -565,7 +581,11 @@ export default function LandingPage() {
 
         <AnimateIn delay={300}>
           <div className="mt-7 rounded-2xl border border-slate-200 bg-slate-50 p-5 flex items-center gap-4 max-w-2xl mx-auto">
-            <Smartphone className="h-8 w-8 text-slate-400 shrink-0" />
+            <svg className="h-8 w-auto shrink-0" viewBox="0 0 120 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Mercado Pago">
+              <rect width="120" height="32" rx="6" fill="#009EE3"/>
+              <text x="8" y="22" fontFamily="Arial, sans-serif" fontSize="13" fontWeight="700" fill="white">mercado</text>
+              <text x="8" y="30" fontFamily="Arial, sans-serif" fontSize="8" fontWeight="400" fill="white" letterSpacing="2">pago</text>
+            </svg>
             <div>
               <p className="text-sm font-bold text-slate-800">Pagás con Mercado Pago</p>
               <p className="text-xs text-slate-500 mt-0.5">
