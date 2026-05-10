@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { toast } from 'sonner'
+import { playSound } from '@/lib/utils/sounds'
 import { Clock, ShoppingCart, Grid3X3, Printer, ScanBarcode, Smartphone } from 'lucide-react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
@@ -125,18 +126,7 @@ export default function POSPage() {
         const code = payload.barcode as string
         setLastRemoteScan(code)
         handleBarcodeFound(code)
-        try {
-          const ctx = new AudioContext()
-          const osc = ctx.createOscillator()
-          const gain = ctx.createGain()
-          osc.connect(gain)
-          gain.connect(ctx.destination)
-          osc.frequency.value = 1200
-          gain.gain.setValueAtTime(0.15, ctx.currentTime)
-          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.12)
-          osc.start()
-          osc.stop(ctx.currentTime + 0.12)
-        } catch { /* AudioContext no disponible */ }
+        playSound('scan')
       })
       .subscribe()
     return () => { supabase.removeChannel(channel) }
@@ -282,6 +272,7 @@ export default function POSPage() {
         })
       )
 
+      playSound('payment')
       toast.success('¡Venta completada!')
     } catch (err) {
       console.error(err)

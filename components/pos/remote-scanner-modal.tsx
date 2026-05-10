@@ -20,7 +20,11 @@ interface Props {
 
 export function RemoteScannerModal({ open, onClose, sessionId, orgSlug, lastScan, onScan }: Props) {
   const [origin, setOrigin] = useState('')
-  const [isMobile, setIsMobile] = useState(false)
+  const [isMobile, setIsMobile] = useState(() =>
+    typeof navigator !== 'undefined'
+      ? /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
+      : false
+  )
   const [scanning, setScanning] = useState(false)
   const [lastMobileScan, setLastMobileScan] = useState<string | null>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
@@ -30,7 +34,6 @@ export function RemoteScannerModal({ open, onClose, sessionId, orgSlug, lastScan
 
   useEffect(() => {
     setOrigin(window.location.origin)
-    setIsMobile(/iPhone|iPad|iPod|Android/i.test(navigator.userAgent))
   }, [])
 
   // Auto-start camera when mobile opens the sheet

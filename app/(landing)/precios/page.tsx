@@ -1,6 +1,6 @@
 'use client'
 
-import { Check, ChevronRight, Smartphone, Zap, Package, Star } from 'lucide-react'
+import { Check, ChevronRight, Smartphone, Zap, Package, Star, Tag } from 'lucide-react'
 import Link from 'next/link'
 
 const fmt = (n: number) =>
@@ -10,7 +10,8 @@ const PLANS = [
   {
     name: 'Simple',
     icon: Zap,
-    price: 30000,
+    pricePromo: 30000,
+    priceFull: 60000,
     features: [
       'POS con escáner de barras USB y cámara',
       'Gestión de productos y stock',
@@ -26,9 +27,10 @@ const PLANS = [
     highlight: false,
   },
   {
-    name: 'Avanzado',
+    name: 'Con Facturación',
     icon: Package,
-    price: 50000,
+    pricePromo: 50000,
+    priceFull: 100000,
     features: [
       'Todo lo del plan Simple',
       'Facturación ARCA (A, B y C) con CAE',
@@ -45,9 +47,10 @@ const PLANS = [
   {
     name: 'Profesional',
     icon: Star,
-    price: 100000,
+    pricePromo: 70000,
+    priceFull: 140000,
     features: [
-      'Todo lo del plan Avanzado',
+      'Todo lo del plan Con Facturación',
       'Múltiples sucursales',
       'Gestión de equipo con roles (owner, admin, cajero)',
       'Selector de cajero por turno',
@@ -80,13 +83,23 @@ const COMPARISON: [string, boolean, boolean, boolean][] = [
 export default function PreciosPage() {
   return (
     <div className="max-w-6xl mx-auto px-4 py-20">
-      <div className="text-center mb-14">
+      <div className="text-center mb-6">
         <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-slate-900">
           Planes y precios
         </h1>
         <p className="mt-4 text-base text-slate-600 max-w-xl mx-auto">
-          Probá el plan Simple gratis 14 días. Sin tarjeta de crédito.
+          Probá cualquier plan gratis 14 días. Sin tarjeta de crédito.
         </p>
+      </div>
+
+      {/* Promo banner */}
+      <div className="mb-10 max-w-xl mx-auto">
+        <div className="flex items-center justify-center gap-3 bg-emerald-50 border border-emerald-200 rounded-xl px-5 py-3">
+          <Tag className="h-4 w-4 text-emerald-600 shrink-0" />
+          <p className="text-sm text-emerald-800 font-medium text-center">
+            <span className="font-bold">50% off los primeros 3 meses</span> — Precio de lanzamiento para los primeros clientes
+          </p>
+        </div>
       </div>
 
       {/* Plan cards */}
@@ -112,9 +125,16 @@ export default function PreciosPage() {
               </div>
               <div>
                 <p className="text-lg font-bold text-slate-900">{plan.name}</p>
-                <div className="flex items-baseline gap-1 mt-3">
-                  <span className="text-3xl font-bold tracking-tight text-slate-900">{fmt(plan.price)}</span>
+                {/* Promo price */}
+                <div className="flex items-baseline gap-2 mt-3">
+                  <span className="text-3xl font-bold tracking-tight text-slate-900">{fmt(plan.pricePromo)}</span>
                   <span className="text-sm text-slate-400">/mes</span>
+                </div>
+                <div className="flex items-center gap-1.5 mt-1">
+                  <span className="text-xs text-slate-400 line-through">{fmt(plan.priceFull)}/mes</span>
+                  <span className="text-xs font-semibold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded">
+                    50% off × 3 meses
+                  </span>
                 </div>
               </div>
               <ul className="space-y-2 flex-1">
@@ -147,6 +167,7 @@ export default function PreciosPage() {
           <p className="text-sm font-semibold text-slate-800 mb-0.5">Pagás con Mercado Pago</p>
           <p className="text-xs text-slate-500 leading-relaxed">
             Tarjeta de débito, crédito o transferencia bancaria. Se cobra mensual de forma automática.
+            Los primeros 3 meses al precio promocional, luego pasa al precio regular.
             Podés cancelar desde tu cuenta en Ventix en cualquier momento, sin permanencia ni penalidades.
           </p>
         </div>
@@ -161,7 +182,7 @@ export default function PreciosPage() {
               <tr className="border-b border-slate-200 bg-slate-50">
                 <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Funcionalidad</th>
                 <th className="px-3 py-3 text-center text-xs font-semibold text-slate-500 uppercase tracking-wider">Simple</th>
-                <th className="px-3 py-3 text-center text-xs font-semibold text-emerald-700 uppercase tracking-wider">Avanzado</th>
+                <th className="px-3 py-3 text-center text-xs font-semibold text-emerald-700 uppercase tracking-wider">Con Facturación</th>
                 <th className="px-3 py-3 text-center text-xs font-semibold text-slate-500 uppercase tracking-wider">Profesional</th>
               </tr>
             </thead>

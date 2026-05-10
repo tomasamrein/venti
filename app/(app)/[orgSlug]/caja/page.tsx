@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { toast } from 'sonner'
+import { playSound } from '@/lib/utils/sounds'
 import {
   DollarSign, Clock, TrendingUp, TrendingDown,
   ArrowUpRight, ArrowDownRight, Plus, History, ExternalLink,
@@ -140,6 +141,7 @@ export default function CajaPage() {
         created_by: userId,
       })
 
+      playSound('open')
       toast.success('Caja abierta')
       setOpenDialog(false)
       setOpeningAmount('')
@@ -183,6 +185,7 @@ export default function CajaPage() {
         created_by: userId,
       })
 
+      playSound('close')
       toast.success('Caja cerrada')
       setCloseDialog(false)
       setClosingAmount('')

@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import { Bell, AlertTriangle, Package, CheckCheck } from 'lucide-react'
+import { Bell, AlertTriangle, Package, CheckCheck, Megaphone } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { toast } from 'sonner'
@@ -18,10 +18,11 @@ interface Notification {
 }
 
 const TYPE_ICONS: Record<string, { icon: typeof Bell; color: string; bg: string }> = {
-  low_stock: { icon: AlertTriangle, color: 'text-amber-400', bg: 'bg-amber-500/10' },
-  out_of_stock: { icon: Package, color: 'text-red-400', bg: 'bg-red-500/10' },
-  subscription: { icon: Bell, color: 'text-emerald-500', bg: 'bg-emerald-50 dark:bg-emerald-900/20' },
-  price_change: { icon: Bell, color: 'text-blue-400', bg: 'bg-blue-500/10' },
+  low_stock:    { icon: AlertTriangle, color: 'text-amber-400',   bg: 'bg-amber-500/10' },
+  out_of_stock: { icon: Package,       color: 'text-red-400',     bg: 'bg-red-500/10' },
+  subscription: { icon: Bell,          color: 'text-emerald-500', bg: 'bg-emerald-50 dark:bg-emerald-900/20' },
+  price_change: { icon: Bell,          color: 'text-blue-400',    bg: 'bg-blue-500/10' },
+  announcement: { icon: Megaphone,     color: 'text-violet-500',  bg: 'bg-violet-500/10' },
 }
 
 export default function NotificacionesPage() {

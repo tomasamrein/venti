@@ -1,13 +1,15 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
-import { LayoutDashboard, Building2, CreditCard, Users, LogOut } from 'lucide-react'
+import { LayoutDashboard, Building2, CreditCard, Users, MessageSquare } from 'lucide-react'
+import { LogoutButton } from './logout-button'
 
 const NAV = [
   { label: 'Dashboard', href: '/admin', icon: LayoutDashboard },
   { label: 'Organizaciones', href: '/admin/organizaciones', icon: Building2 },
   { label: 'Suscripciones', href: '/admin/suscripciones', icon: CreditCard },
   { label: 'Usuarios', href: '/admin/usuarios', icon: Users },
+  { label: 'Mensajes', href: '/admin/mensajes', icon: MessageSquare },
 ]
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -51,9 +53,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         </nav>
         <div className="px-3 py-4 border-t border-border">
           <p className="text-xs text-muted-foreground px-3 mb-2 truncate">{profile.full_name ?? user.email}</p>
-          <Link href="/admin/login" className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-destructive hover:bg-destructive/10 transition-colors">
-            <LogOut className="h-4 w-4" />Salir
-          </Link>
+          <LogoutButton />
         </div>
       </aside>
       <main className="flex-1 overflow-y-auto p-6 scrollbar-thin">
