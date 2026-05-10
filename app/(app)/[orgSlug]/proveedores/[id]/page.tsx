@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { toast } from 'sonner'
-import { ArrowLeft, Loader2, Trash2 } from 'lucide-react'
+import { ArrowLeft, Loader2, Trash2, Phone, Globe, Copy, Check } from 'lucide-react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
@@ -21,7 +21,7 @@ const CATEGORIES = ['Alimentos', 'Bebidas', 'Lácteos', 'Congelados', 'Limpieza'
 interface FormState {
   name: string; alias: string; cuil: string; cuit: string
   email: string; phone: string; address: string; category: string
-  contact_name: string; notes: string; is_active: boolean
+  contact_name: string; notes: string; website: string; is_active: boolean
 }
 
 export default function EditarProveedorPage() {
@@ -35,7 +35,7 @@ export default function EditarProveedorPage() {
   const [orgId, setOrgId] = useState('')
   const [form, setForm] = useState<FormState>({
     name: '', alias: '', cuil: '', cuit: '', email: '', phone: '',
-    address: '', category: '', contact_name: '', notes: '', is_active: true,
+    address: '', category: '', contact_name: '', notes: '', website: '', is_active: true,
   })
 
   function set<K extends keyof FormState>(k: K, v: FormState[K]) {
@@ -56,7 +56,7 @@ export default function EditarProveedorPage() {
         name: s.name ?? '', alias: s.alias ?? '', cuil: s.cuil ?? '', cuit: s.cuit ?? '',
         email: s.email ?? '', phone: s.phone ?? '', address: s.address ?? '',
         category: s.category ?? '', contact_name: s.contact_name ?? '',
-        notes: s.notes ?? '', is_active: s.is_active ?? true,
+        notes: s.notes ?? '', website: (s as any).website ?? '', is_active: s.is_active ?? true,
       })
       setFetching(false)
     }
@@ -69,7 +69,7 @@ export default function EditarProveedorPage() {
     setLoading(true)
     const supabase = createClient()
 
-    const { error } = await supabase.from('suppliers').update({
+    const updatePayload = {
       name: form.name.trim(),
       alias: form.alias || null,
       cuil: form.cuil || null,
@@ -80,9 +80,12 @@ export default function EditarProveedorPage() {
       category: form.category || null,
       contact_name: form.contact_name || null,
       notes: form.notes || null,
+      website: form.website || null,
       is_active: form.is_active,
       updated_at: new Date().toISOString(),
-    }).eq('id', supplierId).eq('organization_id', orgId)
+    }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { error } = await supabase.from('suppliers').update(updatePayload as any).eq('id', supplierId).eq('organization_id', orgId)
 
     if (error) {
       toast.error('Error al guardar')
@@ -137,6 +140,37 @@ export default function EditarProveedorPage() {
           </AlertDialogContent>
         </AlertDialog>
       </div>
+
+      {/* Acceso rápido: links clickeables */}
+      {(form.phone || form.website || form.alias) && (
+        <div className="flex flex-wrap gap-2">
+          {form.phone && (
+            <a
+              href={`https://wa.me/${form.phone.replace(/\D/g, '')}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 h-8 px-3 rounded-lg text-[13px] font-medium bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20 transition-colors"
+            >
+              <Phone className="h-3.5 w-3.5" />
+              WhatsApp
+            </a>
+          )}
+          {form.website && (
+            <a
+              href={form.website}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 h-8 px-3 rounded-lg text-[13px] font-medium bg-blue-500/10 text-blue-500 hover:bg-blue-500/20 transition-colors"
+            >
+              <Globe className="h-3.5 w-3.5" />
+              {form.website.replace(/^https?:\/\//, '').split('/')[0]}
+            </a>
+          )}
+          {form.alias && (
+            <CopyAliasButton alias={form.alias} />
+          )}
+        </div>
+      )}
 
       <form onSubmit={handleSubmit} className="rounded-xl border border-border bg-card overflow-hidden">
         <div className="p-6 space-y-5">
@@ -194,6 +228,12 @@ export default function EditarProveedorPage() {
               className="h-10 bg-muted/30 border-border rounded-xl text-[14px]" />
           </div>
           <div className="space-y-1.5">
+            <Label className="text-[12px] font-semibold text-muted-foreground uppercase tracking-[0.06em]">Sitio web</Label>
+            <Input value={form.website} onChange={e => set('website', e.target.value)}
+              placeholder="https://proveedor.com.ar"
+              className="h-10 bg-muted/30 border-border rounded-xl text-[14px]" />
+          </div>
+          <div className="space-y-1.5">
             <Label className="text-[12px] font-semibold text-muted-foreground uppercase tracking-[0.06em]">Notas</Label>
             <Textarea value={form.notes} onChange={e => set('notes', e.target.value)}
               rows={3} className="bg-muted/30 border-border rounded-xl text-[14px] resize-none" />
@@ -216,5 +256,24 @@ export default function EditarProveedorPage() {
         </div>
       </form>
     </div>
+  )
+}
+
+function CopyAliasButton({ alias }: { alias: string }) {
+  const [copied, setCopied] = useState(false)
+  function copy() {
+    navigator.clipboard.writeText(alias)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+  return (
+    <button
+      type="button"
+      onClick={copy}
+      className="inline-flex items-center gap-1.5 h-8 px-3 rounded-lg text-[13px] font-medium bg-muted/60 text-muted-foreground hover:bg-muted transition-colors"
+    >
+      {copied ? <Check className="h-3.5 w-3.5 text-emerald-500" /> : <Copy className="h-3.5 w-3.5" />}
+      {copied ? 'Copiado' : alias}
+    </button>
   )
 }

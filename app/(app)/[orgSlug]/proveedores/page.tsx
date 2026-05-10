@@ -2,7 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { getOrgBySlug } from '@/lib/supabase/get-org'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { Plus, Search, Building2, Phone, Mail } from 'lucide-react'
+import { Plus, Search, Building2, Phone, Mail, Globe } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 
@@ -109,16 +109,34 @@ export default async function ProveedoresPage({ params, searchParams }: Props) {
                 <td className="px-5 py-3.5 hidden lg:table-cell">
                   <div className="space-y-0.5">
                     {s.phone && (
-                      <div className="flex items-center gap-1.5 text-[13px]">
-                        <Phone className="h-3 w-3 text-muted-foreground" />{s.phone}
-                      </div>
+                      <a
+                        href={`https://wa.me/${s.phone.replace(/\D/g, '')}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-1.5 text-[13px] text-emerald-600 hover:underline"
+                      >
+                        <Phone className="h-3 w-3" />{s.phone}
+                      </a>
                     )}
                     {s.email && (
-                      <div className="flex items-center gap-1.5 text-[13px]">
-                        <Mail className="h-3 w-3 text-muted-foreground" />{s.email}
-                      </div>
+                      <a
+                        href={`mailto:${s.email}`}
+                        className="flex items-center gap-1.5 text-[13px] text-muted-foreground hover:text-foreground"
+                      >
+                        <Mail className="h-3 w-3" />{s.email}
+                      </a>
                     )}
-                    {!s.phone && !s.email && <span className="text-muted-foreground text-[13px]">—</span>}
+                    {(s as any).website && (
+                      <a
+                        href={(s as any).website}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-1.5 text-[13px] text-blue-500 hover:underline truncate max-w-[180px]"
+                      >
+                        <Globe className="h-3 w-3 shrink-0" />{(s as any).website.replace(/^https?:\/\//, '')}
+                      </a>
+                    )}
+                    {!s.phone && !s.email && !(s as any).website && <span className="text-muted-foreground text-[13px]">—</span>}
                   </div>
                 </td>
                 <td className="px-5 py-3.5 text-right">

@@ -17,12 +17,12 @@ const CATEGORIES = ['Alimentos', 'Bebidas', 'Lácteos', 'Congelados', 'Limpieza'
 interface FormState {
   name: string; alias: string; cuil: string; cuit: string
   email: string; phone: string; address: string; category: string
-  contact_name: string; notes: string; is_active: boolean
+  contact_name: string; notes: string; website: string; is_active: boolean
 }
 
 const empty: FormState = {
   name: '', alias: '', cuil: '', cuit: '', email: '', phone: '',
-  address: '', category: '', contact_name: '', notes: '', is_active: true,
+  address: '', category: '', contact_name: '', notes: '', website: '', is_active: true,
 }
 
 export default function NuevoProveedorPage() {
@@ -44,7 +44,7 @@ export default function NuevoProveedorPage() {
     const { data: org } = await supabase.from('organizations').select('id').eq('slug', orgSlug).single()
     if (!org) { toast.error('Organización no encontrada'); setLoading(false); return }
 
-    const { error } = await supabase.from('suppliers').insert({
+    const payload = {
       organization_id: org.id,
       name: form.name.trim(),
       alias: form.alias || null,
@@ -56,8 +56,11 @@ export default function NuevoProveedorPage() {
       category: form.category || null,
       contact_name: form.contact_name || null,
       notes: form.notes || null,
+      website: form.website || null,
       is_active: form.is_active,
-    })
+    }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { error } = await supabase.from('suppliers').insert(payload as any)
 
     if (error) {
       toast.error('Error al guardar el proveedor')
@@ -141,6 +144,12 @@ export default function NuevoProveedorPage() {
             <Label className="text-[12px] font-semibold text-muted-foreground uppercase tracking-[0.06em]">Dirección</Label>
             <Input value={form.address} onChange={e => set('address', e.target.value)}
               placeholder="Dirección del proveedor"
+              className="h-10 bg-muted/30 border-border rounded-xl text-[14px]" />
+          </div>
+          <div className="space-y-1.5">
+            <Label className="text-[12px] font-semibold text-muted-foreground uppercase tracking-[0.06em]">Sitio web</Label>
+            <Input value={form.website} onChange={e => set('website', e.target.value)}
+              placeholder="https://proveedor.com.ar"
               className="h-10 bg-muted/30 border-border rounded-xl text-[14px]" />
           </div>
           <div className="space-y-1.5">

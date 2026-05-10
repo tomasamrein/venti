@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, use } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { Scan, CheckCircle2, WifiOff } from 'lucide-react'
+import { Scan, CheckCircle2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
 
@@ -10,7 +10,7 @@ interface Props {
   params: Promise<{ orgSlug: string; sessionId: string }>
 }
 
-export default function RemoteScanPage({ params }: Props) {
+export default function PublicScanPage({ params }: Props) {
   const { sessionId } = use(params)
   const [scanning, setScanning] = useState(false)
   const [scans, setScans] = useState<{ code: string; ts: number }[]>([])
@@ -26,6 +26,13 @@ export default function RemoteScanPage({ params }: Props) {
     channelRef.current = channel
     return () => { supabase.removeChannel(channel) }
   }, [sessionId])
+
+  // Auto-start camera on mobile
+  useEffect(() => {
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
+    if (isMobile) startCamera()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   async function startCamera() {
     if (!videoRef.current) return
@@ -49,6 +56,19 @@ export default function RemoteScanPage({ params }: Props) {
             payload: { barcode: code },
           })
           setScans(prev => [{ code, ts: now }, ...prev.slice(0, 9)])
+          // Beep de confirmación
+          try {
+            const ctx = new AudioContext()
+            const osc = ctx.createOscillator()
+            const gain = ctx.createGain()
+            osc.connect(gain)
+            gain.connect(ctx.destination)
+            osc.frequency.value = 1200
+            gain.gain.setValueAtTime(0.15, ctx.currentTime)
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.12)
+            osc.start()
+            osc.stop(ctx.currentTime + 0.12)
+          } catch { /* ignore */ }
           toast.success(`Enviado: ${code}`, { duration: 1500 })
         }
       )
@@ -68,8 +88,8 @@ export default function RemoteScanPage({ params }: Props) {
   useEffect(() => () => { controlsRef.current?.stop() }, [])
 
   return (
-    <div className="flex flex-col items-center gap-4 p-4 max-w-sm mx-auto min-h-[calc(100vh-3.5rem)]">
-      <div className="text-center pt-2">
+    <div className="flex flex-col items-center gap-4 p-4 max-w-sm mx-auto min-h-dvh bg-background">
+      <div className="text-center pt-4">
         <h1 className="text-xl font-bold flex items-center justify-center gap-2">
           <Scan className="h-5 w-5 text-emerald-600" />
           Escáner remoto
