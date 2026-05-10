@@ -73,12 +73,12 @@ const config: Config = {
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
-        'fade-up': 'fade-up 0.7s ease-out forwards',
-        'fade-in': 'fade-in 0.5s ease-out forwards',
-        'slide-right': 'slide-right 0.6s ease-out forwards',
+        'fade-up': 'fade-up 0.7s ease-out both',
+        'fade-in': 'fade-in 0.5s ease-out both',
+        'slide-right': 'slide-right 0.6s ease-out both',
         'float': 'float 3s ease-in-out infinite',
         'pulse-slow': 'pulse-slow 2s ease-in-out infinite',
-        'marquee': 'marquee 20s linear infinite',
+        'marquee': 'marquee 24s linear infinite',
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
