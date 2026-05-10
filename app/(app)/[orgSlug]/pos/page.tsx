@@ -46,7 +46,7 @@ interface SaleData {
 
 export default function POSPage() {
   const { org, branch, userId } = useOrg()
-  const { session, isOpen } = useCashSession()
+  const { session, isOpen, isLoading: sessionLoading } = useCashSession()
   const { activeCashierName } = usePosStore()
   const isOffline = useOffline(org.id)
 
@@ -125,6 +125,18 @@ export default function POSPage() {
         const code = payload.barcode as string
         setLastRemoteScan(code)
         handleBarcodeFound(code)
+        try {
+          const ctx = new AudioContext()
+          const osc = ctx.createOscillator()
+          const gain = ctx.createGain()
+          osc.connect(gain)
+          gain.connect(ctx.destination)
+          osc.frequency.value = 1200
+          gain.gain.setValueAtTime(0.15, ctx.currentTime)
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.12)
+          osc.start()
+          osc.stop(ctx.currentTime + 0.12)
+        } catch { /* AudioContext no disponible */ }
       })
       .subscribe()
     return () => { supabase.removeChannel(channel) }
@@ -297,7 +309,7 @@ export default function POSPage() {
           </div>
         )}
 
-        {!loading && !isOpen && (
+        {!loading && !sessionLoading && !isOpen && (
           <div className="absolute top-3 left-1/2 -translate-x-1/2 z-20 bg-yellow-50 dark:bg-yellow-950/50 border border-yellow-300 dark:border-yellow-800 text-yellow-800 dark:text-yellow-300 text-sm px-4 py-2 rounded-full flex items-center gap-2 whitespace-nowrap">
             <Clock className="h-4 w-4 shrink-0" />
             <span>No hay caja abierta.</span>
@@ -348,6 +360,7 @@ export default function POSPage() {
           onHold={handleHoldSale}
           orgSlug={org.slug}
           orgId={org.id}
+          checkoutDisabled={sessionLoading}
         />
       </div>
 

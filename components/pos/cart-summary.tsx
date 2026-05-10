@@ -16,9 +16,10 @@ interface CartSummaryProps {
   onHold?: () => void
   orgSlug?: string
   orgId?: string
+  checkoutDisabled?: boolean
 }
 
-export function CartSummary({ onCheckout, onHold, orgSlug, orgId }: CartSummaryProps) {
+export function CartSummary({ onCheckout, onHold, orgSlug, orgId, checkoutDisabled }: CartSummaryProps) {
   const items = useCartStore(s => s.items)
   const discount_pct = useCartStore(s => s.discount_pct)
   const customerId = useCartStore(s => s.customer_id)
@@ -234,6 +235,7 @@ export function CartSummary({ onCheckout, onHold, orgSlug, orgId }: CartSummaryP
               <Button
                 className="w-full h-10 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold"
                 onClick={onCheckout}
+                disabled={checkoutDisabled}
               >
                 Cobrar
               </Button>

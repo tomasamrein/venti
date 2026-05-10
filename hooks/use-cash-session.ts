@@ -27,6 +27,7 @@ export function useCashSession() {
       return data as CashSession | null
     },
     enabled: !!branch?.id,
+    staleTime: 30_000,
   })
 
   const openSession = useMutation({
