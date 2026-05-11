@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { ShoppingBag, RefreshCw, Phone, Mail, AlertTriangle, CheckCircle2, ExternalLink } from 'lucide-react'
+import { ShoppingBag, RefreshCw, Phone, Mail, AlertTriangle, CheckCircle2, ExternalLink, PackageCheck } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { formatARS } from '@/lib/utils/currency'
@@ -26,7 +26,8 @@ export default function ComprasPage() {
   const { org } = useOrg()
   const [suggestions, setSuggestions] = useState<Suggestion[]>([])
   const [loading, setLoading] = useState(true)
-  const [checked, setChecked] = useState<Set<string>>(new Set())
+  const [selected, setSelected] = useState<Set<string>>(new Set())
+  const [ordered, setOrdered] = useState<Set<string>>(new Set())
 
   async function load() {
     setLoading(true)
@@ -38,13 +39,19 @@ export default function ComprasPage() {
 
   useEffect(() => { load() }, [org.id])
 
-  function toggleCheck(id: string) {
-    setChecked(prev => {
+  function toggleSelect(id: string) {
+    if (ordered.has(id)) return
+    setSelected(prev => {
       const next = new Set(prev)
       if (next.has(id)) next.delete(id)
       else next.add(id)
       return next
     })
+  }
+
+  function markAsOrdered(ids: Set<string>) {
+    setOrdered(prev => new Set([...prev, ...ids]))
+    setSelected(new Set())
   }
 
   function shareWhatsApp(supplier: string | null, items: Suggestion[]) {
@@ -56,11 +63,11 @@ export default function ComprasPage() {
     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank')
   }
 
-  const unchecked = suggestions.filter(s => !checked.has(s.id))
-  const totalEstimated = unchecked.reduce((sum, s) => sum + (s.price_cost ?? 0) * s.suggested_qty, 0)
+  const pending = suggestions.filter(s => !ordered.has(s.id))
+  const totalEstimated = pending.reduce((sum, s) => sum + (s.price_cost ?? 0) * s.suggested_qty, 0)
 
-  // Group by supplier
-  const bySupplier = unchecked.reduce<Record<string, Suggestion[]>>((acc, s) => {
+  // Group by supplier (all non-ordered items)
+  const bySupplier = pending.reduce<Record<string, Suggestion[]>>((acc, s) => {
     const key = s.supplier?.name ?? 'Sin proveedor'
     acc[key] = [...(acc[key] || []), s]
     return acc
@@ -99,15 +106,27 @@ export default function ComprasPage() {
             <div className="flex items-center gap-2 text-amber-800 dark:text-amber-300">
               <AlertTriangle className="h-5 w-5" />
               <span className="text-sm font-semibold">
-                {unchecked.length} producto{unchecked.length !== 1 ? 's' : ''} para reponer
-                {checked.size > 0 && <span className="text-amber-600"> · {checked.size} marcado{checked.size !== 1 ? 's' : ''} como pedido</span>}
+                {pending.length} producto{pending.length !== 1 ? 's' : ''} para reponer
+                {ordered.size > 0 && <span className="text-amber-600 dark:text-amber-400"> · {ordered.size} ya pedido{ordered.size !== 1 ? 's' : ''}</span>}
               </span>
             </div>
-            {totalEstimated > 0 && (
-              <span className="text-sm font-semibold text-amber-800 dark:text-amber-300">
-                Estimado: {formatARS(totalEstimated)}
-              </span>
-            )}
+            <div className="flex items-center gap-3">
+              {selected.size > 0 && (
+                <Button
+                  size="sm"
+                  className="gap-1.5 text-xs bg-emerald-600 hover:bg-emerald-700 text-white"
+                  onClick={() => markAsOrdered(selected)}
+                >
+                  <PackageCheck className="h-3.5 w-3.5" />
+                  Marcar como pedido ({selected.size})
+                </Button>
+              )}
+              {totalEstimated > 0 && (
+                <span className="text-sm font-semibold text-amber-800 dark:text-amber-300">
+                  Estimado: {formatARS(totalEstimated)}
+                </span>
+              )}
+            </div>
           </div>
 
           {/* Grouped by supplier */}
@@ -138,10 +157,10 @@ export default function ComprasPage() {
                     variant="outline"
                     size="sm"
                     className="gap-1.5 text-xs"
-                    onClick={() => shareWhatsApp(supplier?.name ?? null, items)}
+                    onClick={() => shareWhatsApp(supplier?.name ?? null, items.filter(i => !selected.has(i.id)))}
                   >
                     <ExternalLink className="h-3.5 w-3.5" />
-                    Pedir por WhatsApp
+                    Compartir por WhatsApp
                   </Button>
                 </div>
 
@@ -150,12 +169,12 @@ export default function ComprasPage() {
                   {items.map(s => (
                     <div
                       key={s.id}
-                      className={`flex items-center gap-4 px-4 py-3 transition-colors ${checked.has(s.id) ? 'opacity-50' : ''}`}
+                      className={`flex items-center gap-4 px-4 py-3 transition-colors ${selected.has(s.id) ? 'bg-emerald-50/50 dark:bg-emerald-950/20' : ''}`}
                     >
                       <input
                         type="checkbox"
-                        checked={checked.has(s.id)}
-                        onChange={() => toggleCheck(s.id)}
+                        checked={selected.has(s.id)}
+                        onChange={() => toggleSelect(s.id)}
                         className="h-4 w-4 rounded border-border accent-emerald-600"
                       />
                       <div className="flex-1 min-w-0">
@@ -190,16 +209,6 @@ export default function ComprasPage() {
             )
           })}
 
-          {/* Global WA share */}
-          <div className="flex justify-end">
-            <Button
-              onClick={() => shareWhatsApp(null, unchecked)}
-              className="bg-emerald-600 hover:bg-emerald-500 text-white gap-2"
-            >
-              <ExternalLink className="h-4 w-4" />
-              Compartir lista completa por WhatsApp
-            </Button>
-          </div>
         </>
       )}
     </div>

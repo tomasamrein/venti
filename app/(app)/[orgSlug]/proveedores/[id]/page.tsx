@@ -16,8 +16,6 @@ import {
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
 
-const CATEGORIES = ['Alimentos', 'Bebidas', 'Lácteos', 'Congelados', 'Limpieza', 'Golosinas', 'Cigarrillos', 'Papel e higiene', 'Farmacia', 'Otro']
-
 interface FormState {
   name: string; alias: string; cuil: string; cuit: string
   email: string; phone: string; address: string; category: string
@@ -33,6 +31,7 @@ export default function EditarProveedorPage() {
   const [loading, setLoading] = useState(false)
   const [fetching, setFetching] = useState(true)
   const [orgId, setOrgId] = useState('')
+  const [categories, setCategories] = useState<{ id: string; name: string }[]>([])
   const [form, setForm] = useState<FormState>({
     name: '', alias: '', cuil: '', cuit: '', email: '', phone: '',
     address: '', category: '', contact_name: '', notes: '', website: '', is_active: true,
@@ -49,13 +48,18 @@ export default function EditarProveedorPage() {
       if (!org) { router.replace(`/${orgSlug}/proveedores`); return }
       setOrgId(org.id)
 
-      const { data: s } = await supabase.from('suppliers').select('*').eq('id', supplierId).single()
+      const [{ data: s }, { data: cats }] = await Promise.all([
+        supabase.from('suppliers').select('*').eq('id', supplierId).single(),
+        supabase.from('product_categories').select('id, name').eq('organization_id', org.id).order('name'),
+      ])
       if (!s) { toast.error('Proveedor no encontrado'); router.replace(`/${orgSlug}/proveedores`); return }
 
+      setCategories(cats || [])
       setForm({
         name: s.name ?? '', alias: s.alias ?? '', cuil: s.cuil ?? '', cuit: s.cuit ?? '',
         email: s.email ?? '', phone: s.phone ?? '', address: s.address ?? '',
         category: s.category ?? '', contact_name: s.contact_name ?? '',
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         notes: s.notes ?? '', website: (s as any).website ?? '', is_active: s.is_active ?? true,
       })
       setFetching(false)
@@ -218,7 +222,7 @@ export default function EditarProveedorPage() {
                 className="w-full h-10 px-3 rounded-xl bg-muted/30 border border-border text-[14px] text-foreground focus:outline-none focus:border-emerald-300/50"
               >
                 <option value="">Sin categoría</option>
-                {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+                {categories.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
               </select>
             </div>
           </div>

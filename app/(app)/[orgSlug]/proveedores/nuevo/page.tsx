@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { toast } from 'sonner'
 import { ArrowLeft, Loader2 } from 'lucide-react'
@@ -11,8 +11,6 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Switch } from '@/components/ui/switch'
-
-const CATEGORIES = ['Alimentos', 'Bebidas', 'Lácteos', 'Congelados', 'Limpieza', 'Golosinas', 'Cigarrillos', 'Papel e higiene', 'Farmacia', 'Otro']
 
 interface FormState {
   name: string; alias: string; cuil: string; cuit: string
@@ -31,6 +29,18 @@ export default function NuevoProveedorPage() {
   const orgSlug = params.orgSlug as string
   const [loading, setLoading] = useState(false)
   const [form, setForm] = useState<FormState>(empty)
+  const [categories, setCategories] = useState<{ id: string; name: string }[]>([])
+
+  useEffect(() => {
+    async function loadCategories() {
+      const supabase = createClient()
+      const { data: org } = await supabase.from('organizations').select('id').eq('slug', orgSlug).single()
+      if (!org) return
+      const { data } = await supabase.from('product_categories').select('id, name').eq('organization_id', org.id).order('name')
+      setCategories(data || [])
+    }
+    loadCategories()
+  }, [orgSlug])
 
   function set<K extends keyof FormState>(k: K, v: FormState[K]) {
     setForm(f => ({ ...f, [k]: v }))
@@ -136,7 +146,7 @@ export default function NuevoProveedorPage() {
                 className="w-full h-10 px-3 rounded-xl bg-muted/30 border border-border text-[14px] text-foreground focus:outline-none focus:border-emerald-300/50"
               >
                 <option value="">Sin categoría</option>
-                {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+                {categories.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
               </select>
             </div>
           </div>
