@@ -86,8 +86,42 @@ export async function POST(req: NextRequest) {
 
     const isFacturaC = ncTipo === 13
     const total = Number(invoice.total)
-    const impNeto = isFacturaC ? total : Number(invoice.subtotal)
-    const impIva = isFacturaC ? 0 : Number(invoice.tax_amount)
+
+    // Recalculate IVA breakdown from stored items (tax_amount in DB may be 0)
+    const IVA_CODE: Record<number, number> = { 0: 3, 2.5: 9, 5: 8, 10.5: 4, 21: 5, 27: 6 }
+    const round2 = (n: number) => Math.round(n * 100) / 100
+
+    let impNeto: number
+    let impIva: number
+    let ivaArray: Array<{ Id: number; BaseImp: number; Importe: number }>
+
+    if (isFacturaC) {
+      impNeto = total
+      impIva = 0
+      ivaArray = []
+    } else {
+      const items = (invoice.items ?? []) as Array<{ subtotal: number; tax_rate?: number }>
+      const ivaMap = new Map<number, { BaseImp: number; Importe: number }>()
+      for (const item of items) {
+        const rate = item.tax_rate ?? 21
+        const code = IVA_CODE[rate] ?? 5
+        const base = round2(item.subtotal / (1 + rate / 100))
+        const imp = round2(item.subtotal - base)
+        const prev = ivaMap.get(code) ?? { BaseImp: 0, Importe: 0 }
+        ivaMap.set(code, { BaseImp: round2(prev.BaseImp + base), Importe: round2(prev.Importe + imp) })
+      }
+      // If no items, fall back to total as neto with IVA 0
+      if (ivaMap.size === 0) {
+        ivaMap.set(3, { BaseImp: total, Importe: 0 })
+      }
+      ivaArray = Array.from(ivaMap.entries()).map(([Id, v]) => ({ Id, ...v }))
+      impNeto = round2(ivaArray.reduce((s, v) => s + v.BaseImp, 0))
+      impIva = round2(ivaArray.reduce((s, v) => s + v.Importe, 0))
+      // ARCA: if ImpIVA ends up 0, must include Id=3 (IVA exento/0%)
+      if (impIva === 0 && ivaArray.every(v => v.Id !== 3)) {
+        ivaArray = [{ Id: 3, BaseImp: impNeto, Importe: 0 }]
+      }
+    }
 
     const response = await fecaeSolicitar(opts, {
       CantReg: 1,
@@ -107,7 +141,7 @@ export async function POST(req: NextRequest) {
       ImpIVA: impIva,
       MonId: 'PES',
       MonCotiz: 1,
-      Iva: isFacturaC ? [] : [{ Id: 5, BaseImp: impNeto, Importe: impIva }],
+      Iva: ivaArray,
       CondicionIVAReceptorId: invoice.customer_cuit ? 1 : 5,
       CbtesAsoc: [{ Tipo: invoice.afip_comp_tipo, PtoVta: invoice.afip_punto_venta, Nro: invoice.afip_comp_nro }],
     })
