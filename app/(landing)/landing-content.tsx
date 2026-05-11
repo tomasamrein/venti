@@ -248,7 +248,7 @@ export default function LandingPage() {
               </h1>
 
               <p
-                className="mt-7 text-lg md:text-xl text-slate-500 max-w-lg mx-auto lg:mx-0 leading-relaxed animate-fade-up"
+                className="mt-7 text-lg md:text-xl text-slate-600 max-w-lg mx-auto lg:mx-0 leading-relaxed animate-fade-up"
                 style={{ animationDelay: '180ms' }}
               >
                 Cobrás más rápido, controlás el stock y facturás por AFIP sin complicaciones.
@@ -267,14 +267,14 @@ export default function LandingPage() {
                 </Link>
                 <Link
                   href="#precios"
-                  className="inline-flex items-center gap-2 h-12 px-7 rounded-xl text-base font-semibold text-slate-600 border border-slate-200 hover:bg-slate-50 hover:border-slate-300 transition-all"
+                  className="inline-flex items-center gap-2 h-12 px-7 rounded-xl text-base font-semibold text-slate-700 border border-slate-300 hover:bg-slate-50 hover:border-slate-400 transition-all"
                 >
                   Ver planes
                 </Link>
               </div>
 
               <p
-                className="mt-5 text-xs text-slate-400 text-center lg:text-left animate-fade-in"
+                className="mt-5 text-xs text-slate-500 text-center lg:text-left animate-fade-in"
                 style={{ animationDelay: '360ms' }}
               >
                 Sin permanencia · Cancelás cuando querés · Hecho en Argentina 🇦🇷
@@ -333,7 +333,7 @@ export default function LandingPage() {
           <h2 className="text-3xl md:text-4xl font-black tracking-tight text-slate-900">
             Manejás tu negocio a ciegas
           </h2>
-          <p className="mt-3 text-base text-slate-500 max-w-lg mx-auto">
+          <p className="mt-3 text-base text-slate-600 max-w-lg mx-auto">
             Sin un sistema, cada día perdés tiempo y plata sin darte cuenta.
           </p>
         </AnimateIn>
@@ -373,7 +373,7 @@ export default function LandingPage() {
           <h2 className="text-3xl md:text-4xl font-black tracking-tight text-slate-900">
             Construido para el comercio argentino
           </h2>
-          <p className="mt-3 text-base text-slate-500 max-w-2xl mx-auto">
+          <p className="mt-3 text-base text-slate-600 max-w-2xl mx-auto">
             Estudiamos kioscos, almacenes y drugstores para entender exactamente dónde se pierde plata y tiempo.
             Cada función de Ventix resuelve uno de esos problemas.
           </p>
@@ -389,7 +389,7 @@ export default function LandingPage() {
             <div key={feat.num} className={`flex flex-col gap-10 ${isEven ? 'lg:flex-row' : 'lg:flex-row-reverse'} items-center`}>
               <AnimateIn from={isEven ? 'left' : 'right'} className="flex-1 space-y-5">
                 <div className="flex items-center gap-3">
-                  <span className="text-5xl font-black text-slate-100 leading-none select-none">{feat.num}</span>
+                  <span className="text-5xl font-black text-slate-300 leading-none select-none">{feat.num}</span>
                   {feat.badge && (
                     <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-blue-100 text-blue-700 border border-blue-200">
                       {feat.badge}
@@ -397,10 +397,10 @@ export default function LandingPage() {
                   )}
                 </div>
                 <h3 className="text-2xl md:text-3xl font-black text-slate-900 tracking-tight">{feat.title}</h3>
-                <p className="text-base text-slate-500 leading-relaxed max-w-md">{feat.desc}</p>
+                <p className="text-base text-slate-600 leading-relaxed max-w-md">{feat.desc}</p>
                 <ul className="space-y-2.5">
                   {feat.highlights.map(h => (
-                    <li key={h} className="flex items-center gap-3 text-sm text-slate-700">
+                    <li key={h} className="flex items-center gap-3 text-sm text-slate-800 font-medium">
                       <div className="w-5 h-5 rounded-full bg-emerald-100 flex items-center justify-center shrink-0">
                         <Check className="h-3 w-3 text-emerald-600" />
                       </div>
@@ -429,7 +429,7 @@ export default function LandingPage() {
         <div className="max-w-5xl mx-auto px-4">
           <AnimateIn className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-black tracking-tight text-slate-900">¿Por qué Ventix?</h2>
-            <p className="mt-3 text-base text-slate-500 max-w-lg mx-auto">
+            <p className="mt-3 text-base text-slate-600 max-w-lg mx-auto">
               No somos un sistema genérico traducido al español. Es argentino, de punta a punta.
             </p>
           </AnimateIn>
@@ -443,7 +443,7 @@ export default function LandingPage() {
                       <Icon className="h-5 w-5 text-emerald-600" />
                     </div>
                     <p className="text-sm font-bold text-slate-900">{w.title}</p>
-                    <p className="text-sm text-slate-500 leading-relaxed">{w.desc}</p>
+                    <p className="text-sm text-slate-600 leading-relaxed">{w.desc}</p>
                   </div>
                 </AnimateIn>
               )
@@ -493,7 +493,7 @@ export default function LandingPage() {
               </div>
               <div className="flex-1 pt-1.5 pb-4">
                 <p className="text-base font-bold text-slate-900">{s.title}</p>
-                <p className="text-sm text-slate-500 mt-1.5 leading-relaxed">{s.desc}</p>
+                <p className="text-sm text-slate-600 mt-1.5 leading-relaxed">{s.desc}</p>
               </div>
             </AnimateIn>
           ))}
@@ -538,24 +538,24 @@ export default function LandingPage() {
                     {plan.priceLabel ? (
                       <div className="mt-3">
                         <span className="text-2xl font-black text-slate-900">A consultar</span>
-                        <p className="text-xs text-slate-400 mt-1.5">El precio se define según tu negocio, facturación y cantidad de sucursales. Hablanos por WhatsApp.</p>
+                        <p className="text-xs text-slate-500 mt-1.5">El precio se define según tu negocio, facturación y cantidad de sucursales. Hablanos por WhatsApp.</p>
                       </div>
                     ) : (
                       <div>
                         <div className="mt-3 flex items-baseline gap-1.5">
                           <span className="text-4xl font-black text-slate-900">{fmt(plan.pricePromo!)}</span>
-                          <span className="text-sm text-slate-400 font-medium">/mes</span>
+                          <span className="text-sm text-slate-500 font-medium">/mes</span>
                         </div>
                         <p className="text-[11px] text-slate-500 mt-1">los primeros 3 meses</p>
-                        <p className="text-[11px] text-slate-400 mt-2">
-                          Después <span className="font-semibold text-slate-600">{fmt(plan.priceFull!)}/mes</span>
+                        <p className="text-[11px] text-slate-500 mt-2">
+                          Después <span className="font-semibold text-slate-700">{fmt(plan.priceFull!)}/mes</span>
                         </p>
                       </div>
                     )}
                   </div>
                   <ul className="space-y-2.5 flex-1">
                     {plan.features.map(feat => (
-                      <li key={feat} className="flex items-start gap-2.5 text-sm text-slate-600">
+                      <li key={feat} className="flex items-start gap-2.5 text-sm text-slate-700">
                         <Check className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
                         {feat}
                       </li>
@@ -566,7 +566,7 @@ export default function LandingPage() {
                     className={`inline-flex items-center justify-center gap-2 h-11 rounded-xl text-sm font-bold transition-all ${
                       plan.highlight
                         ? 'bg-emerald-600 text-white hover:bg-emerald-700 hover:shadow-md hover:shadow-emerald-200'
-                        : 'border border-slate-200 text-slate-700 hover:bg-slate-50'
+                        : 'border border-slate-300 text-slate-800 hover:bg-slate-50'
                     }`}
                   >
                     {plan.cta} <ChevronRight className="h-4 w-4" />
@@ -582,7 +582,7 @@ export default function LandingPage() {
             <Image src="/mercadopago-icon.png" alt="Mercado Pago" width={40} height={40} className="shrink-0" />
             <div>
               <p className="text-sm font-bold text-slate-800">Pagás con Mercado Pago</p>
-              <p className="text-xs text-slate-500 mt-0.5">
+              <p className="text-xs text-slate-600 mt-0.5">
                 Débito, crédito o transferencia. Mensual automático. Los primeros 3 meses al precio promocional, luego el precio regular. Cancelás cuando querés.
               </p>
             </div>

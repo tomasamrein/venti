@@ -14,11 +14,11 @@ export function FaqItem({ q, a }: { q: string; a: string }) {
         <span className="text-sm font-semibold text-slate-900 leading-snug">{q}</span>
         {open
           ? <Minus className="h-4 w-4 text-emerald-600 shrink-0" />
-          : <Plus className="h-4 w-4 text-slate-400 shrink-0" />
+          : <Plus className="h-4 w-4 text-slate-500 shrink-0" />
         }
       </button>
       {open && (
-        <div className="px-6 pb-5 text-sm text-slate-500 leading-relaxed border-t border-slate-100 pt-4">
+        <div className="px-6 pb-5 text-sm text-slate-600 leading-relaxed border-t border-slate-100 pt-4">
           {a}
         </div>
       )}
