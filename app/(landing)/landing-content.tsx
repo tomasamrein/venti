@@ -542,16 +542,14 @@ export default function LandingPage() {
                       </div>
                     ) : (
                       <div>
-                        <div className="mt-3 flex items-baseline gap-1">
-                          <span className="text-3xl font-black text-slate-900">{fmt(plan.pricePromo!)}</span>
-                          <span className="text-xs text-slate-400">/mes</span>
+                        <div className="mt-3 flex items-baseline gap-1.5">
+                          <span className="text-4xl font-black text-slate-900">{fmt(plan.pricePromo!)}</span>
+                          <span className="text-sm text-slate-400 font-medium">/mes</span>
                         </div>
-                        <div className="flex items-center gap-2 mt-1.5">
-                          <span className="text-xs text-slate-400 line-through">{fmt(plan.priceFull!)}/mes</span>
-                          <span className="text-[10px] font-black text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
-                            50% off × 3m
-                          </span>
-                        </div>
+                        <p className="text-[11px] text-slate-500 mt-1">los primeros 3 meses</p>
+                        <p className="text-[11px] text-slate-400 mt-2">
+                          Después <span className="font-semibold text-slate-600">{fmt(plan.priceFull!)}/mes</span>
+                        </p>
                       </div>
                     )}
                   </div>
