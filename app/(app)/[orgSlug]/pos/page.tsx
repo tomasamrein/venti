@@ -8,7 +8,7 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { ProductGrid } from '@/components/pos/product-grid'
 import { CartSummary } from '@/components/pos/cart-summary'
-import { PaymentModal } from '@/components/pos/payment-modal'
+import { PaymentModal, type InvoiceChoice } from '@/components/pos/payment-modal'
 import { SaleTicket } from '@/components/pos/sale-ticket'
 import { CopyServicePanel } from '@/components/pos/copy-service-panel'
 import { EmployeeSwitcher } from '@/components/pos/employee-switcher'
@@ -54,10 +54,13 @@ export default function POSPage() {
   const businessType = org.business_type
   const isFotocopiadora = !!(org.settings as any)?.copy_service_enabled
   const isDrugstore = businessType === 'drugstore'
+  const hasArcaEnabled = !!((org.settings as any)?.arca?.vault_cert_id)
 
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
   const [paymentOpen, setPaymentOpen] = useState(false)
+  const [customerCuit, setCustomerCuit] = useState<string | undefined>()
+  const [customerName, setCustomerName] = useState<string | undefined>()
   const [ticketData, setTicketData] = useState<SaleData | null>(null)
   const [mobileTab, setMobileTab] = useState<MobileTab>('products')
   const [usbInputOpen, setUsbInputOpen] = useState(false)
@@ -104,6 +107,16 @@ export default function POSPage() {
         setLoading(false)
       })
   }, [org.id, isOffline])
+
+  useEffect(() => {
+    if (!customerId) { setCustomerCuit(undefined); setCustomerName(undefined); return }
+    const supabase = createClient()
+    supabase.from('customers').select('full_name, cuit').eq('id', customerId).single()
+      .then(({ data }) => {
+        setCustomerName(data?.full_name ?? undefined)
+        setCustomerCuit(data?.cuit ?? undefined)
+      })
+  }, [customerId])
 
   const handleBarcodeFound = useCallback((barcode: string) => {
     const product = products.find(p => p.barcode === barcode)
@@ -172,7 +185,7 @@ export default function POSPage() {
     }
   }
 
-  const handlePayment = async (method: string, amountPaid: number) => {
+  const handlePayment = async (method: string, amountPaid: number, invoice: InvoiceChoice) => {
     if (!session) return
 
     const supabase = createClient()
@@ -273,7 +286,45 @@ export default function POSPage() {
       )
 
       playSound('payment')
-      toast.success('¡Venta completada!')
+
+      if (invoice.type !== 'non_fiscal') {
+        try {
+          const arcaRes = await fetch('/api/arca/invoice', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              org_id: org.id,
+              branch_id: branch.id,
+              sale_id: result.sale_id,
+              invoice_type: invoice.type,
+              customer_id: customerId ?? undefined,
+              customer_name: invoice.customerName,
+              customer_cuit: invoice.customerCuit,
+              items: itemsPayload.map(i => ({
+                name: i.name,
+                unit_price: i.unit_price,
+                quantity: i.quantity,
+                discount_pct: i.discount_pct ?? 0,
+                tax_rate: i.tax_rate,
+                subtotal: i.subtotal,
+              })),
+              subtotal,
+              tax_amount: 0,
+              total,
+            }),
+          })
+          const arcaJson = await arcaRes.json()
+          if (!arcaRes.ok) {
+            toast.warning(`Venta registrada, pero error ARCA: ${arcaJson.error ?? 'error desconocido'}`)
+          } else {
+            toast.success(`Venta completada — CAE: ${arcaJson.invoice?.cae}`)
+          }
+        } catch {
+          toast.warning('Venta registrada, pero no se pudo conectar con ARCA')
+        }
+      } else {
+        toast.success('¡Venta completada!')
+      }
     } catch (err) {
       console.error(err)
       const message = err instanceof Error ? err.message : 'Error al registrar la venta'
@@ -397,6 +448,9 @@ export default function POSPage() {
         open={paymentOpen}
         total={getTotal()}
         hasCustomer={!!customerId}
+        hasArcaEnabled={hasArcaEnabled}
+        customerCuit={customerCuit}
+        customerName={customerName}
         onClose={() => setPaymentOpen(false)}
         onConfirm={handlePayment}
       />
