@@ -60,9 +60,10 @@ export default async function DashboardPage({ params, searchParams }: Props) {
   }).format(nowUtc)
 
   // These counts are static (not period-dependent) — fetch once server-side for onboarding banner
-  const [{ count: totalProducts }, { count: totalSales }] = await Promise.all([
+  const [{ count: totalProducts }, { count: totalSales }, { count: totalSessions }] = await Promise.all([
     supabase.from('products').select('*', { count: 'exact', head: true }).eq('organization_id', org.id).eq('is_active', true),
     supabase.from('sales').select('*', { count: 'exact', head: true }).eq('organization_id', org.id).eq('status', 'completed'),
+    supabase.from('cash_sessions').select('*', { count: 'exact', head: true }).eq('organization_id', org.id),
   ])
 
   return (
@@ -78,7 +79,7 @@ export default async function DashboardPage({ params, searchParams }: Props) {
         orgSlug={orgSlug}
         hasProducts={(totalProducts ?? 0) > 0}
         hasSales={(totalSales ?? 0) > 0}
-        hasCashSession={false}
+        hasCashSession={(totalSessions ?? 0) > 0}
       />
 
       <DashboardClient
