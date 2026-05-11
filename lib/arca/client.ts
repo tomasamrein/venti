@@ -75,10 +75,11 @@ async function callWsfev1(action: string, innerBody: string, opts: SOAPOpts, att
 }
 
 function authXml(opts: SOAPOpts): string {
+  const cuitDigits = opts.cuit.replace(/\D/g, '')
   return `<ar:Auth>
       <ar:Token>${opts.token.token}</ar:Token>
       <ar:Sign>${opts.token.sign}</ar:Sign>
-      <ar:Cuit>${opts.cuit}</ar:Cuit>
+      <ar:Cuit>${cuitDigits}</ar:Cuit>
     </ar:Auth>`
 }
 
@@ -89,8 +90,8 @@ export async function feCompUltimoAutorizado(
 ): Promise<number> {
   const body = `<ar:FECompUltimoAutorizado>
     ${authXml(opts)}
-    <ar:PtoVta>${ptoVta}</ar:PtoVta>
-    <ar:CbteTipo>${cbteTipo}</ar:CbteTipo>
+    <ar:PtoVta>${parseInt(String(ptoVta))}</ar:PtoVta>
+    <ar:CbteTipo>${parseInt(String(cbteTipo))}</ar:CbteTipo>
   </ar:FECompUltimoAutorizado>`
 
   const xml = await callWsfev1('FECompUltimoAutorizado', body, opts)
