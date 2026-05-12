@@ -2,7 +2,8 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Moon, Sun, LogOut, Settings, Menu } from 'lucide-react'
+import Link from 'next/link'
+import { Moon, Sun, LogOut, Settings, Menu, BookOpen } from 'lucide-react'
 import { useTheme } from 'next-themes'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
@@ -58,6 +59,15 @@ export function TopNav({ orgSlug, organizationId, userName, userAvatar }: TopNav
       <div className="flex-1" />
 
       <div className="flex items-center gap-1">
+        <Link
+          href={`/${orgSlug}/docs`}
+          aria-label="Documentación"
+          title="Documentación"
+          className="h-8 w-8 rounded-lg inline-flex items-center justify-center text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+        >
+          <BookOpen className="h-4 w-4" />
+        </Link>
+
         <NotificationBell orgSlug={orgSlug} organizationId={organizationId} />
 
         <Button
