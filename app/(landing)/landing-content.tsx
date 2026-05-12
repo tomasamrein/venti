@@ -12,12 +12,47 @@ import { AnimateIn } from '@/components/landing/animate-in'
 import { FaqItem } from '@/components/landing/faq-item'
 
 export const metadata: Metadata = {
-  title: 'Ventix — Sistema para comercios argentinos',
-  description: 'El sistema más completo para kioscos, almacenes y drugstores. Facturación AFIP, stock automático y cuentas corrientes. 14 días gratis.',
+  title: 'Ventix — Sistema POS para Kioscos y Comercios Argentinos',
+  description: 'Software de gestión para kioscos, almacenes, drugstores y comercios minoristas de Argentina. Facturación AFIP/ARCA, control de stock, cuentas corrientes y POS. Probá 14 días gratis.',
+  keywords: [
+    'sistema para kiosco argentina',
+    'software kiosco argentino',
+    'sistema punto de venta argentina',
+    'POS argentina',
+    'programa para almacen argentina',
+    'software para comercio argentino',
+    'sistema facturación AFIP',
+    'facturación ARCA',
+    'control de stock kiosco',
+    'gestión comercio minorista argentina',
+    'programa para drugstore',
+    'sistema de gestión para negocio',
+    'software caja registradora argentina',
+    'programa facturación electronica argentina',
+    'cuentas corrientes clientes',
+  ],
+  alternates: {
+    canonical: 'https://ventix.com.ar',
+  },
   openGraph: {
-    title: 'Ventix — Sistema para comercios argentinos',
-    description: 'Facturación AFIP, stock, cuentas corrientes y cobros en segundos. Hecho para el comercio argentino.',
-    images: [{ url: '/og-image.png', width: 1200, height: 630 }],
+    type: 'website',
+    url: 'https://ventix.com.ar',
+    title: 'Ventix — Sistema POS para Kioscos y Comercios Argentinos',
+    description: 'Facturación AFIP/ARCA, stock automático, cuentas corrientes y cobros en segundos. Hecho para el comercio argentino.',
+    siteName: 'Ventix',
+    locale: 'es_AR',
+    images: [{ url: '/og-image.png', width: 1200, height: 630, alt: 'Ventix — Sistema POS para comercios argentinos' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Ventix — Sistema POS para Kioscos y Comercios Argentinos',
+    description: 'Facturación AFIP/ARCA, stock automático, cuentas corrientes y cobros en segundos.',
+    images: ['/og-image.png'],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true, 'max-snippet': -1, 'max-image-preview': 'large' },
   },
 }
 

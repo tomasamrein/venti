@@ -1,25 +1,23 @@
+'use client'
+
 import { WifiOff } from 'lucide-react'
-import Link from 'next/link'
+import { Button } from '@/components/ui/button'
 
 export default function OfflinePage() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
-      <div className="text-center space-y-4">
-        <div className="w-16 h-16 rounded-2xl bg-amber-500/10 flex items-center justify-center mx-auto">
-          <WifiOff className="h-8 w-8 text-amber-400" />
-        </div>
-        <h1 className="text-[24px] font-extrabold tracking-[-0.03em] text-white">Sin conexión</h1>
-        <p className="text-[14px] text-muted-foreground max-w-xs">
-          No se pudo conectar. Revisá tu conexión a internet e intentá de nuevo.
-        </p>
-        <Link
-          href="/"
-          className="inline-flex items-center gap-2 mt-4 px-5 h-10 rounded-xl text-[14px] font-semibold text-white transition-opacity hover:opacity-80"
-          style={{ background: 'linear-gradient(135deg, oklch(0.55 0.16 155), oklch(0.50 0.16 158))' }}
-        >
-          Reintentar
-        </Link>
+    <div className="min-h-screen flex flex-col items-center justify-center gap-6 p-8 text-center bg-background">
+      <div className="flex items-center justify-center w-20 h-20 rounded-full bg-muted">
+        <WifiOff className="w-10 h-10 text-muted-foreground" />
       </div>
+      <div className="space-y-2">
+        <h1 className="text-2xl font-semibold">Sin conexión</h1>
+        <p className="text-muted-foreground max-w-sm">
+          No hay conexión a internet. Algunas funciones del POS siguen disponibles.
+        </p>
+      </div>
+      <Button onClick={() => window.location.reload()} variant="outline">
+        Reintentar
+      </Button>
     </div>
   )
 }

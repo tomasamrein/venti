@@ -10,7 +10,7 @@ const PRECACHE = [OFFLINE_URL]
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(STATIC_CACHE)
-      .then((cache) => cache.addAll(PRECACHE))
+      .then((cache) => cache.addAll(PRECACHE).catch(() => {}))
       .then(() => self.skipWaiting())
   )
 })
