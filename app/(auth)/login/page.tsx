@@ -26,6 +26,7 @@ function LoginForm() {
   const redirectTo = searchParams.get('redirect') || '/'
   const checkout = searchParams.get('checkout')
   const [loading, setLoading] = useState(false)
+  const [remember, setRemember] = useState(true)
 
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -40,6 +41,11 @@ function LoginForm() {
       toast.error('Credenciales incorrectas. Revisá tu email y contraseña.')
       setLoading(false)
       return
+    }
+
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('ventix-remember-me', remember ? '1' : '0')
+      sessionStorage.setItem('ventix-session-alive', '1')
     }
 
     if (checkout === 'basic') {
@@ -140,6 +146,16 @@ function LoginForm() {
               </div>
               {errors.password && <p className="text-xs text-destructive">{errors.password.message}</p>}
             </div>
+
+            <label className="flex items-center gap-2 cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={remember}
+                onChange={e => setRemember(e.target.checked)}
+                className="h-4 w-4 rounded border-input text-emerald-600 focus:ring-emerald-500 cursor-pointer"
+              />
+              <span className="text-sm text-foreground">Recordar mi cuenta en este dispositivo</span>
+            </label>
           </div>
 
           <div className="px-7 pt-6 pb-7 space-y-3">

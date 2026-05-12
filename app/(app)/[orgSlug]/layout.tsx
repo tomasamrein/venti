@@ -7,6 +7,7 @@ import { OfflineBanner } from '@/components/shared/offline-banner'
 import { TrialBanner } from '@/components/shared/trial-banner'
 import { OrgProvider } from '@/components/providers/org-provider'
 import { SupportChat } from '@/components/layout/support-chat'
+import { RememberMeGuard } from '@/components/providers/remember-me-guard'
 
 interface Props {
   children: React.ReactNode
@@ -77,6 +78,7 @@ export default async function OrgLayout({ children, params }: Props) {
         </div>
       </div>
       <SupportChat />
+      <RememberMeGuard />
     </OrgProvider>
   )
 }

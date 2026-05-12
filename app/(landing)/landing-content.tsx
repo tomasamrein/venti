@@ -3,7 +3,7 @@ import Image from 'next/image'
 import {
   ShoppingCart, BarChart3, Wifi, Receipt, Users, Package,
   ChevronRight, Check, TrendingDown, AlertTriangle, Clock,
-  CreditCard, Smartphone, Zap, Star, ShieldCheck, HeadphonesIcon,
+  CreditCard, Smartphone, Zap, ShieldCheck, HeadphonesIcon,
   Rocket, FileText, FileSpreadsheet, Bot, Tag, ArrowRight,
   MessageCircle, Mail,
 } from 'lucide-react'
@@ -129,17 +129,6 @@ const PLANS = [
     cta: 'Suscribirme',
     href: '/registro',
     highlight: true,
-  },
-  {
-    name: 'Profesional',
-    icon: Star,
-    pricePromo: null as number | null,
-    priceFull: null as number | null,
-    priceLabel: 'A consultar',
-    features: ['Todo lo del plan Con Facturación', 'Múltiples sucursales', 'Equipo con roles (dueño, admin, cajero)', 'Reportes por sucursal y empleado', 'Notificaciones push de stock', 'Soporte prioritario por WhatsApp'],
-    cta: 'Consultanos',
-    href: '/#contacto',
-    highlight: false,
   },
 ]
 
@@ -418,7 +407,7 @@ export default function LandingPage() {
           const Icon = feat.icon
           const isEven = i % 2 === 0
           const planLabel = feat.badge
-            ? 'Plan Con Facturación y Profesional'
+            ? 'Plan Con Facturación'
             : 'Incluido en todos los planes'
           return (
             <div key={feat.num} className={`flex flex-col gap-10 ${isEven ? 'lg:flex-row' : 'lg:flex-row-reverse'} items-center`}>

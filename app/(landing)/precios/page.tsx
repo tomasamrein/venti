@@ -1,6 +1,6 @@
 'use client'
 
-import { Check, ChevronRight, Smartphone, Zap, Package, Star, Tag } from 'lucide-react'
+import { Check, ChevronRight, Smartphone, Zap, Package, Tag } from 'lucide-react'
 import Link from 'next/link'
 
 const fmt = (n: number) =>
@@ -44,40 +44,19 @@ const PLANS = [
     href: '/registro',
     highlight: true,
   },
-  {
-    name: 'Profesional',
-    icon: Star,
-    pricePromo: 70000,
-    priceFull: 140000,
-    features: [
-      'Todo lo del plan Con Facturación',
-      'Múltiples sucursales',
-      'Gestión de equipo con roles (owner, admin, cajero)',
-      'Selector de cajero por turno',
-      'Historial de ventas por empleado',
-      'Notificaciones push de stock',
-      'Soporte prioritario',
-    ],
-    cta: 'Contactanos',
-    href: '/contacto',
-    highlight: false,
-  },
 ]
 
-const COMPARISON: [string, boolean, boolean, boolean][] = [
-  ['POS con escáner de barras',            true,  true,  true ],
-  ['Stock y alertas automáticas',          true,  true,  true ],
-  ['Clientes y cuentas corrientes',        true,  true,  true ],
-  ['Export de ventas para contador',       true,  true,  true ],
-  ['Funciona offline',                     true,  true,  true ],
-  ['Chatbot IA + soporte WhatsApp',        true,  true,  true ],
-  ['Facturación ARCA (A, B y C)',          false, true,  true ],
-  ['Reportes avanzados',                   false, true,  true ],
-  ['Gestión de proveedores',               false, true,  true ],
-  ['Historial de precios',                 false, true,  true ],
-  ['Múltiples sucursales',                 false, false, true ],
-  ['Gestión de equipo y roles',            false, false, true ],
-  ['Notificaciones push',                  false, false, true ],
+const COMPARISON: [string, boolean, boolean][] = [
+  ['POS con escáner de barras',            true,  true ],
+  ['Stock y alertas automáticas',          true,  true ],
+  ['Clientes y cuentas corrientes',        true,  true ],
+  ['Export de ventas para contador',       true,  true ],
+  ['Funciona offline',                     true,  true ],
+  ['Chatbot IA + soporte WhatsApp',        true,  true ],
+  ['Facturación ARCA (A, B y C)',          false, true ],
+  ['Reportes avanzados',                   false, true ],
+  ['Gestión de proveedores',               false, true ],
+  ['Historial de precios',                 false, true ],
 ]
 
 export default function PreciosPage() {
@@ -103,7 +82,7 @@ export default function PreciosPage() {
       </div>
 
       {/* Plan cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 max-w-4xl mx-auto">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 max-w-3xl mx-auto">
         {PLANS.map(plan => {
           const Icon = plan.icon
           return (
@@ -183,14 +162,13 @@ export default function PreciosPage() {
                 <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Funcionalidad</th>
                 <th className="px-3 py-3 text-center text-xs font-semibold text-slate-500 uppercase tracking-wider">Simple</th>
                 <th className="px-3 py-3 text-center text-xs font-semibold text-emerald-700 uppercase tracking-wider">Con Facturación</th>
-                <th className="px-3 py-3 text-center text-xs font-semibold text-slate-500 uppercase tracking-wider">Profesional</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {COMPARISON.map(([feat, simple, avanzado, profesional]) => (
+              {COMPARISON.map(([feat, simple, avanzado]) => (
                 <tr key={feat} className="hover:bg-slate-50">
                   <td className="px-4 py-3 text-slate-700 text-xs">{feat}</td>
-                  {[simple, avanzado, profesional].map((val, i) => (
+                  {[simple, avanzado].map((val, i) => (
                     <td key={i} className="px-3 py-3 text-center">
                       {val
                         ? <Check className="h-4 w-4 text-emerald-600 mx-auto" />

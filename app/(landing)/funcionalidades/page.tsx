@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import {
   ShoppingCart, Receipt, Package, Users, BarChart3, Wifi,
-  CreditCard, Bell, Building2, Truck, ShieldCheck, Bot,
+  CreditCard, Bell, Truck, ShieldCheck, Bot,
   ChevronRight, Check,
 } from 'lucide-react'
 
@@ -114,21 +114,6 @@ const SECTIONS = [
       'Diferencia automática al cierre',
       'Historial de sesiones anteriores',
       'Una sola caja abierta por sucursal a la vez',
-    ],
-  },
-  {
-    icon: Building2,
-    iconColor: 'text-emerald-700',
-    iconBg: 'bg-emerald-100',
-    title: 'Multi-sucursal (Plan Profesional)',
-    desc: 'Manejás toda la cadena desde un solo lugar.',
-    features: [
-      'Sucursales ilimitadas',
-      'Dashboard consolidado con todas las sucursales',
-      'Reportes comparativos entre sucursales',
-      'Usuarios asignados por sucursal',
-      'Stock independiente por sucursal',
-      'Facturas por punto de venta AFIP',
     ],
   },
   {
