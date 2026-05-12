@@ -70,6 +70,9 @@ export async function proxy(request: NextRequest) {
     pathname.startsWith('/precios') ||
     pathname.startsWith('/funcionalidades') ||
     pathname.startsWith('/contacto') ||
+    pathname.startsWith('/docs') ||
+    pathname.startsWith('/terminos') ||
+    pathname.startsWith('/privacidad') ||
     pathname.startsWith('/login') ||
     pathname === '/admin/login' ||
     pathname.startsWith('/registro') ||
