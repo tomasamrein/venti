@@ -83,6 +83,19 @@ export default function EquipoPage() {
     setInviting(true)
     try {
       const supabase = createClient()
+      const { data: sub } = await supabase
+        .from('subscriptions')
+        .select('subscription_plans(max_users)')
+        .eq('organization_id', orgId)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle()
+      const maxUsers = (sub?.subscription_plans as { max_users: number } | null)?.max_users ?? 2
+      const activeMembers = members.filter(m => m.is_active).length
+      if (activeMembers >= maxUsers) {
+        toast.error(`Tu plan permite hasta ${maxUsers} usuario${maxUsers > 1 ? 's' : ''}. Actualizá tu plan para agregar más.`)
+        return
+      }
       // Try to find user by email via RPC
       const { data: authData } = await supabase.rpc('get_user_id_by_email' as never, { email: inviteEmail.trim().toLowerCase() } as never)
       const userId = authData as string | null

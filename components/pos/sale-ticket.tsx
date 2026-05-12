@@ -9,7 +9,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { formatARS } from '@/lib/utils/currency'
+import { formatARS, waEncode } from '@/lib/utils/currency'
 import { format } from 'date-fns'
 import { es } from 'date-fns/locale'
 
@@ -117,7 +117,7 @@ export function SaleTicket({ open, onClose, sale }: SaleTicketProps) {
       `Pago: ${PAYMENT_LABELS[sale.payment_method] ?? sale.payment_method}`,
     ].filter(Boolean).join('\n')
 
-    const url = `https://wa.me/?text=${encodeURIComponent(lines)}`
+    const url = `https://wa.me/?text=${waEncode(lines)}`
     window.open(url, '_blank')
   }
 

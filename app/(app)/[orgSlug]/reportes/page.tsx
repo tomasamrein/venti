@@ -195,7 +195,7 @@ export default function ReportesPage() {
             className="h-8 px-3 rounded-lg text-[13px] font-medium transition-colors border border-border/60 text-muted-foreground hover:text-foreground hover:bg-muted/40 inline-flex items-center gap-1.5"
           >
             <Download className="h-3.5 w-3.5" />
-            XLSX
+            Descargar datos
           </a>
         </div>
       </div>
@@ -264,19 +264,19 @@ export default function ReportesPage() {
                 </div>
               ))
               : !topProducts.length
-              ? <p className="text-center py-8 text-[14px] text-muted-foreground">Sin datos</p>
-              : topProducts.map((p, i) => (
-                <div key={p.name} className="px-5 py-3 flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <span className="text-[12px] font-bold text-muted-foreground w-5">{i + 1}</span>
-                    <div>
-                      <p className="text-[13px] font-medium">{p.name}</p>
-                      <p className="text-[11px] text-muted-foreground">{p.quantity} unidades</p>
+                ? <p className="text-center py-8 text-[14px] text-muted-foreground">Sin datos</p>
+                : topProducts.map((p, i) => (
+                  <div key={p.name} className="px-5 py-3 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <span className="text-[12px] font-bold text-muted-foreground w-5">{i + 1}</span>
+                      <div>
+                        <p className="text-[13px] font-medium">{p.name}</p>
+                        <p className="text-[11px] text-muted-foreground">{p.quantity} unidades</p>
+                      </div>
                     </div>
+                    <p className="text-[13px] font-bold">{formatARS(p.revenue)}</p>
                   </div>
-                  <p className="text-[13px] font-bold">{formatARS(p.revenue)}</p>
-                </div>
-              ))}
+                ))}
           </div>
         </div>
 
@@ -299,18 +299,18 @@ export default function ReportesPage() {
                 </div>
               ))
               : !stockAlerts.length
-              ? <p className="text-center py-8 text-[14px] text-muted-foreground">Sin alertas activas</p>
-              : stockAlerts.map(a => {
-                const isOut = a.alert_type === 'out_of_stock'
-                return (
-                  <div key={a.id} className="px-5 py-3 flex items-center justify-between">
-                    <p className="text-[13px] font-medium">{a.products?.name ?? 'Producto eliminado'}</p>
-                    <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${isOut ? 'bg-red-500/15 text-red-400' : 'bg-amber-500/15 text-amber-400'}`}>
-                      {isOut ? 'Sin stock' : `Stock: ${a.current_stock}`}
-                    </span>
-                  </div>
-                )
-              })}
+                ? <p className="text-center py-8 text-[14px] text-muted-foreground">Sin alertas activas</p>
+                : stockAlerts.map(a => {
+                  const isOut = a.alert_type === 'out_of_stock'
+                  return (
+                    <div key={a.id} className="px-5 py-3 flex items-center justify-between">
+                      <p className="text-[13px] font-medium">{a.products?.name ?? 'Producto eliminado'}</p>
+                      <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${isOut ? 'bg-red-500/15 text-red-400' : 'bg-amber-500/15 text-amber-400'}`}>
+                        {isOut ? 'Sin stock' : `Stock: ${a.current_stock}`}
+                      </span>
+                    </div>
+                  )
+                })}
           </div>
         </div>
       </div>

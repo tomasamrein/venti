@@ -9,6 +9,7 @@ import {
   Bell, DollarSign, TrendingUp, Receipt, ShoppingBag,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useOrg } from '@/hooks/use-org'
 
 interface SidebarProps {
   orgSlug: string
@@ -33,27 +34,29 @@ function navItem(label: string, href: string, icon: React.ReactNode): NavItem {
 export function Sidebar({ orgSlug, className }: SidebarProps) {
   const pathname = usePathname()
   const base = `/${orgSlug}`
+  const { role } = useOrg()
+  const isCashier = role === 'cashier'
 
   const sections: NavSection[] = [
     {
       items: [
-        navItem('Dashboard', `${base}/dashboard`, <LayoutDashboard className="h-4 w-4" />),
+        ...(!isCashier ? [navItem('Dashboard', `${base}/dashboard`, <LayoutDashboard className="h-4 w-4" />)] : []),
         navItem('Punto de Venta', `${base}/pos`, <ShoppingCart className="h-4 w-4" />),
         navItem('Caja', `${base}/caja`, <DollarSign className="h-4 w-4" />),
       ],
     },
-    {
+    ...(!isCashier ? [{
       title: 'Inventario',
       items: [
         navItem('Productos', `${base}/productos`, <Package className="h-4 w-4" />),
         navItem('Compras sugeridas', `${base}/compras`, <ShoppingBag className="h-4 w-4" />),
         navItem('Proveedores', `${base}/proveedores`, <Briefcase className="h-4 w-4" />),
       ],
-    },
+    }] : []),
     {
       title: 'Finanzas',
       items: [
-        navItem('Gastos', `${base}/gastos`, <Receipt className="h-4 w-4" />),
+        ...(!isCashier ? [navItem('Gastos', `${base}/gastos`, <Receipt className="h-4 w-4" />)] : []),
         navItem('Facturación', `${base}/facturacion`, <FileText className="h-4 w-4" />),
       ],
     },
@@ -64,13 +67,13 @@ export function Sidebar({ orgSlug, className }: SidebarProps) {
         navItem('Cuentas Corrientes', `${base}/cuentas-corrientes`, <CreditCard className="h-4 w-4" />),
       ],
     },
-    {
+    ...(!isCashier ? [{
       title: 'Análisis',
       items: [
         navItem('Ventas', `${base}/ventas`, <TrendingUp className="h-4 w-4" />),
         navItem('Reportes', `${base}/reportes`, <BarChart3 className="h-4 w-4" />),
       ],
-    },
+    }] : []),
   ]
 
   const bottomItems: NavItem[] = [

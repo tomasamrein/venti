@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { ShoppingBag, RefreshCw, Phone, Mail, AlertTriangle, CheckCircle2, ExternalLink, PackageCheck } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { formatARS } from '@/lib/utils/currency'
+import { formatARS, waEncode } from '@/lib/utils/currency'
 import { useOrg } from '@/hooks/use-org'
 
 interface Suggestion {
@@ -60,7 +60,7 @@ export default function ComprasPage() {
       `• ${i.name}${i.brand ? ` (${i.brand})` : ''} — ${i.suggested_qty} ${i.unit}${i.price_cost ? ` @ ${formatARS(i.price_cost)}` : ''}`
     ).join('\n')
     const text = `Pedido ${date}${supplier ? ` para ${supplier}` : ''}:\n\n${lines}`
-    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank')
+    window.open(`https://wa.me/?text=${waEncode(text)}`, '_blank')
   }
 
   const pending = suggestions.filter(s => !ordered.has(s.id))

@@ -3,14 +3,14 @@
 import { useEffect, useState } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { toast } from 'sonner'
-import { ArrowLeft, Loader2, Plus, Minus } from 'lucide-react'
+import { ArrowLeft, Loader2, Plus, Minus, MessageCircle } from 'lucide-react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
-import { formatARS } from '@/lib/utils/currency'
+import { formatARS, waEncode } from '@/lib/utils/currency'
 import { useOrg } from '@/hooks/use-org'
 
 interface Transaction {
@@ -99,6 +99,27 @@ export default function CuentaCorrientePage() {
 
   const customer = account?.customers as unknown as { full_name: string; phone: string | null; alias: string | null }
 
+  function handleWhatsApp() {
+    const date = new Date().toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit', year: 'numeric' })
+    const recent = transactions.slice(0, 10).map(tx => {
+      const d = new Date(tx.created_at).toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit' })
+      const sign = tx.amount > 0 ? '+' : ''
+      return `  ${d} ${tx.description || (tx.amount > 0 ? 'Pago' : 'Cargo')}: ${sign}${formatARS(tx.amount)}`
+    }).join('\n')
+    const lines = [
+      `*Estado de cuenta — ${customer?.full_name}*`,
+      `${org.name} | ${date}`,
+      ``,
+      `Saldo actual: *${formatARS(account?.balance ?? 0)}*`,
+      account?.credit_limit ? `Límite de crédito: ${formatARS(account.credit_limit)}` : null,
+      ``,
+      transactions.length ? `Últimos movimientos:\n${recent}` : null,
+    ].filter(Boolean).join('\n')
+    const phone = customer?.phone?.replace(/\D/g, '') ?? ''
+    const url = phone ? `https://wa.me/${phone}?text=${waEncode(lines)}` : `https://wa.me/?text=${waEncode(lines)}`
+    window.open(url, '_blank')
+  }
+
   if (fetching) {
     return (
       <div className="max-w-2xl">
@@ -137,6 +158,13 @@ export default function CuentaCorrientePage() {
             )}
           </div>
           <div className="flex gap-2">
+            <Button
+              variant="ghost" size="sm"
+              className="h-8 px-3 rounded-lg text-[12px] text-green-500 hover:text-green-400 hover:bg-green-500/10 gap-1.5"
+              onClick={handleWhatsApp}
+            >
+              <MessageCircle className="h-3.5 w-3.5" />Compartir
+            </Button>
             <Button
               variant="ghost" size="sm"
               className="h-8 px-3 rounded-lg text-[12px] text-red-400 hover:text-red-300 hover:bg-red-500/10 gap-1.5"

@@ -31,7 +31,7 @@ import {
 import { ScrollArea } from '@/components/ui/scroll-area'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
-import { formatARS } from '@/lib/utils/currency'
+import { formatARS, waEncode } from '@/lib/utils/currency'
 import { format } from 'date-fns'
 import { es } from 'date-fns/locale'
 import { useOrg } from '@/hooks/use-org'
@@ -270,7 +270,7 @@ export default function CajaPage() {
       diff !== 0 ? `${diff >= 0 ? '➕' : '➖'} Diferencia: ${formatARS(diff)}` : `✔ Sin diferencia`,
     ].join('\n')
 
-    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank')
+    window.open(`https://wa.me/?text=${waEncode(text)}`, '_blank')
   }
 
   const movementTypeLabel: Record<string, string> = {

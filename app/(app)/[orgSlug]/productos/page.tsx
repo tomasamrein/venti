@@ -41,7 +41,7 @@ import { RemoteScannerModal } from '@/components/pos/remote-scanner-modal'
 import { ExcelPriceImport } from '@/components/products/excel-price-import'
 import { CsvProductImport } from '@/components/products/csv-product-import'
 import { createClient } from '@/lib/supabase/client'
-import { formatARS } from '@/lib/utils/currency'
+import { formatARS, waEncode } from '@/lib/utils/currency'
 import { useOrg } from '@/hooks/use-org'
 import type { Database } from '@/types/database'
 
@@ -209,7 +209,7 @@ export default function ProductosPage() {
     const lines = lowStock.length > 0
       ? lowStock.map(p => `- ${p.name}: stock actual ${p.stock_current} ${p.unit} (mínimo ${p.stock_min})`).join('\n')
       : filtered.map(p => `- ${p.name}`).join('\n')
-    const msg = encodeURIComponent(`Hola ${supplier.name}! Te mando la lista de pedido:\n\n${lines}\n\n¡Gracias!`)
+    const msg = waEncode(`Hola ${supplier.name}! Te mando la lista de pedido:\n\n${lines}\n\n¡Gracias!`)
     const contact = supplier.phone?.replace(/\D/g, '') ?? ''
     const url = contact ? `https://wa.me/${contact}?text=${msg}` : `https://wa.me/?text=${msg}`
     window.open(url, '_blank')

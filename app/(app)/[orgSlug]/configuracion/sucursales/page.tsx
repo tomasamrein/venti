@@ -66,6 +66,22 @@ export default function SucursalesPage() {
     if (!form.name.trim()) { toast.error('El nombre es obligatorio'); return }
     setSaving(true)
     const supabase = createClient()
+    if (!editing) {
+      const { data: sub } = await supabase
+        .from('subscriptions')
+        .select('subscription_plans(max_branches)')
+        .eq('organization_id', orgId)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle()
+      const maxBranches = (sub?.subscription_plans as { max_branches: number } | null)?.max_branches ?? 1
+      const activeBranches = branches.filter(b => b.is_active).length
+      if (activeBranches >= maxBranches) {
+        toast.error(`Tu plan permite hasta ${maxBranches} sucursal${maxBranches > 1 ? 'es' : ''}. Actualizá tu plan para agregar más.`)
+        setSaving(false)
+        return
+      }
+    }
     if (editing) {
       const { error } = await supabase.from('branches').update({
         name: form.name.trim(),
