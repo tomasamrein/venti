@@ -49,7 +49,7 @@ export default function POSPage() {
   const { org, branch, userId } = useOrg()
   const { session, isOpen, isLoading: sessionLoading } = useCashSession()
   const { activeCashierName } = usePosStore()
-  const isOffline = useOffline(org.id)
+  const isOffline = useOffline(org.id, branch.id)
 
   const businessType = org.business_type
   const isFotocopiadora = !!(org.settings as any)?.copy_service_enabled
@@ -155,28 +155,55 @@ export default function POSPage() {
     if (cartItems.length === 0) return toast.error('El carrito está vacío')
     if (!session) return toast.error('No hay caja abierta')
 
-    try {
-      const supabase = createClient()
-      const label = `Venta ${new Date().toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' })}`
+    const label = `Venta ${new Date().toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' })}`
+    const pendingSaleId = crypto.randomUUID()
+    const items = cartItems.map(i => ({
+      id: i.product_id ?? i.id,
+      name: i.name,
+      price_sell: i.price_sell,
+      cart_quantity: i.cart_quantity,
+      barcode: i.barcode,
+      tax_rate: i.tax_rate,
+      is_service: i.is_service,
+    }))
 
-      const { error } = await supabase.from('pending_sales').insert({
+    if (isOffline) {
+      await db.pending_sales.put({
+        id: pendingSaleId,
+        organization_id: org.id,
+        branch_id: branch.id,
+        items,
+        label,
+        notes: null,
+        created_at: new Date().toISOString(),
+      })
+      await queueMutation('pending_sales', 'insert', {
+        id: pendingSaleId,
         organization_id: org.id,
         branch_id: branch.id,
         session_id: session.id,
         customer_id: customerId ?? null,
         label,
-        items: cartItems.map(i => ({
-          id: i.product_id ?? i.id,
-          name: i.name,
-          price_sell: i.price_sell,
-          cart_quantity: i.cart_quantity,
-          barcode: i.barcode,
-          tax_rate: i.tax_rate,
-          is_service: i.is_service,
-        })),
+        items,
+        created_by: userId,
+      }, pendingSaleId)
+      clearCart()
+      toast.success(`Venta guardada como "${label}" (offline)`)
+      return
+    }
+
+    try {
+      const supabase = createClient()
+      const { error } = await supabase.from('pending_sales').insert({
+        id: pendingSaleId,
+        organization_id: org.id,
+        branch_id: branch.id,
+        session_id: session.id,
+        customer_id: customerId ?? null,
+        label,
+        items,
         created_by: userId,
       })
-
       if (error) throw error
       clearCart()
       toast.success(`Venta guardada como "${label}"`)

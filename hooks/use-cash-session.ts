@@ -1,8 +1,10 @@
 'use client'
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useOrg } from '@/hooks/use-org'
+import { db } from '@/lib/offline/db'
 import type { Database } from '@/types/database'
 
 type CashSession = Database['public']['Tables']['cash_sessions']['Row']
@@ -11,6 +13,30 @@ export function useCashSession() {
   const { org, branch } = useOrg()
   const supabase = createClient()
   const queryClient = useQueryClient()
+  const [isOffline, setIsOffline] = useState(false)
+  const [offlineSession, setOfflineSession] = useState<CashSession | null>(null)
+
+  useEffect(() => {
+    setIsOffline(!navigator.onLine)
+    const onOnline = () => setIsOffline(false)
+    const onOffline = () => setIsOffline(true)
+    window.addEventListener('online', onOnline)
+    window.addEventListener('offline', onOffline)
+    return () => {
+      window.removeEventListener('online', onOnline)
+      window.removeEventListener('offline', onOffline)
+    }
+  }, [])
+
+  // When offline, read session from IndexedDB
+  useEffect(() => {
+    if (!isOffline || !branch?.id) return
+    db.cash_sessions
+      .where('branch_id').equals(branch.id)
+      .filter(s => s.status === 'open')
+      .first()
+      .then(s => setOfflineSession(s as unknown as CashSession ?? null))
+  }, [isOffline, branch?.id])
 
   const key = ['cash-session', branch?.id]
 
@@ -24,9 +50,25 @@ export function useCashSession() {
         .eq('branch_id', branch.id)
         .eq('status', 'open')
         .single()
+      // Cache in IndexedDB for offline use
+      if (data) {
+        await db.cash_sessions.put({
+          id: data.id,
+          organization_id: data.organization_id,
+          branch_id: data.branch_id,
+          opened_by: data.opened_by,
+          opened_at: data.opened_at,
+          opening_amount: data.opening_amount,
+          status: data.status,
+        })
+      } else {
+        await db.cash_sessions
+          .where('branch_id').equals(branch.id)
+          .modify({ status: 'closed' })
+      }
       return data as CashSession | null
     },
-    enabled: !!branch?.id,
+    enabled: !!branch?.id && !isOffline,
     staleTime: 30_000,
   })
 
@@ -85,10 +127,12 @@ export function useCashSession() {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: key }),
   })
 
+  const effectiveSession = isOffline ? offlineSession : (query.data ?? null)
+
   return {
-    session: query.data,
-    isOpen: !!query.data,
-    isLoading: query.isLoading,
+    session: effectiveSession,
+    isOpen: !!effectiveSession,
+    isLoading: !isOffline && query.isLoading,
     openSession,
     closeSession,
   }

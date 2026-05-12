@@ -15,6 +15,25 @@ export async function syncProducts(organizationId: string) {
   await db.products.bulkPut(data)
 }
 
+export async function syncCashSession(branchId: string) {
+  const supabase = createClient()
+  const { data } = await supabase
+    .from('cash_sessions')
+    .select('id, organization_id, branch_id, opened_by, opened_at, opening_amount, status')
+    .eq('branch_id', branchId)
+    .eq('status', 'open')
+    .maybeSingle()
+
+  if (data) {
+    await db.cash_sessions.put(data)
+  } else {
+    // Mark any cached session for this branch as closed
+    await db.cash_sessions
+      .where('branch_id').equals(branchId)
+      .modify({ status: 'closed' })
+  }
+}
+
 export async function drainSyncQueue() {
   const supabase = createClient()
   const items = await db.sync_queue.orderBy('created_at').toArray()
