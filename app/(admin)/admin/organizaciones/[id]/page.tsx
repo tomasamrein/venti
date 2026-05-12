@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { useParams, useRouter } from 'next/navigation'
-import { ArrowLeft, Building2, Users, CreditCard, Settings, Printer } from 'lucide-react'
+import { useParams } from 'next/navigation'
+import { ArrowLeft, Building2, Users, CreditCard, Settings, Printer, FileText, X } from 'lucide-react'
 import Link from 'next/link'
 import { toast } from 'sonner'
 
@@ -69,6 +69,13 @@ export default function AdminOrgDetailPage() {
   const [editPlanId, setEditPlanId] = useState('')
   const [editStatus, setEditStatus] = useState('')
   const [editPeriodEnd, setEditPeriodEnd] = useState('')
+
+  // Factura C modal
+  const [showFacturaModal, setShowFacturaModal] = useState(false)
+  const [facturaAmount, setFacturaAmount] = useState('')
+  const [facturaDesc, setFacturaDesc] = useState('')
+  const [facturaLoading, setFacturaLoading] = useState(false)
+  const [facturaResult, setFacturaResult] = useState<{ cae: string; invoice_number: number; cae_vto: string } | null>(null)
 
   useEffect(() => {
     async function load() {
@@ -175,6 +182,27 @@ export default function AdminOrgDetailPage() {
     toast.success(!current ? 'Panel de fotocopiadora activado' : 'Panel de fotocopiadora desactivado')
   }
 
+  async function emitFacturaC() {
+    const amount = parseFloat(facturaAmount)
+    if (!amount || amount <= 0) { toast.error('Ingresá un importe válido'); return }
+    setFacturaLoading(true)
+    try {
+      const res = await fetch('/api/admin/invoice', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ org_id: id, amount, description: facturaDesc || 'Servicios' }),
+      })
+      const data = await res.json()
+      if (!res.ok) { toast.error(data.error || 'Error al emitir'); return }
+      setFacturaResult(data.result)
+      toast.success(`Factura C emitida — CAE ${data.result.cae}`)
+    } catch {
+      toast.error('Error de red')
+    } finally {
+      setFacturaLoading(false)
+    }
+  }
+
   if (!org) return (
     <div className="flex items-center justify-center h-64">
       <div className="h-5 w-5 border-2 border-slate-200 border-t-slate-600 rounded-full animate-spin" />
@@ -194,6 +222,13 @@ export default function AdminOrgDetailPage() {
           <p className="text-[13px] text-muted-foreground font-mono">{org.slug}</p>
         </div>
         <div className="flex items-center gap-2">
+          <button
+            onClick={() => { setShowFacturaModal(true); setFacturaResult(null); setFacturaAmount(''); setFacturaDesc('') }}
+            className="h-8 px-3 rounded-lg text-[12px] font-medium text-muted-foreground hover:text-foreground hover:bg-muted/40 transition-colors border border-border flex items-center gap-1.5"
+          >
+            <FileText className="h-3.5 w-3.5" />
+            Factura C
+          </button>
           <button
             onClick={extendTrial}
             disabled={saving}
@@ -384,6 +419,79 @@ export default function AdminOrgDetailPage() {
           </tbody>
         </table>
       </div>
+
+      {/* Modal Factura C */}
+      {showFacturaModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="w-full max-w-sm rounded-2xl border border-border bg-card shadow-2xl p-6 space-y-5">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <FileText className="h-4 w-4 text-muted-foreground" />
+                <h2 className="text-[15px] font-semibold text-foreground">Emitir Factura C</h2>
+              </div>
+              <button onClick={() => setShowFacturaModal(false)} className="h-7 w-7 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/40 transition-colors">
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            <p className="text-[12px] text-muted-foreground">
+              Org: <span className="font-medium text-foreground">{org.name}</span>
+            </p>
+
+            {facturaResult ? (
+              <div className="space-y-3">
+                <div className="rounded-xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 p-4 space-y-2">
+                  <p className="text-[12px] font-semibold text-emerald-700 dark:text-emerald-400">Factura emitida</p>
+                  <div className="space-y-1">
+                    <p className="text-[12px] text-muted-foreground">Nro: <span className="font-mono text-foreground">{facturaResult.invoice_number}</span></p>
+                    <p className="text-[12px] text-muted-foreground">CAE: <span className="font-mono text-foreground">{facturaResult.cae}</span></p>
+                    <p className="text-[12px] text-muted-foreground">Vence: <span className="text-foreground">{facturaResult.cae_vto}</span></p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setShowFacturaModal(false)}
+                  className="w-full h-9 rounded-lg text-[13px] font-medium bg-emerald-600 text-white hover:bg-emerald-500 transition-colors"
+                >
+                  Cerrar
+                </button>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <div>
+                  <label className="text-[11px] text-muted-foreground uppercase tracking-wider block mb-1.5">Importe total (ARS)</label>
+                  <input
+                    type="number"
+                    min="0.01"
+                    step="0.01"
+                    placeholder="0.00"
+                    value={facturaAmount}
+                    onChange={e => setFacturaAmount(e.target.value)}
+                    className="w-full h-9 px-3 rounded-lg border border-border bg-background text-[14px] text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-emerald-500/40"
+                  />
+                </div>
+                <div>
+                  <label className="text-[11px] text-muted-foreground uppercase tracking-wider block mb-1.5">Descripción</label>
+                  <input
+                    type="text"
+                    placeholder="Servicios"
+                    value={facturaDesc}
+                    onChange={e => setFacturaDesc(e.target.value)}
+                    className="w-full h-9 px-3 rounded-lg border border-border bg-background text-[14px] text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-emerald-500/40"
+                  />
+                </div>
+                <button
+                  onClick={emitFacturaC}
+                  disabled={facturaLoading || !facturaAmount}
+                  className="w-full h-9 rounded-lg text-[13px] font-medium bg-emerald-600 text-white hover:bg-emerald-500 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                >
+                  {facturaLoading && <span className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />}
+                  {facturaLoading ? 'Emitiendo...' : 'Emitir Factura C'}
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   )
 }
