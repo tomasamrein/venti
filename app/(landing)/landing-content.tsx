@@ -335,13 +335,13 @@ export default function LandingPage() {
         <div className="pointer-events-none absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-slate-50 to-transparent z-10" />
         <div className="pointer-events-none absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-slate-50 to-transparent z-10" />
 
-        <div className="flex w-max animate-marquee">
-          {[...INTEGRATIONS, ...INTEGRATIONS].map((item, i) => {
+        <div className="flex animate-marquee" style={{ width: 'max-content' }}>
+          {[...INTEGRATIONS, ...INTEGRATIONS, ...INTEGRATIONS, ...INTEGRATIONS].map((item, i) => {
             const Icon = item.icon
             return (
               <div
-                key={`${item.name}-${i}`}
-                className="mx-2 inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-slate-200 bg-white shadow-sm shrink-0"
+                key={i}
+                className="mx-2.5 inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-slate-200 bg-white shadow-sm shrink-0"
                 aria-hidden={i >= INTEGRATIONS.length}
               >
                 <Icon className="w-4 h-4 shrink-0" style={{ color: item.color }} />

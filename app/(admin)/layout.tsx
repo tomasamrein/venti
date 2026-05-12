@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 import { LayoutDashboard, Building2, CreditCard, Users, MessageSquare } from 'lucide-react'
 import { LogoutButton } from './logout-button'
+import { AdminMobileNav } from './admin-mobile-nav'
 
 const NAV = [
   { label: 'Dashboard', href: '/admin', icon: LayoutDashboard },
@@ -11,6 +12,8 @@ const NAV = [
   { label: 'Usuarios', href: '/admin/usuarios', icon: Users },
   { label: 'Mensajes', href: '/admin/mensajes', icon: MessageSquare },
 ]
+
+export { NAV }
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient()
@@ -22,9 +25,12 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
   if (!profile?.is_super_admin) redirect('/admin/login')
 
+  const displayName = profile.full_name ?? user.email ?? ''
+
   return (
     <div className="flex h-screen overflow-hidden bg-background">
-      <aside className="w-56 shrink-0 flex flex-col border-r border-border bg-sidebar">
+      {/* Sidebar desktop */}
+      <aside className="hidden md:flex w-56 shrink-0 flex-col border-r border-border bg-sidebar">
         <div className="px-5 py-5 border-b border-border">
           <div className="flex items-center gap-2">
             <div className="w-7 h-7 rounded-lg bg-red-600 flex items-center justify-center">
@@ -52,13 +58,27 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           })}
         </nav>
         <div className="px-3 py-4 border-t border-border">
-          <p className="text-xs text-muted-foreground px-3 mb-2 truncate">{profile.full_name ?? user.email}</p>
+          <p className="text-xs text-muted-foreground px-3 mb-2 truncate">{displayName}</p>
           <LogoutButton />
         </div>
       </aside>
-      <main className="flex-1 overflow-y-auto p-6 scrollbar-thin">
-        {children}
-      </main>
+
+      <div className="flex flex-col flex-1 overflow-hidden">
+        {/* Top bar mobile */}
+        <header className="md:hidden h-14 flex items-center px-4 gap-3 border-b border-border bg-background shrink-0">
+          <AdminMobileNav nav={NAV} displayName={displayName} />
+          <div className="flex items-center gap-2">
+            <div className="w-6 h-6 rounded-md bg-red-600 flex items-center justify-center">
+              <span className="text-white text-[10px] font-black">V</span>
+            </div>
+            <span className="text-sm font-bold text-foreground">Ventix Admin</span>
+          </div>
+        </header>
+
+        <main className="flex-1 overflow-y-auto p-4 md:p-6 scrollbar-thin">
+          {children}
+        </main>
+      </div>
     </div>
   )
 }
