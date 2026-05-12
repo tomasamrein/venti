@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import {
   LayoutDashboard, ShoppingCart, Package, FileText,
   Users, Briefcase, CreditCard, BarChart3, Settings,
@@ -33,6 +33,7 @@ function navItem(label: string, href: string, icon: React.ReactNode): NavItem {
 
 export function Sidebar({ orgSlug, className }: SidebarProps) {
   const pathname = usePathname()
+  const router = useRouter()
   const base = `/${orgSlug}`
   const { role } = useOrg()
   const isCashier = role === 'cashier'
@@ -86,6 +87,9 @@ export function Sidebar({ orgSlug, className }: SidebarProps) {
     return (
       <Link
         href={item.href}
+        prefetch
+        onMouseEnter={() => router.prefetch(item.href)}
+        onTouchStart={() => router.prefetch(item.href)}
         className={cn(
           'flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors select-none',
           active

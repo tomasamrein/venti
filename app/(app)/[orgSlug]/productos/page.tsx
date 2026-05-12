@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useMemo } from 'react'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
@@ -67,11 +68,7 @@ export default function ProductosPage() {
   const orgSlug = org.slug
   const orgId = org.id
 
-  const [products, setProducts] = useState<Product[]>([])
-  const [categories, setCategories] = useState<Category[]>([])
-  const [suppliers, setSuppliers] = useState<Supplier[]>([])
-  const [supplierProductMap, setSupplierProductMap] = useState<Record<string, Set<string>>>({})
-  const [loading, setLoading] = useState(true)
+  const queryClient = useQueryClient()
   const [search, setSearch] = useState('')
   const [categoryFilter, setCategoryFilter] = useState('all')
   const [stockFilter, setStockFilter] = useState('all')
@@ -91,76 +88,72 @@ export default function ProductosPage() {
   })
   const [lastRemoteScan, setLastRemoteScan] = useState<string | null>(null)
 
-  const loadData = useCallback(async () => {
-    const supabase = createClient()
-    const [{ data: prods }, { data: cats }, { data: suppls }, { data: suppProds }] = await Promise.all([
-      supabase
-        .from('products')
-        .select('*, product_categories(name, color)')
-        .eq('organization_id', orgId)
-        .eq('is_active', true)
-        .order('name'),
-      supabase
-        .from('product_categories')
-        .select('id, name')
-        .eq('organization_id', orgId)
-        .order('name'),
-      supabase
-        .from('suppliers')
-        .select('id, name, phone, email')
-        .eq('organization_id', orgId)
-        .eq('is_active', true)
-        .order('name'),
-      supabase
-        .from('supplier_products')
-        .select('supplier_id, product_id')
-        .eq('organization_id', orgId),
-    ])
-    setProducts((prods as Product[]) || [])
-    setCategories(cats || [])
-    setSuppliers((suppls as Supplier[]) || [])
+  const { data, isLoading: loading } = useQuery({
+    queryKey: ['productos-page', orgId],
+    queryFn: async () => {
+      const supabase = createClient()
+      const [{ data: prods }, { data: cats }, { data: suppls }, { data: suppProds }] = await Promise.all([
+        supabase
+          .from('products')
+          .select('*, product_categories(name, color)')
+          .eq('organization_id', orgId)
+          .eq('is_active', true)
+          .order('name'),
+        supabase
+          .from('product_categories')
+          .select('id, name')
+          .eq('organization_id', orgId)
+          .order('name'),
+        supabase
+          .from('suppliers')
+          .select('id, name, phone, email')
+          .eq('organization_id', orgId)
+          .eq('is_active', true)
+          .order('name'),
+        supabase
+          .from('supplier_products')
+          .select('supplier_id, product_id')
+          .eq('organization_id', orgId),
+      ])
+      const map: Record<string, Set<string>> = {}
+      for (const sp of suppProds ?? []) {
+        if (!map[sp.supplier_id]) map[sp.supplier_id] = new Set()
+        map[sp.supplier_id].add(sp.product_id)
+      }
+      return {
+        products: (prods as Product[]) || [],
+        categories: (cats as Category[]) || [],
+        suppliers: (suppls as Supplier[]) || [],
+        supplierProductMap: map,
+      }
+    },
+  })
 
-    const map: Record<string, Set<string>> = {}
-    for (const sp of suppProds ?? []) {
-      if (!map[sp.supplier_id]) map[sp.supplier_id] = new Set()
-      map[sp.supplier_id].add(sp.product_id)
-    }
-    setSupplierProductMap(map)
-    setLoading(false)
-  }, [orgId])
-
-  useEffect(() => {
-    loadData()
-  }, [loadData])
+  const products = useMemo(() => data?.products ?? [], [data])
+  const categories = data?.categories ?? []
+  const suppliers = data?.suppliers ?? []
+  const supplierProductMap = data?.supplierProductMap ?? {}
+  const loadData = () => queryClient.invalidateQueries({ queryKey: ['productos-page', orgId] })
 
   async function handleDelete(id: string) {
     const supabase = createClient()
+    const removeLocally = () => {
+      queryClient.setQueryData(['productos-page', orgId], (old: typeof data) =>
+        old ? { ...old, products: old.products.filter(p => p.id !== id) } : old
+      )
+    }
 
-    // Try hard delete first (works if no sale_items reference it)
-    const { error: hardErr } = await supabase
-      .from('products')
-      .delete()
-      .eq('id', id)
-
+    const { error: hardErr } = await supabase.from('products').delete().eq('id', id)
     if (!hardErr) {
       toast.success('Producto eliminado')
-      setProducts(prev => prev.filter(p => p.id !== id))
+      removeLocally()
       setDeleteId(null)
       return
     }
 
-    // FK violation → fall back to soft delete
-    const { error: softErr } = await supabase
-      .from('products')
-      .update({ is_active: false })
-      .eq('id', id)
-
-    if (softErr) {
-      toast.error('Error al eliminar el producto')
-    } else {
-      toast.success('Producto archivado (tiene ventas asociadas)')
-      setProducts(prev => prev.filter(p => p.id !== id))
-    }
+    const { error: softErr } = await supabase.from('products').update({ is_active: false }).eq('id', id)
+    if (softErr) toast.error('Error al eliminar el producto')
+    else { toast.success('Producto archivado (tiene ventas asociadas)'); removeLocally() }
     setDeleteId(null)
   }
 
