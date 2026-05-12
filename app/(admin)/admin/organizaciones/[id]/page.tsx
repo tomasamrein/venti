@@ -74,6 +74,8 @@ export default function AdminOrgDetailPage() {
   const [showFacturaModal, setShowFacturaModal] = useState(false)
   const [facturaAmount, setFacturaAmount] = useState('')
   const [facturaDesc, setFacturaDesc] = useState('')
+  const [facturaCustomerName, setFacturaCustomerName] = useState('')
+  const [facturaCustomerCuit, setFacturaCustomerCuit] = useState('')
   const [facturaLoading, setFacturaLoading] = useState(false)
   const [facturaResult, setFacturaResult] = useState<{ cae: string; invoice_number: number; cae_vto: string } | null>(null)
 
@@ -190,7 +192,13 @@ export default function AdminOrgDetailPage() {
       const res = await fetch('/api/admin/invoice', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ org_id: id, amount, description: facturaDesc || 'Servicios' }),
+        body: JSON.stringify({
+          client_org_id: id,
+          amount,
+          description: facturaDesc || 'Suscripción Ventix',
+          customer_name: facturaCustomerName || org?.name || undefined,
+          customer_cuit: facturaCustomerCuit || org?.cuit || undefined,
+        }),
       })
       const data = await res.json()
       if (!res.ok) { toast.error(data.error || 'Error al emitir'); return }
@@ -223,7 +231,7 @@ export default function AdminOrgDetailPage() {
         </div>
         <div className="flex items-center gap-2">
           <button
-            onClick={() => { setShowFacturaModal(true); setFacturaResult(null); setFacturaAmount(''); setFacturaDesc('') }}
+            onClick={() => { setShowFacturaModal(true); setFacturaResult(null); setFacturaAmount(''); setFacturaDesc(''); setFacturaCustomerName(org?.name ?? ''); setFacturaCustomerCuit(org?.cuit ?? '') }}
             className="h-8 px-3 rounded-lg text-[12px] font-medium text-muted-foreground hover:text-foreground hover:bg-muted/40 transition-colors border border-border flex items-center gap-1.5"
           >
             <FileText className="h-3.5 w-3.5" />
@@ -457,6 +465,28 @@ export default function AdminOrgDetailPage() {
               </div>
             ) : (
               <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-[11px] text-muted-foreground uppercase tracking-wider block mb-1.5">Razón social receptor</label>
+                    <input
+                      type="text"
+                      placeholder={org?.name ?? 'Nombre'}
+                      value={facturaCustomerName}
+                      onChange={e => setFacturaCustomerName(e.target.value)}
+                      className="w-full h-9 px-3 rounded-lg border border-border bg-background text-[13px] text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-emerald-500/40"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[11px] text-muted-foreground uppercase tracking-wider block mb-1.5">CUIT receptor</label>
+                    <input
+                      type="text"
+                      placeholder={org?.cuit ?? '—'}
+                      value={facturaCustomerCuit}
+                      onChange={e => setFacturaCustomerCuit(e.target.value)}
+                      className="w-full h-9 px-3 rounded-lg border border-border bg-background text-[13px] text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-emerald-500/40"
+                    />
+                  </div>
+                </div>
                 <div>
                   <label className="text-[11px] text-muted-foreground uppercase tracking-wider block mb-1.5">Importe total (ARS)</label>
                   <input
@@ -473,10 +503,10 @@ export default function AdminOrgDetailPage() {
                   <label className="text-[11px] text-muted-foreground uppercase tracking-wider block mb-1.5">Descripción</label>
                   <input
                     type="text"
-                    placeholder="Servicios"
+                    placeholder="Suscripción Ventix"
                     value={facturaDesc}
                     onChange={e => setFacturaDesc(e.target.value)}
-                    className="w-full h-9 px-3 rounded-lg border border-border bg-background text-[14px] text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-emerald-500/40"
+                    className="w-full h-9 px-3 rounded-lg border border-border bg-background text-[13px] text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-emerald-500/40"
                   />
                 </div>
                 <button
