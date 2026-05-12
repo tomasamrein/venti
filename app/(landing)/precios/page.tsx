@@ -1,12 +1,25 @@
 'use client'
 
-import { Check, ChevronRight, Smartphone, Zap, Package, Tag } from 'lucide-react'
+import type React from 'react'
+import { Check, ChevronRight, Smartphone, Zap, Package, Tag, Rocket, MessageCircle } from 'lucide-react'
 import Link from 'next/link'
 
 const fmt = (n: number) =>
   new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 }).format(n)
 
-const PLANS = [
+type Plan = {
+  name: string
+  icon: React.ElementType
+  pricePromo: number | null
+  priceFull: number | null
+  features: string[]
+  cta: string
+  href: string
+  highlight: boolean
+  contact: boolean
+}
+
+const PLANS: Plan[] = [
   {
     name: 'Simple',
     icon: Zap,
@@ -25,6 +38,7 @@ const PLANS = [
     cta: 'Empezar gratis 14 días',
     href: '/registro',
     highlight: false,
+    contact: false,
   },
   {
     name: 'Con Facturación',
@@ -43,20 +57,41 @@ const PLANS = [
     cta: 'Suscribirme',
     href: '/registro',
     highlight: true,
+    contact: false,
+  },
+  {
+    name: 'Profesional',
+    icon: Rocket,
+    pricePromo: null,
+    priceFull: null,
+    features: [
+      'Todo lo del plan Con Facturación',
+      'Multi-sucursal con stock independiente',
+      'Multi-usuario sin límite',
+      'Reportes por sucursal y cajero',
+      'Integración personalizada',
+      'Soporte prioritario',
+    ],
+    cta: 'Hablar con ventas',
+    href: '/#contacto',
+    highlight: false,
+    contact: true,
   },
 ]
 
-const COMPARISON: [string, boolean, boolean][] = [
-  ['POS con escáner de barras',            true,  true ],
-  ['Stock y alertas automáticas',          true,  true ],
-  ['Clientes y cuentas corrientes',        true,  true ],
-  ['Export de ventas para contador',       true,  true ],
-  ['Funciona offline',                     true,  true ],
-  ['Chatbot IA + soporte WhatsApp',        true,  true ],
-  ['Facturación ARCA (A, B y C)',          false, true ],
-  ['Reportes avanzados',                   false, true ],
-  ['Gestión de proveedores',               false, true ],
-  ['Historial de precios',                 false, true ],
+const COMPARISON: [string, boolean, boolean, boolean][] = [
+  ['POS con escáner de barras',            true,  true,  true ],
+  ['Stock y alertas automáticas',          true,  true,  true ],
+  ['Clientes y cuentas corrientes',        true,  true,  true ],
+  ['Export de ventas para contador',       true,  true,  true ],
+  ['Funciona offline',                     true,  true,  true ],
+  ['Chatbot IA + soporte WhatsApp',        true,  true,  true ],
+  ['Facturación ARCA (A, B y C)',          false, true,  true ],
+  ['Reportes avanzados',                   false, true,  true ],
+  ['Gestión de proveedores',               false, true,  true ],
+  ['Historial de precios',                 false, true,  true ],
+  ['Multi-sucursal',                       false, false, true ],
+  ['Multi-usuario sin límite',             false, false, true ],
 ]
 
 export default function PreciosPage() {
@@ -82,7 +117,7 @@ export default function PreciosPage() {
       </div>
 
       {/* Plan cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 max-w-3xl mx-auto">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 max-w-5xl mx-auto">
         {PLANS.map(plan => {
           const Icon = plan.icon
           return (
@@ -104,17 +139,27 @@ export default function PreciosPage() {
               </div>
               <div>
                 <p className="text-lg font-bold text-slate-900">{plan.name}</p>
-                {/* Promo price */}
-                <div className="flex items-baseline gap-2 mt-3">
-                  <span className="text-3xl font-bold tracking-tight text-slate-900">{fmt(plan.pricePromo)}</span>
-                  <span className="text-sm text-slate-400">/mes</span>
-                </div>
-                <div className="flex items-center gap-1.5 mt-1">
-                  <span className="text-xs text-slate-400 line-through">{fmt(plan.priceFull)}/mes</span>
-                  <span className="text-xs font-semibold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded">
-                    50% off × 3 meses
-                  </span>
-                </div>
+                {plan.contact ? (
+                  <div className="mt-3">
+                    <span className="text-2xl font-bold text-slate-900">A consultar</span>
+                    <p className="text-xs text-slate-500 mt-1.5 leading-relaxed">
+                      El precio se define según la cantidad de sucursales y necesidades de tu negocio.
+                    </p>
+                  </div>
+                ) : (
+                  <>
+                    <div className="flex items-baseline gap-2 mt-3">
+                      <span className="text-3xl font-bold tracking-tight text-slate-900">{fmt(plan.pricePromo!)}</span>
+                      <span className="text-sm text-slate-400">/mes</span>
+                    </div>
+                    <div className="flex items-center gap-1.5 mt-1">
+                      <span className="text-xs text-slate-400 line-through">{fmt(plan.priceFull!)}/mes</span>
+                      <span className="text-xs font-semibold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded">
+                        50% off × 3 meses
+                      </span>
+                    </div>
+                  </>
+                )}
               </div>
               <ul className="space-y-2 flex-1">
                 {plan.features.map(feat => (
@@ -129,10 +174,14 @@ export default function PreciosPage() {
                 className={`w-full inline-flex items-center justify-center gap-2 h-11 rounded-lg text-sm font-semibold transition-colors ${
                   plan.highlight
                     ? 'bg-emerald-600 text-white hover:bg-emerald-700'
-                    : 'border border-slate-200 text-slate-700 hover:bg-slate-50'
+                    : plan.contact
+                      ? 'bg-slate-800 text-white hover:bg-slate-900'
+                      : 'border border-slate-200 text-slate-700 hover:bg-slate-50'
                 }`}
               >
-                {plan.cta} <ChevronRight className="h-4 w-4" />
+                {plan.contact ? <MessageCircle className="h-4 w-4" /> : null}
+                {plan.cta}
+                {!plan.contact && <ChevronRight className="h-4 w-4" />}
               </Link>
             </div>
           )
@@ -153,7 +202,7 @@ export default function PreciosPage() {
       </div>
 
       {/* Feature comparison */}
-      <div className="mt-16 max-w-3xl mx-auto">
+      <div className="mt-16 max-w-5xl mx-auto">
         <h2 className="text-xl font-bold text-slate-900 mb-6 text-center">¿Qué incluye cada plan?</h2>
         <div className="rounded-xl border border-slate-200 overflow-hidden bg-white">
           <table className="w-full text-sm">
@@ -162,13 +211,14 @@ export default function PreciosPage() {
                 <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Funcionalidad</th>
                 <th className="px-3 py-3 text-center text-xs font-semibold text-slate-500 uppercase tracking-wider">Simple</th>
                 <th className="px-3 py-3 text-center text-xs font-semibold text-emerald-700 uppercase tracking-wider">Con Facturación</th>
+                <th className="px-3 py-3 text-center text-xs font-semibold text-slate-700 uppercase tracking-wider">Profesional</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {COMPARISON.map(([feat, simple, avanzado]) => (
+              {COMPARISON.map(([feat, simple, facturacion, pro]) => (
                 <tr key={feat} className="hover:bg-slate-50">
                   <td className="px-4 py-3 text-slate-700 text-xs">{feat}</td>
-                  {[simple, avanzado].map((val, i) => (
+                  {[simple, facturacion, pro].map((val, i) => (
                     <td key={i} className="px-3 py-3 text-center">
                       {val
                         ? <Check className="h-4 w-4 text-emerald-600 mx-auto" />

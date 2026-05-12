@@ -130,6 +130,17 @@ const PLANS = [
     href: '/registro',
     highlight: true,
   },
+  {
+    name: 'Profesional',
+    icon: Rocket,
+    pricePromo: null as number | null,
+    priceFull: null as number | null,
+    priceLabel: 'A consultar' as string | null,
+    features: ['Todo lo del plan Con Facturación', 'Multi-sucursal con stock independiente', 'Multi-usuario sin límite', 'Reportes por sucursal y cajero', 'Integración personalizada', 'Soporte prioritario'],
+    cta: 'Hablar con ventas',
+    href: '/#contacto',
+    highlight: false,
+  },
 ]
 
 const FAQS = [
