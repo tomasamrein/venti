@@ -330,32 +330,25 @@ export default function LandingPage() {
       </section>
 
       {/* ─── INTEGRATIONS (marquee seamless) ─── */}
-      <div className="overflow-hidden border-y border-slate-100 bg-slate-50 py-5">
+      <div className="relative overflow-hidden border-y border-slate-100 bg-slate-50 py-5">
+        {/* Edge fades */}
+        <div className="pointer-events-none absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-slate-50 to-transparent z-10" />
+        <div className="pointer-events-none absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-slate-50 to-transparent z-10" />
+
         <div className="flex w-max animate-marquee">
-          {/* Copy 1 */}
-          <div className="flex items-center gap-4 pr-4">
-            {INTEGRATIONS.map(item => {
-              const Icon = item.icon
-              return (
-                <div key={item.name} className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-slate-200 bg-white shadow-sm">
-                  <Icon className="w-4 h-4 shrink-0" style={{ color: item.color }} />
-                  <span className="text-xs font-semibold text-slate-600 whitespace-nowrap">{item.name}</span>
-                </div>
-              )
-            })}
-          </div>
-          {/* Copy 2 — idéntica, sin aria */}
-          <div className="flex items-center gap-4 pr-4" aria-hidden>
-            {INTEGRATIONS.map(item => {
-              const Icon = item.icon
-              return (
-                <div key={item.name} className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-slate-200 bg-white shadow-sm">
-                  <Icon className="w-4 h-4 shrink-0" style={{ color: item.color }} />
-                  <span className="text-xs font-semibold text-slate-600 whitespace-nowrap">{item.name}</span>
-                </div>
-              )
-            })}
-          </div>
+          {[...INTEGRATIONS, ...INTEGRATIONS].map((item, i) => {
+            const Icon = item.icon
+            return (
+              <div
+                key={`${item.name}-${i}`}
+                className="mx-2 inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-slate-200 bg-white shadow-sm shrink-0"
+                aria-hidden={i >= INTEGRATIONS.length}
+              >
+                <Icon className="w-4 h-4 shrink-0" style={{ color: item.color }} />
+                <span className="text-xs font-semibold text-slate-600 whitespace-nowrap">{item.name}</span>
+              </div>
+            )
+          })}
         </div>
       </div>
 
