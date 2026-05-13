@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
   let token: string
 
   if (existing) {
-    token = existing.id
+    token = (existing as unknown as { id: string; token: string }).token
   } else {
     const { data: inv, error } = await admin.from('invitations' as any).insert({
       email: email.toLowerCase(),
@@ -52,33 +52,41 @@ export async function POST(request: NextRequest) {
   const inviterName = inviterProfile?.full_name ?? 'Un miembro del equipo'
   const roleLabel = role === 'admin' ? 'Admin' : 'Cajero'
 
-  // Send email via Resend if configured
   const resendKey = process.env.RESEND_API_KEY
-  if (resendKey) {
-    await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${resendKey}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        from: 'Ventix <noreply@ventix.ar>',
-        to: email,
-        subject: `${inviterName} te invitó a ${org.name} en Ventix`,
-        html: `
-          <div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:24px">
-            <h2 style="color:#16a34a;margin-bottom:8px">Fuiste invitado a ${org.name}</h2>
-            <p style="color:#374151;margin-bottom:16px">
-              <strong>${inviterName}</strong> te invitó a unirte como <strong>${roleLabel}</strong> en Ventix.
-            </p>
-            <a href="${inviteUrl}"
-              style="display:inline-block;background:#16a34a;color:white;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:600">
-              Aceptar invitación
-            </a>
-            <p style="color:#9ca3af;font-size:12px;margin-top:24px">
-              El link expira en 7 días. Si no esperabas esta invitación, podés ignorar este email.
-            </p>
-          </div>
-        `,
-      }),
-    })
+  if (!resendKey) {
+    console.error('[invitations] RESEND_API_KEY no configurada — email no enviado')
+    return NextResponse.json({ ok: true, invite_url: inviteUrl, warning: 'email_not_sent' })
+  }
+
+  const emailRes = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${resendKey}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      from: 'Ventix <onboarding@resend.dev>',
+      to: email,
+      subject: `${inviterName} te invitó a ${org.name} en Ventix`,
+      html: `
+        <div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:24px">
+          <h2 style="color:#16a34a;margin-bottom:8px">Fuiste invitado a ${org.name}</h2>
+          <p style="color:#374151;margin-bottom:16px">
+            <strong>${inviterName}</strong> te invitó a unirte como <strong>${roleLabel}</strong> en Ventix.
+          </p>
+          <a href="${inviteUrl}"
+            style="display:inline-block;background:#16a34a;color:white;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:600">
+            Aceptar invitación
+          </a>
+          <p style="color:#9ca3af;font-size:12px;margin-top:24px">
+            El link expira en 7 días. Si no esperabas esta invitación, podés ignorar este email.
+          </p>
+        </div>
+      `,
+    }),
+  })
+
+  if (!emailRes.ok) {
+    const errBody = await emailRes.text()
+    console.error('[invitations] Resend error:', emailRes.status, errBody)
+    return NextResponse.json({ ok: true, invite_url: inviteUrl, warning: 'email_failed' })
   }
 
   return NextResponse.json({ ok: true, invite_url: inviteUrl })

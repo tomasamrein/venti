@@ -38,49 +38,61 @@ export function Sidebar({ orgSlug, className }: SidebarProps) {
   const { role } = useOrg()
   const isCashier = role === 'cashier'
 
-  const sections: NavSection[] = [
-    {
-      items: [
-        ...(!isCashier ? [navItem('Dashboard', `${base}/dashboard`, <LayoutDashboard className="h-4 w-4" />)] : []),
-        navItem('Punto de Venta', `${base}/pos`, <ShoppingCart className="h-4 w-4" />),
-        navItem('Caja', `${base}/caja`, <DollarSign className="h-4 w-4" />),
-      ],
-    },
-    ...(!isCashier ? [{
-      title: 'Inventario',
-      items: [
-        navItem('Productos', `${base}/productos`, <Package className="h-4 w-4" />),
-        navItem('Compras sugeridas', `${base}/compras`, <ShoppingBag className="h-4 w-4" />),
-        navItem('Proveedores', `${base}/proveedores`, <Briefcase className="h-4 w-4" />),
-      ],
-    }] : []),
-    {
-      title: 'Finanzas',
-      items: [
-        ...(!isCashier ? [navItem('Gastos', `${base}/gastos`, <Receipt className="h-4 w-4" />)] : []),
-        navItem('Facturación', `${base}/facturacion`, <FileText className="h-4 w-4" />),
-      ],
-    },
-    {
-      title: 'Clientes',
-      items: [
-        navItem('Clientes', `${base}/clientes`, <Users className="h-4 w-4" />),
-        navItem('Cuentas Corrientes', `${base}/cuentas-corrientes`, <CreditCard className="h-4 w-4" />),
-      ],
-    },
-    ...(!isCashier ? [{
-      title: 'Análisis',
-      items: [
-        navItem('Ventas', `${base}/ventas`, <TrendingUp className="h-4 w-4" />),
-        navItem('Reportes', `${base}/reportes`, <BarChart3 className="h-4 w-4" />),
-      ],
-    }] : []),
-  ]
+  const sections: NavSection[] = isCashier
+    ? [{
+        items: [
+          navItem('Punto de Venta', `${base}/pos`, <ShoppingCart className="h-4 w-4" />),
+          navItem('Caja', `${base}/caja`, <DollarSign className="h-4 w-4" />),
+          navItem('Productos', `${base}/productos`, <Package className="h-4 w-4" />),
+          navItem('Clientes', `${base}/clientes`, <Users className="h-4 w-4" />),
+          navItem('Cuentas Corrientes', `${base}/cuentas-corrientes`, <CreditCard className="h-4 w-4" />),
+        ],
+      }]
+    : [
+        {
+          items: [
+            navItem('Dashboard', `${base}/dashboard`, <LayoutDashboard className="h-4 w-4" />),
+            navItem('Punto de Venta', `${base}/pos`, <ShoppingCart className="h-4 w-4" />),
+            navItem('Caja', `${base}/caja`, <DollarSign className="h-4 w-4" />),
+          ],
+        },
+        {
+          title: 'Inventario',
+          items: [
+            navItem('Productos', `${base}/productos`, <Package className="h-4 w-4" />),
+            navItem('Compras sugeridas', `${base}/compras`, <ShoppingBag className="h-4 w-4" />),
+            navItem('Proveedores', `${base}/proveedores`, <Briefcase className="h-4 w-4" />),
+          ],
+        },
+        {
+          title: 'Finanzas',
+          items: [
+            navItem('Gastos', `${base}/gastos`, <Receipt className="h-4 w-4" />),
+            navItem('Facturación', `${base}/facturacion`, <FileText className="h-4 w-4" />),
+          ],
+        },
+        {
+          title: 'Clientes',
+          items: [
+            navItem('Clientes', `${base}/clientes`, <Users className="h-4 w-4" />),
+            navItem('Cuentas Corrientes', `${base}/cuentas-corrientes`, <CreditCard className="h-4 w-4" />),
+          ],
+        },
+        {
+          title: 'Análisis',
+          items: [
+            navItem('Ventas', `${base}/ventas`, <TrendingUp className="h-4 w-4" />),
+            navItem('Reportes', `${base}/reportes`, <BarChart3 className="h-4 w-4" />),
+          ],
+        },
+      ]
 
-  const bottomItems: NavItem[] = [
-    navItem('Notificaciones', `${base}/notificaciones`, <Bell className="h-4 w-4" />),
-    navItem('Configuración', `${base}/configuracion`, <Settings className="h-4 w-4" />),
-  ]
+  const bottomItems: NavItem[] = isCashier
+    ? []
+    : [
+        navItem('Notificaciones', `${base}/notificaciones`, <Bell className="h-4 w-4" />),
+        navItem('Configuración', `${base}/configuracion`, <Settings className="h-4 w-4" />),
+      ]
 
   function NavLink({ item }: { item: NavItem }) {
     const active = pathname === item.href || pathname.startsWith(item.href + '/')

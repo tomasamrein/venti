@@ -2,7 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { getOrgBySlug } from '@/lib/supabase/get-org'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { ShoppingCart } from 'lucide-react'
+import { ShoppingCart, Download } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { formatARS } from '@/lib/utils/currency'
@@ -59,14 +59,23 @@ export default async function VentasPage({ params, searchParams }: Props) {
           <h1 className="text-[28px] font-extrabold tracking-[-0.03em]">Ventas</h1>
           <p className="text-[14px] text-muted-foreground mt-1">{sales?.length ?? 0} registros · {formatARS(totalRevenue)} facturado</p>
         </div>
-        <Link
-          href={`/${orgSlug}/pos`}
-          className="inline-flex items-center gap-2 rounded-xl text-white text-[13px] font-semibold h-9 px-4 transition-opacity hover:opacity-90"
-          style={{ background: 'linear-gradient(135deg, oklch(0.55 0.16 155), oklch(0.50 0.16 158))' }}
-        >
-          <ShoppingCart className="h-4 w-4" />
-          Nueva venta
-        </Link>
+        <div className="flex items-center gap-2">
+          <a
+            href={`/api/exports/business?org=${orgSlug}`}
+            className="inline-flex items-center gap-2 rounded-xl text-[13px] font-semibold h-9 px-4 border border-border bg-card hover:bg-muted transition-colors"
+          >
+            <Download className="h-4 w-4" />
+            Exportar Excel
+          </a>
+          <Link
+            href={`/${orgSlug}/pos`}
+            className="inline-flex items-center gap-2 rounded-xl text-white text-[13px] font-semibold h-9 px-4 transition-opacity hover:opacity-90"
+            style={{ background: 'linear-gradient(135deg, oklch(0.55 0.16 155), oklch(0.50 0.16 158))' }}
+          >
+            <ShoppingCart className="h-4 w-4" />
+            Nueva venta
+          </Link>
+        </div>
       </div>
 
       <form method="GET" className="flex flex-wrap gap-3 items-end">

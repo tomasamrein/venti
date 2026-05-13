@@ -8,6 +8,7 @@ import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { useOrg } from '@/hooks/use-org'
 
 interface OrgForm {
   name: string; cuit: string; address: string; phone: string; email: string
@@ -27,6 +28,7 @@ export default function ConfiguracionPage() {
   const params = useParams()
   const router = useRouter()
   const orgSlug = params.orgSlug as string
+  const { planType } = useOrg()
 
   const [orgId, setOrgId] = useState('')
   const [userId, setUserId] = useState('')
@@ -131,12 +133,13 @@ export default function ConfiguracionPage() {
     )
   }
 
-  const subPages = [
-    { label: 'Facturación ARCA', description: 'Certificado, CUIT, punto de venta', href: `/${orgSlug}/configuracion/facturacion`, icon: FileText, color: 'text-blue-600 bg-blue-50' },
-    { label: 'Suscripción', description: 'Plan actual y facturación', href: `/${orgSlug}/configuracion/suscripcion`, icon: CreditCard, color: 'text-emerald-600 bg-emerald-50' },
-    { label: 'Equipo', description: 'Usuarios y roles', href: `/${orgSlug}/configuracion/equipo`, icon: Users, color: 'text-violet-600 bg-violet-50' },
-    { label: 'Sucursales', description: 'Gestión de locales', href: `/${orgSlug}/configuracion/sucursales`, icon: GitBranch, color: 'text-amber-600 bg-amber-50' },
+  const allSubPages = [
+    { label: 'Suscripción', description: 'Plan actual y facturación', href: `/${orgSlug}/configuracion/suscripcion`, icon: CreditCard, color: 'text-emerald-600 bg-emerald-50', plans: ['free_trial', 'basic', 'pro'] },
+    { label: 'Equipo', description: 'Usuarios y roles', href: `/${orgSlug}/configuracion/equipo`, icon: Users, color: 'text-violet-600 bg-violet-50', plans: ['free_trial', 'basic', 'pro'] },
+    { label: 'Sucursales', description: 'Gestión de locales', href: `/${orgSlug}/configuracion/sucursales`, icon: GitBranch, color: 'text-amber-600 bg-amber-50', plans: ['pro'] },
+    { label: 'Facturación ARCA', description: 'Certificado, CUIT, punto de venta', href: `/${orgSlug}/configuracion/facturacion`, icon: FileText, color: 'text-blue-600 bg-blue-50', plans: ['pro'] },
   ]
+  const subPages = allSubPages.filter(p => p.plans.includes(planType ?? 'free_trial'))
 
   return (
     <div className="space-y-6 max-w-xl">

@@ -1,4 +1,5 @@
 import { notFound, redirect } from 'next/navigation'
+import { headers } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
 import { getOrgBySlug } from '@/lib/supabase/get-org'
 import { Sidebar } from '@/components/layout/sidebar'
@@ -32,15 +33,41 @@ export default async function OrgLayout({ children, params }: Props) {
 
   if (!org) notFound()
 
-  const { data: member } = await supabase
-    .from('organization_members')
-    .select('role, branch_id')
-    .eq('organization_id', org.id)
-    .eq('user_id', user.id)
-    .eq('is_active', true)
-    .single()
+  const [{ data: member }, { data: subscription }] = await Promise.all([
+    supabase
+      .from('organization_members')
+      .select('role, branch_id')
+      .eq('organization_id', org.id)
+      .eq('user_id', user.id)
+      .eq('is_active', true)
+      .single(),
+    supabase
+      .from('subscriptions')
+      .select('status, plan:subscription_plans(type)')
+      .eq('organization_id', org.id)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle(),
+  ])
 
   if (!member) redirect('/login')
+
+  const h = await headers()
+  const pathname = h.get('x-pathname') ?? ''
+  const isOnSuscripcion = pathname.includes('/configuracion')
+
+  const trialExpired = org.trial_ends_at ? new Date(org.trial_ends_at) < new Date() : false
+  const subStatus = subscription?.status
+  const isBlocked = !subStatus
+    || (subStatus === 'trialing' && trialExpired)
+    || subStatus === 'canceled'
+    || subStatus === 'past_due'
+
+  if (isBlocked && !isOnSuscripcion) {
+    redirect(`/${orgSlug}/configuracion/suscripcion`)
+  }
+
+  const planType = (subscription?.plan as { type?: string } | null)?.type ?? 'free_trial'
 
   // Resolve branch: prefer the member's assigned branch, else the main branch
   const branchQuery = member.branch_id
@@ -59,6 +86,7 @@ export default async function OrgLayout({ children, params }: Props) {
         role: member.role,
         userId: user.id,
         userFullName: profile?.full_name ?? null,
+        planType,
       }}
     >
       <div className="flex h-screen overflow-hidden">

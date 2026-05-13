@@ -17,6 +17,7 @@ interface OrgContextValue {
   role: MemberRole
   userId: string
   userFullName: string | null
+  planType: string
 }
 
 export const OrgContext = createContext<OrgContextValue | null>(null)
