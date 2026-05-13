@@ -158,7 +158,7 @@ export default function SuscripcionPage() {
           {subscription?.plan && (
             <div className="text-right space-y-1 text-[12px] text-muted-foreground">
               <p>Hasta {subscription.plan.max_branches === 1 ? '1 sucursal' : `${subscription.plan.max_branches} sucursales`}</p>
-              <p>Hasta {subscription.plan.max_users} usuarios</p>
+              <p>Hasta {subscription.plan.max_users >= 999 ? '∞' : subscription.plan.max_users} usuarios</p>
             </div>
           )}
         </div>
@@ -214,7 +214,7 @@ export default function SuscripcionPage() {
                       )}
                     </div>
                     <p className="text-[13px] text-muted-foreground">
-                      {plan.max_branches === 1 ? '1 sucursal' : `${plan.max_branches} sucursales`} · hasta {plan.max_users} usuarios
+                      {plan.max_branches === 1 ? '1 sucursal' : `${plan.max_branches} sucursales`} · hasta {plan.max_users >= 999 ? '∞' : plan.max_users} usuarios
                     </p>
                   </div>
                   <div className="text-right shrink-0">
