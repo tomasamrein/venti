@@ -4,8 +4,10 @@ import { getPreApproval } from '@/lib/mercadopago/client'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { createClient } from '@/lib/supabase/server'
 
+const ANNUAL_TYPES = new Set(['basic_annual', 'pro_annual'])
+
 const checkoutSchema = z.object({
-  plan_type: z.enum(['basic', 'avanzado', 'pro']),
+  plan_type: z.enum(['basic', 'pro', 'basic_annual', 'pro_annual']),
   email: z.string().email(),
   org_id: z.string().uuid().nullish().transform(v => v ?? undefined),
 })
@@ -81,7 +83,7 @@ export async function POST(req: NextRequest) {
         reason: `Ventix ${plan.name}`,
         payer_email: email,
         auto_recurring: {
-          frequency: 1,
+          frequency: ANNUAL_TYPES.has(plan_type) ? 12 : 1,
           frequency_type: 'months',
           transaction_amount: Number(plan.price_ars),
           currency_id: 'ARS',

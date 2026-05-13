@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
-import { CreditCard, CheckCircle2, Clock, AlertCircle, Zap, Loader2 } from 'lucide-react'
+import { CreditCard, CheckCircle2, Clock, AlertCircle, Zap, Loader2, Calendar } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { formatARS } from '@/lib/utils/currency'
 import { Button } from '@/components/ui/button'
@@ -45,6 +45,7 @@ export default function SuscripcionPage() {
   const [userEmail, setUserEmail] = useState<string | null>(null)
   const [fetching, setFetching] = useState(true)
   const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null)
+  const [billing, setBilling] = useState<'monthly' | 'annual'>('monthly')
 
   useEffect(() => {
     async function load() {
@@ -166,13 +167,36 @@ export default function SuscripcionPage() {
       {/* Plans */}
       {plans.length > 0 && (
         <div className="space-y-3">
-          <h2 className="text-[14px] font-semibold text-muted-foreground uppercase tracking-wider">Planes disponibles</h2>
+          <div className="flex items-center justify-between">
+            <h2 className="text-[14px] font-semibold text-muted-foreground uppercase tracking-wider">Planes disponibles</h2>
+            <div className="flex items-center gap-1 p-1 bg-muted/40 rounded-xl text-[12px] font-medium">
+              <button
+                onClick={() => setBilling('monthly')}
+                className={`px-3 py-1 rounded-lg transition-colors ${billing === 'monthly' ? 'bg-background shadow text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+              >
+                Mensual
+              </button>
+              <button
+                onClick={() => setBilling('annual')}
+                className={`px-3 py-1 rounded-lg transition-colors flex items-center gap-1.5 ${billing === 'annual' ? 'bg-background shadow text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+              >
+                <Calendar className="h-3 w-3" />
+                Anual
+                <span className="text-[10px] font-bold text-emerald-500 bg-emerald-500/10 px-1.5 py-0.5 rounded-full">-25%</span>
+              </button>
+            </div>
+          </div>
           <div className="grid gap-3">
             {(() => {
-              const PLAN_ORDER: Record<string, number> = { free_trial: 0, basic: 1, pro: 2 }
+              const PLAN_ORDER: Record<string, number> = { free_trial: 0, basic: 1, basic_annual: 1, pro: 2, pro_annual: 2 }
               const currentPlanType = subscription?.plan?.type ?? 'free_trial'
               const currentOrder = PLAN_ORDER[currentPlanType] ?? 0
-              return plans.filter(p => (PLAN_ORDER[p.type] ?? 0) > currentOrder)
+              const isAnnual = billing === 'annual'
+              return plans.filter(p => {
+                const planIsAnnual = p.type.endsWith('_annual')
+                if (isAnnual ? !planIsAnnual : planIsAnnual) return false
+                return (PLAN_ORDER[p.type] ?? 0) > currentOrder
+              })
             })().map(plan => {
               const isCurrent = false
               const isPremium = plan.type === 'pro'
@@ -195,7 +219,10 @@ export default function SuscripcionPage() {
                   </div>
                   <div className="text-right shrink-0">
                     <p className="text-[20px] font-extrabold">{formatARS(plan.price_ars)}</p>
-                    <p className="text-[11px] text-muted-foreground">por mes</p>
+                    {plan.type.endsWith('_annual')
+                      ? <p className="text-[11px] text-muted-foreground">por año · {formatARS(Math.round(plan.price_ars / 12))}/mes</p>
+                      : <p className="text-[11px] text-muted-foreground">por mes</p>
+                    }
                     <Button size="sm" className="mt-2 rounded-lg text-[12px] text-white"
                       disabled={checkoutLoading === plan.id}
                       style={{ background: 'linear-gradient(135deg, oklch(0.55 0.16 155), oklch(0.50 0.16 158))' }}
@@ -210,7 +237,7 @@ export default function SuscripcionPage() {
             })}
           </div>
           {(() => {
-            const PLAN_ORDER: Record<string, number> = { free_trial: 0, basic: 1, pro: 2 }
+            const PLAN_ORDER: Record<string, number> = { free_trial: 0, basic: 1, basic_annual: 1, pro: 2, pro_annual: 2 }
             const currentPlanType = subscription?.plan?.type ?? 'free_trial'
             const hasUpgrades = plans.some(p => (PLAN_ORDER[p.type] ?? 0) > (PLAN_ORDER[currentPlanType] ?? 0))
             return hasUpgrades ? (
