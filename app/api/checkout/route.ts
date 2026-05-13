@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
     const { data: plan } = await admin
       .from('subscription_plans')
       .select('id, name, price_ars, mp_plan_id, is_active')
-      .eq('type', plan_type)
+      .eq('type', plan_type as string)
       .single()
 
     if (!plan || !plan.is_active) {
