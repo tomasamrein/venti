@@ -5,7 +5,7 @@ INSERT INTO subscription_plans (name, type, price_ars, max_branches, max_users, 
 (
   'Simple Anual',
   'basic_annual',
-  449991,
+  270000,
   1,
   999,
   '{"pos": true, "products": true, "invoices": true, "reports": true, "multi_branch": false, "current_accounts": true, "annual": true}'
@@ -13,7 +13,7 @@ INSERT INTO subscription_plans (name, type, price_ars, max_branches, max_users, 
 (
   'Profesional Anual',
   'pro_annual',
-  899991,
+  450000,
   999,
   999,
   '{"pos": true, "products": true, "invoices": true, "reports": true, "multi_branch": true, "current_accounts": true, "advanced_reports": true, "push_notifications": true, "priority_support": true, "onboarding": true, "annual": true}'
