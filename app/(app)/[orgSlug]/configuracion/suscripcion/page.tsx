@@ -168,8 +168,13 @@ export default function SuscripcionPage() {
         <div className="space-y-3">
           <h2 className="text-[14px] font-semibold text-muted-foreground uppercase tracking-wider">Planes disponibles</h2>
           <div className="grid gap-3">
-            {plans.filter(p => p.type !== 'free_trial').map(plan => {
-              const isCurrent = subscription?.plan?.id === plan.id
+            {(() => {
+              const PLAN_ORDER: Record<string, number> = { free_trial: 0, basic: 1, pro: 2 }
+              const currentPlanType = subscription?.plan?.type ?? 'free_trial'
+              const currentOrder = PLAN_ORDER[currentPlanType] ?? 0
+              return plans.filter(p => (PLAN_ORDER[p.type] ?? 0) > currentOrder)
+            })().map(plan => {
+              const isCurrent = false
               const isPremium = plan.type === 'pro'
               return (
                 <div key={plan.id}
@@ -191,24 +196,33 @@ export default function SuscripcionPage() {
                   <div className="text-right shrink-0">
                     <p className="text-[20px] font-extrabold">{formatARS(plan.price_ars)}</p>
                     <p className="text-[11px] text-muted-foreground">por mes</p>
-                    {!isCurrent && (
-                      <Button size="sm" className="mt-2 rounded-lg text-[12px] text-white"
-                        disabled={checkoutLoading === plan.id}
-                        style={{ background: 'linear-gradient(135deg, oklch(0.55 0.16 155), oklch(0.50 0.16 158))' }}
-                        onClick={() => handleCheckout(plan)}>
-                        {checkoutLoading === plan.id
-                          ? <Loader2 className="h-3 w-3 animate-spin" />
-                          : subscription?.status === 'active' ? 'Cambiar plan' : 'Suscribirme'}
-                      </Button>
-                    )}
+                    <Button size="sm" className="mt-2 rounded-lg text-[12px] text-white"
+                      disabled={checkoutLoading === plan.id}
+                      style={{ background: 'linear-gradient(135deg, oklch(0.55 0.16 155), oklch(0.50 0.16 158))' }}
+                      onClick={() => handleCheckout(plan)}>
+                      {checkoutLoading === plan.id
+                        ? <Loader2 className="h-3 w-3 animate-spin" />
+                        : subscription?.status === 'active' ? 'Actualizar plan' : 'Suscribirme'}
+                    </Button>
                   </div>
                 </div>
               )
             })}
           </div>
-          <p className="text-[12px] text-muted-foreground text-center">
-            Para cambiar de plan o cancelar tu suscripción, contactanos por WhatsApp o email.
-          </p>
+          {(() => {
+            const PLAN_ORDER: Record<string, number> = { free_trial: 0, basic: 1, pro: 2 }
+            const currentPlanType = subscription?.plan?.type ?? 'free_trial'
+            const hasUpgrades = plans.some(p => (PLAN_ORDER[p.type] ?? 0) > (PLAN_ORDER[currentPlanType] ?? 0))
+            return hasUpgrades ? (
+              <p className="text-[12px] text-muted-foreground text-center">
+                Para cancelar tu suscripción, contactanos por WhatsApp o email.
+              </p>
+            ) : (
+              <p className="text-[12px] text-muted-foreground text-center">
+                Estás en el plan más completo. Para cancelar, contactanos por WhatsApp o email.
+              </p>
+            )
+          })()}
         </div>
       )}
     </div>
