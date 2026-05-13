@@ -1,7 +1,8 @@
 'use client'
 
 import type React from 'react'
-import { Check, ChevronRight, Smartphone, Zap, Package, Tag, Rocket, MessageCircle } from 'lucide-react'
+import { useState } from 'react'
+import { Check, ChevronRight, Smartphone, Zap, Package, Tag, Rocket, MessageCircle, Calendar } from 'lucide-react'
 import Link from 'next/link'
 
 const fmt = (n: number) =>
@@ -12,6 +13,7 @@ type Plan = {
   icon: React.ElementType
   pricePromo: number | null
   priceFull: number | null
+  priceAnnual: number | null
   features: string[]
   cta: string
   href: string
@@ -25,6 +27,7 @@ const PLANS: Plan[] = [
     icon: Zap,
     pricePromo: 30000,
     priceFull: 60000,
+    priceAnnual: 270000,
     features: [
       'POS con escáner de barras USB y cámara',
       'Gestión de productos y stock',
@@ -45,6 +48,7 @@ const PLANS: Plan[] = [
     icon: Package,
     pricePromo: 50000,
     priceFull: 100000,
+    priceAnnual: 450000,
     features: [
       'Todo lo del plan Simple',
       'Facturación ARCA (A, B y C) con CAE',
@@ -64,6 +68,7 @@ const PLANS: Plan[] = [
     icon: Rocket,
     pricePromo: null,
     priceFull: null,
+    priceAnnual: null,
     features: [
       'Todo lo del plan Con Facturación',
       'Multi-sucursal con stock independiente',
@@ -95,6 +100,8 @@ const COMPARISON: [string, boolean, boolean, boolean][] = [
 ]
 
 export default function PreciosPage() {
+  const [billing, setBilling] = useState<'monthly' | 'annual'>('monthly')
+
   return (
     <div className="max-w-6xl mx-auto px-4 py-20">
       <div className="text-center mb-6">
@@ -104,6 +111,28 @@ export default function PreciosPage() {
         <p className="mt-4 text-base text-slate-600 max-w-xl mx-auto">
           Probá cualquier plan gratis 14 días. Sin tarjeta de crédito.
         </p>
+      </div>
+
+      {/* Billing toggle */}
+      <div className="flex items-center justify-center mb-8">
+        <div className="flex items-center gap-1 p-1 bg-slate-100 rounded-xl text-sm font-medium">
+          <button
+            onClick={() => setBilling('monthly')}
+            className={`px-5 py-2 rounded-lg transition-colors ${billing === 'monthly' ? 'bg-white shadow text-slate-900' : 'text-slate-500 hover:text-slate-700'}`}
+          >
+            Mensual
+          </button>
+          <button
+            onClick={() => setBilling('annual')}
+            className={`px-5 py-2 rounded-lg transition-colors flex items-center gap-2 ${billing === 'annual' ? 'bg-white shadow text-slate-900' : 'text-slate-500 hover:text-slate-700'}`}
+          >
+            <Calendar className="h-3.5 w-3.5" />
+            Anual
+            <span className="text-[11px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded-full">
+              -25%
+            </span>
+          </button>
+        </div>
       </div>
 
       {/* Promo banner */}
@@ -146,6 +175,20 @@ export default function PreciosPage() {
                       El precio se define según la cantidad de sucursales y necesidades de tu negocio.
                     </p>
                   </div>
+                ) : billing === 'annual' ? (
+                  <>
+                    <div className="flex items-baseline gap-2 mt-3">
+                      <span className="text-3xl font-bold tracking-tight text-slate-900">{fmt(plan.priceAnnual!)}</span>
+                      <span className="text-sm text-slate-400">/año</span>
+                    </div>
+                    <div className="flex items-center gap-1.5 mt-1">
+                      <span className="text-xs text-slate-400 line-through">{fmt(plan.pricePromo! * 12)}/año</span>
+                      <span className="text-xs font-semibold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded">
+                        ahorrás {fmt(plan.pricePromo! * 12 - plan.priceAnnual!)}
+                      </span>
+                    </div>
+                    <p className="text-xs text-slate-400 mt-1">{fmt(Math.round(plan.priceAnnual! / 12))}/mes</p>
+                  </>
                 ) : (
                   <>
                     <div className="flex items-baseline gap-2 mt-3">
