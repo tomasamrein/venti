@@ -35,8 +35,14 @@ export function Sidebar({ orgSlug, className }: SidebarProps) {
   const pathname = usePathname()
   const router = useRouter()
   const base = `/${orgSlug}`
-  const { role } = useOrg()
+  const { role, org, planType } = useOrg()
   const isCashier = role === 'cashier'
+
+  const daysLeft = (() => {
+    if (!org.trial_ends_at) return null
+    const ms = new Date(org.trial_ends_at).getTime() - Date.now()
+    return Math.ceil(ms / 86400000)
+  })()
 
   const sections: NavSection[] = isCashier
     ? [{
@@ -155,6 +161,11 @@ export function Sidebar({ orgSlug, className }: SidebarProps) {
 
       {/* Bottom items */}
       <div className="px-3 pb-4 border-t border-border pt-3 space-y-0.5">
+        {!isCashier && planType === 'free_trial' && daysLeft !== null && (
+          <p className={`px-3 py-1.5 text-[11px] font-medium ${daysLeft <= 2 ? 'text-red-400' : 'text-muted-foreground'}`}>
+            Días restantes: {Math.max(0, daysLeft)}
+          </p>
+        )}
         {bottomItems.map(it => (
           <NavLink key={it.href} item={it} />
         ))}
