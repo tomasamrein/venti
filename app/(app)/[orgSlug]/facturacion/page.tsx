@@ -60,7 +60,7 @@ const PAYMENT_LABEL: Record<string, string> = {
 
 export default function FacturacionPage({ params }: Props) {
   const { planType, org } = useOrg()
-  const isSimplePlan = planType === 'free_trial' || planType === 'basic'
+  const isSimplePlan = planType !== 'pro'
   const [orgSlug, setOrgSlug] = useState('')
   const [orgId, setOrgId] = useState('')
   const [orgBranchId, setOrgBranchId] = useState('')

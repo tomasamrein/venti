@@ -139,7 +139,7 @@ export default function ConfiguracionPage() {
     { label: 'Sucursales', description: 'Gestión de locales', href: `/${orgSlug}/configuracion/sucursales`, icon: GitBranch, color: 'text-amber-600 bg-amber-50', plans: ['pro'] },
     { label: 'Facturación ARCA', description: 'Certificado, CUIT, punto de venta', href: `/${orgSlug}/configuracion/facturacion`, icon: FileText, color: 'text-blue-600 bg-blue-50', plans: ['pro'] },
   ]
-  const subPages = allSubPages.filter(p => p.plans.includes(planType ?? 'free_trial'))
+  const subPages = allSubPages.filter(p => p.plans.includes(planType === 'pro' ? 'pro' : 'basic'))
 
   return (
     <div className="space-y-6 max-w-xl">
