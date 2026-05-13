@@ -132,11 +132,16 @@ export function Sidebar({ orgSlug, className }: SidebarProps) {
       className
     )}>
       {/* Logo */}
-      <div className="h-14 flex items-center px-5 border-b border-border shrink-0">
+      <div className={`flex items-center px-5 border-b border-border shrink-0 ${planType === 'free_trial' && daysLeft !== null ? 'flex-col items-start gap-0.5 py-2.5' : 'h-14'}`}>
         <Link href={`${base}/dashboard`} className="flex items-center gap-2">
           <Image src="/isotipo.png" alt="Ventix" width={28} height={28} className="h-7 w-7 object-contain" priority />
           <span className="text-base font-extrabold text-slate-900 dark:text-slate-100 tracking-tight">Ventix</span>
         </Link>
+        {planType === 'free_trial' && daysLeft !== null && (
+          <p className={`text-[11px] font-semibold px-1 ${daysLeft <= 2 ? 'text-red-500' : 'text-amber-500'}`}>
+            {Math.max(0, daysLeft)} días de prueba restantes
+          </p>
+        )}
       </div>
 
       {/* Navigation */}
@@ -161,11 +166,6 @@ export function Sidebar({ orgSlug, className }: SidebarProps) {
 
       {/* Bottom items */}
       <div className="px-3 pb-4 border-t border-border pt-3 space-y-0.5">
-        {!isCashier && planType === 'free_trial' && daysLeft !== null && (
-          <p className={`px-3 py-1.5 text-[11px] font-medium ${daysLeft <= 2 ? 'text-red-400' : 'text-muted-foreground'}`}>
-            Días restantes: {Math.max(0, daysLeft)}
-          </p>
-        )}
         {bottomItems.map(it => (
           <NavLink key={it.href} item={it} />
         ))}
