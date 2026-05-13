@@ -128,10 +128,10 @@ export function LandingPricing() {
                         <span className="text-4xl font-black text-slate-900">{fmt(plan.pricePromo!)}</span>
                         <span className="text-sm text-slate-500 font-medium">/mes</span>
                       </div>
-                      <p className="text-[11px] text-slate-500 mt-1">los primeros 3 meses</p>
-                      <p className="text-[11px] text-slate-500 mt-2">
-                        Después <span className="font-semibold text-slate-700">{fmt(plan.priceFull!)}/mes</span>
-                      </p>
+                      <div className="flex items-center gap-1.5 mt-1">
+                        <span className="text-[11px] text-slate-400 line-through">{fmt(plan.priceFull!)}/mes</span>
+                        <span className="text-[11px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded-full">50% off × 3 meses</span>
+                      </div>
                     </div>
                   )}
                 </div>
