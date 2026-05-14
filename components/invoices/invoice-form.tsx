@@ -110,7 +110,9 @@ export function InvoiceForm({ orgId, orgSlug, saleId, onClose, onDone }: Props) 
 
     setSubmitting(true)
     try {
-      const res = await fetch('/api/arca/invoice', {
+      const isNonFiscal = invoiceType === 'ticket' || invoiceType === 'non_fiscal'
+      const endpoint = isNonFiscal ? '/api/invoices/non-fiscal' : '/api/arca/invoice'
+      const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(req),
@@ -120,8 +122,8 @@ export function InvoiceForm({ orgId, orgSlug, saleId, onClose, onDone }: Props) 
 
       const inv = json.invoice
       toast.success(
-        invoiceType === 'ticket' || invoiceType === 'non_fiscal'
-          ? 'Ticket registrado'
+        isNonFiscal
+          ? `Ticket Nº ${inv.afip_comp_nro} registrado`
           : `Factura emitida — CAE ${inv.cae}`
       )
       onDone()

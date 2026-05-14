@@ -82,7 +82,7 @@ export function LandingPricing() {
 
         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-50 border border-amber-200">
           <Tag className="h-3.5 w-3.5 text-amber-600" />
-          <span className="text-xs font-bold text-amber-700">Precio de lanzamiento: 50% off los primeros 3 meses</span>
+          <span className="text-xs font-bold text-amber-700">50% off por tiempo limitado · Solo para los primeros 30 clientes</span>
         </div>
       </AnimateIn>
 
@@ -130,7 +130,7 @@ export function LandingPricing() {
                       </div>
                       <div className="flex items-center gap-1.5 mt-1">
                         <span className="text-[11px] text-slate-400 line-through">{fmt(plan.priceFull!)}/mes</span>
-                        <span className="text-[11px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded-full">50% off × 3 meses</span>
+                        <span className="text-[11px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded-full">50% off por tiempo limitado</span>
                       </div>
                     </div>
                   )}

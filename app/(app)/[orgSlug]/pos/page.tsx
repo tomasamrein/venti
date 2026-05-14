@@ -15,6 +15,7 @@ import { EmployeeSwitcher } from '@/components/pos/employee-switcher'
 import { UsbScannerInput } from '@/components/pos/usb-scanner-input'
 import { RemoteScannerModal } from '@/components/pos/remote-scanner-modal'
 import { OfflineBanner } from '@/components/shared/offline-banner'
+import { PosStatusBar } from '@/components/pos/pos-status-bar'
 import { Button } from '@/components/ui/button'
 import { useCartStore } from '@/stores/cart-store'
 import { usePosStore } from '@/stores/pos-store'
@@ -363,8 +364,16 @@ export default function POSPage() {
   const showProductsArea = mobileTab === 'products' || mobileTab === 'services'
 
   return (
-    <div className="h-[calc(100vh-3.5rem)] flex flex-col md:flex-row gap-0 md:gap-4 md:p-4">
+    <div className="h-[calc(100vh-3.5rem)] flex flex-col">
       <OfflineBanner />
+      <PosStatusBar
+        orgId={org.id}
+        branchId={branch.id}
+        sessionId={session?.id}
+        isOpen={isOpen}
+        isOffline={isOffline}
+      />
+      <div className="flex-1 flex flex-col md:flex-row gap-0 md:gap-4 md:p-4 min-h-0">
       {/* Products + services area */}
       <div className={`flex-1 flex flex-col overflow-hidden md:rounded-2xl md:border md:border-border/60 md:bg-card relative ${mobileTab === 'cart' ? 'hidden md:flex' : 'flex'}`}>
         {/* Drugstore: employee switcher in top bar */}
@@ -504,6 +513,7 @@ export default function POSPage() {
         lastScan={lastRemoteScan}
         onScan={handleBarcodeFound}
       />
+      </div>
     </div>
   )
 }

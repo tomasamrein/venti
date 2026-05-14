@@ -27,6 +27,14 @@ function parseSoapFault(xml: string): string | null {
   return m ? m[1].trim() : null
 }
 
+const ARCA_DEBUG = process.env.ARCA_DEBUG === '1' || process.env.ARCA_ENVIRONMENT !== 'production'
+
+function redactAuth(xml: string): string {
+  return xml
+    .replace(/<ar:Token>[\s\S]*?<\/ar:Token>/g, '<ar:Token>[REDACTED]</ar:Token>')
+    .replace(/<ar:Sign>[\s\S]*?<\/ar:Sign>/g, '<ar:Sign>[REDACTED]</ar:Sign>')
+}
+
 async function callWsfev1(action: string, innerBody: string, opts: SOAPOpts, attempt = 0): Promise<string> {
   const url = opts.env === 'production' ? WSFEV1_PROD : WSFEV1_HOMO
 
@@ -37,6 +45,12 @@ async function callWsfev1(action: string, innerBody: string, opts: SOAPOpts, att
   </soap:Body>
 </soap:Envelope>`
 
+  const t0 = Date.now()
+  if (ARCA_DEBUG) {
+    console.log(`[ARCA] → ${action} ${url} attempt=${attempt} cuit=${opts.cuit.replace(/\D/g, '')}`)
+    console.log(`[ARCA] req: ${redactAuth(envelope).slice(0, 2000)}`)
+  }
+
   let res: Response
   try {
     res = await fetch(url, {
@@ -46,10 +60,10 @@ async function callWsfev1(action: string, innerBody: string, opts: SOAPOpts, att
         SOAPAction: `http://ar.gov.afip.dif.FEV1/${action}`,
       },
       body: envelope,
-      signal: AbortSignal.timeout(30000), // 30s timeout
+      signal: AbortSignal.timeout(30000),
     })
   } catch (err) {
-    // Network/timeout — retry once
+    if (ARCA_DEBUG) console.error(`[ARCA] ✗ ${action} network err (${Date.now() - t0}ms):`, err instanceof Error ? err.message : err)
     if (attempt < 1) {
       await new Promise(r => setTimeout(r, 1000))
       return callWsfev1(action, innerBody, opts, attempt + 1)
@@ -58,6 +72,12 @@ async function callWsfev1(action: string, innerBody: string, opts: SOAPOpts, att
   }
 
   const xml = await res.text()
+  const ms = Date.now() - t0
+
+  if (ARCA_DEBUG) {
+    console.log(`[ARCA] ← ${action} HTTP ${res.status} (${ms}ms)`)
+    console.log(`[ARCA] res: ${xml.slice(0, 2000)}`)
+  }
 
   if (!res.ok) {
     const fault = parseSoapFault(xml)

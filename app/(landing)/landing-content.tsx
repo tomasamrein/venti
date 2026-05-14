@@ -102,10 +102,10 @@ const WHY = [
 ]
 
 const PAINS = [
-  { icon: TrendingDown,   text: 'No sabés cuánto vendiste realmente hasta que contás la caja a fin del día' },
-  { icon: AlertTriangle,  text: 'Te quedás sin stock de lo que más vendés y no te enterás a tiempo' },
-  { icon: Receipt,        text: 'Hacer una factura AFIP te lleva varios minutos buscando el portal y las claves' },
-  { icon: Clock,          text: 'Perdés plata por fiar sin llevar un registro claro de lo que te deben' },
+  { icon: TrendingDown,   tag: 'Ventas a ciegas',    text: 'No sabés cuánto vendiste hasta contar la caja a fin del día. Si hubo error, ya es tarde.' },
+  { icon: AlertTriangle,  tag: 'Stock roto',          text: 'Te quedás sin el producto que más sale y lo descubrís cuando el cliente ya se fue.' },
+  { icon: Receipt,        tag: 'Facturación manual',  text: 'Cada factura AFIP son minutos perdidos buscando el portal, las claves y cargando todo a mano.' },
+  { icon: Clock,          tag: 'Fiados sin control',  text: 'Fiás sin registro claro y al final del mes no sabés quién te debe ni cuánto.' },
 ]
 
 
@@ -215,6 +215,16 @@ function PosMockup() {
 export default function LandingPage() {
   return (
     <>
+      {/* ─── URGENCY STRIP ─── */}
+      <div className="bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-400 text-amber-950">
+        <div className="max-w-6xl mx-auto px-4 py-2 flex items-center justify-center gap-2 text-[12px] md:text-[13px] font-bold tracking-tight">
+          <Zap className="h-3.5 w-3.5 fill-amber-950" />
+          <span className="hidden sm:inline">PRECIO DE LANZAMIENTO ·</span>
+          <span>50% OFF por tiempo limitado</span>
+          <span className="hidden md:inline">· Solo para los primeros 30 clientes</span>
+        </div>
+      </div>
+
       {/* ─── HERO ─── */}
       <section className="relative overflow-hidden bg-white">
         <div className="pointer-events-none absolute inset-0 overflow-hidden">
@@ -222,13 +232,16 @@ export default function LandingPage() {
           <div className="absolute top-40 -left-20 w-72 h-72 rounded-full bg-emerald-50/80 blur-3xl" />
         </div>
 
-        <div className="relative max-w-6xl mx-auto px-4 pt-24 pb-16 md:pt-32 md:pb-20">
+        <div className="relative max-w-6xl mx-auto px-4 pt-16 pb-16 md:pt-20 md:pb-20">
           {/* Badge — sin opacity inline, usa fill-mode: both del CSS */}
           <div className="flex justify-center mb-8 animate-fade-in" style={{ animationDelay: '0ms' }}>
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-emerald-200 bg-emerald-50 shadow-sm">
-              <Tag className="h-3.5 w-3.5 text-emerald-600" />
-              <span className="text-xs font-semibold text-emerald-700">
-                50% off los primeros 3 meses · Sin tarjeta de crédito
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-red-200 bg-red-50 shadow-sm">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500" />
+              </span>
+              <span className="text-xs font-bold text-red-700 tracking-tight">
+                Oferta por tiempo limitado · Sin tarjeta de crédito
               </span>
             </div>
           </div>
@@ -262,9 +275,10 @@ export default function LandingPage() {
               >
                 <Link
                   href="/registro"
-                  className="inline-flex items-center gap-2 h-12 px-8 rounded-xl text-base font-bold text-white bg-emerald-600 hover:bg-emerald-700 transition-all hover:shadow-lg hover:shadow-emerald-200 hover:-translate-y-0.5 active:translate-y-0"
+                  className="group relative inline-flex items-center gap-2 h-12 px-8 rounded-xl text-base font-bold text-white bg-emerald-600 hover:bg-emerald-700 transition-all hover:shadow-lg hover:shadow-emerald-200 hover:-translate-y-0.5 active:translate-y-0"
                 >
-                  Empezar gratis 14 días <ArrowRight className="h-4 w-4" />
+                  <span className="absolute -top-2 -right-2 px-2 py-0.5 rounded-full bg-amber-400 text-amber-950 text-[10px] font-black tracking-wider shadow-md">GRATIS</span>
+                  Empezar prueba de 14 días <ArrowRight className="h-4 w-4" />
                 </Link>
                 <Link
                   href="#precios"
@@ -274,12 +288,20 @@ export default function LandingPage() {
                 </Link>
               </div>
 
-              <p
-                className="mt-5 text-xs text-slate-500 text-center lg:text-left animate-fade-in"
+              <div
+                className="mt-6 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-x-5 gap-y-2 text-xs text-slate-500 animate-fade-in"
                 style={{ animationDelay: '360ms' }}
               >
-                Sin permanencia · Cancelás cuando querés · Hecho en Argentina 🇦🇷
-              </p>
+                <span className="inline-flex items-center gap-1.5">
+                  <Check className="h-3.5 w-3.5 text-emerald-600" />Sin tarjeta de crédito
+                </span>
+                <span className="inline-flex items-center gap-1.5">
+                  <Check className="h-3.5 w-3.5 text-emerald-600" />Cancelás cuando querés
+                </span>
+                <span className="inline-flex items-center gap-1.5">
+                  <Check className="h-3.5 w-3.5 text-emerald-600" />Hecho en Argentina 🇦🇷
+                </span>
+              </div>
             </div>
 
             {/* Mockup — float en hijo para no conflictar con fade-up */}
@@ -321,14 +343,14 @@ export default function LandingPage() {
       {/* ─── PAIN POINTS ─── */}
       <section className="max-w-5xl mx-auto px-4 py-20">
         <AnimateIn className="text-center mb-12">
-          <p className="inline-flex items-center gap-2 text-xs font-bold text-red-500 uppercase tracking-widest mb-4">
+          <p className="inline-flex items-center gap-2 text-xs font-bold text-red-600 uppercase tracking-widest mb-4">
             <span className="w-8 h-px bg-red-300" />¿Te suena familiar?<span className="w-8 h-px bg-red-300" />
           </p>
           <h2 className="text-3xl md:text-4xl font-black tracking-tight text-slate-900">
-            Manejás tu negocio a ciegas
+            Cada día <span className="bg-red-100 text-red-700 px-2 py-0.5 rounded-lg">perdés plata</span> sin saberlo
           </h2>
           <p className="mt-3 text-base text-slate-600 max-w-lg mx-auto">
-            Sin un sistema, cada día perdés tiempo y plata sin darte cuenta.
+            Sin un sistema, los pequeños descuidos se acumulan. Mirá lo que te cuesta hoy:
           </p>
         </AnimateIn>
 
@@ -337,24 +359,29 @@ export default function LandingPage() {
             const Icon = p.icon
             return (
               <AnimateIn key={p.text} delay={i * 80}>
-                <div className="flex items-start gap-4 p-5 rounded-2xl bg-red-50 border border-red-100">
-                  <div className="w-9 h-9 rounded-xl bg-red-100 flex items-center justify-center shrink-0">
-                    <Icon className="h-4 w-4 text-red-500" />
+                <div className="relative flex items-start gap-4 p-5 rounded-2xl bg-red-50 border border-red-100 hover:border-red-200 hover:bg-red-50/80 transition-colors">
+                  <div className="w-10 h-10 rounded-xl bg-red-100 flex items-center justify-center shrink-0">
+                    <Icon className="h-4 w-4 text-red-600" />
                   </div>
-                  <p className="text-sm text-slate-700 leading-relaxed pt-1">{p.text}</p>
+                  <div className="flex-1 pt-0.5">
+                    <span className="inline-block mb-1.5 px-2 py-0.5 rounded-md bg-red-600 text-white text-[10px] font-black tracking-wider uppercase">
+                      {p.tag}
+                    </span>
+                    <p className="text-sm text-slate-700 leading-relaxed">{p.text}</p>
+                  </div>
                 </div>
               </AnimateIn>
             )
           })}
         </div>
 
-        <AnimateIn delay={320} className="text-center mt-8">
-          <p className="text-sm text-slate-500">
-            Con Ventix, todo eso desaparece.{' '}
-            <Link href="/registro" className="text-emerald-600 font-semibold hover:underline underline-offset-2">
-              Probalo gratis →
-            </Link>
-          </p>
+        <AnimateIn delay={320} className="text-center mt-10">
+          <Link
+            href="/registro"
+            className="inline-flex items-center gap-2 h-11 px-6 rounded-xl bg-slate-900 text-white text-sm font-bold hover:bg-slate-800 transition-all hover:-translate-y-0.5"
+          >
+            Dejar de perder plata — Probar gratis <ArrowRight className="h-4 w-4" />
+          </Link>
         </AnimateIn>
       </section>
 
@@ -383,7 +410,7 @@ export default function LandingPage() {
             <div key={feat.num} className={`flex flex-col gap-10 ${isEven ? 'lg:flex-row' : 'lg:flex-row-reverse'} items-center`}>
               <AnimateIn from={isEven ? 'left' : 'right'} className="flex-1 space-y-5">
                 <div className="flex items-center gap-3">
-                  <span className="text-5xl font-black text-slate-300 leading-none select-none">{feat.num}</span>
+                  <span className="text-5xl font-black text-slate-700 dark:text-slate-200 leading-none select-none">{feat.num}</span>
                   {feat.badge && (
                     <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-blue-100 text-blue-700 border border-blue-200">
                       {feat.badge}
@@ -449,8 +476,10 @@ export default function LandingPage() {
       {/* ─── STATS ─── */}
       <section className="max-w-5xl mx-auto px-4 py-16">
         <AnimateIn>
-          <div className="rounded-3xl bg-emerald-600 px-8 py-10">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-600 via-emerald-600 to-emerald-700 px-8 py-12">
+            <div className="pointer-events-none absolute -top-16 -right-16 w-64 h-64 rounded-full bg-emerald-400/30 blur-3xl" />
+            <div className="pointer-events-none absolute -bottom-16 -left-16 w-64 h-64 rounded-full bg-amber-300/10 blur-3xl" />
+            <div className="relative grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
               {[
                 { n: '< 3s',   label: 'para completar una venta' },
                 { n: '14 días', label: 'de prueba gratuita'       },
@@ -458,10 +487,33 @@ export default function LandingPage() {
                 { n: '0',      label: 'instalaciones requeridas'  },
               ].map(s => (
                 <div key={s.label}>
-                  <p className="text-3xl md:text-4xl font-black text-white">{s.n}</p>
-                  <p className="text-xs text-emerald-200 mt-1 leading-tight">{s.label}</p>
+                  <p className="text-3xl md:text-5xl font-black text-white tracking-tight">{s.n}</p>
+                  <p className="text-xs text-emerald-100 mt-2 leading-tight font-medium">{s.label}</p>
                 </div>
               ))}
+            </div>
+          </div>
+        </AnimateIn>
+      </section>
+
+      {/* ─── GUARANTEE / TRUST ─── */}
+      <section className="max-w-5xl mx-auto px-4 py-8">
+        <AnimateIn>
+          <div className="rounded-3xl border-2 border-amber-300 bg-gradient-to-br from-amber-50 to-yellow-50 p-6 md:p-8 flex flex-col md:flex-row items-center gap-6">
+            <div className="shrink-0 w-16 h-16 rounded-2xl bg-amber-400 flex items-center justify-center shadow-md shadow-amber-300/50">
+              <ShieldCheck className="h-8 w-8 text-amber-950" />
+            </div>
+            <div className="flex-1 text-center md:text-left">
+              <p className="inline-block px-2 py-0.5 rounded-md bg-amber-500 text-white text-[10px] font-black tracking-wider uppercase mb-2">
+                Garantía total
+              </p>
+              <h3 className="text-xl md:text-2xl font-black text-slate-900 tracking-tight">
+                Si en 14 días no te convence, no pagás nada
+              </h3>
+              <p className="mt-2 text-sm text-slate-700 leading-relaxed">
+                No te pedimos tarjeta para arrancar. Probás todas las funciones por 14 días.
+                Si no te sirve, simplemente no seguís. <span className="font-bold text-slate-900">Sin letra chica, sin permanencia.</span>
+              </p>
             </div>
           </div>
         </AnimateIn>
@@ -503,7 +555,7 @@ export default function LandingPage() {
             <div>
               <p className="text-sm font-bold text-slate-800">Pagás con Mercado Pago</p>
               <p className="text-xs text-slate-600 mt-0.5">
-                Débito, crédito o transferencia. Mensual automático. Los primeros 3 meses al precio promocional, luego el precio regular. Cancelás cuando querés.
+                Débito, crédito o transferencia. Mensual automático. Oferta por tiempo limitado para los primeros 30 clientes. Cancelás cuando querés.
               </p>
             </div>
           </div>
@@ -559,24 +611,28 @@ export default function LandingPage() {
         <AnimateIn>
           <div className="relative overflow-hidden rounded-3xl bg-slate-900 px-10 py-16 text-center">
             <div className="pointer-events-none absolute -top-10 -right-10 w-64 h-64 rounded-full bg-emerald-500/20 blur-3xl" />
-            <div className="pointer-events-none absolute -bottom-10 -left-10 w-48 h-48 rounded-full bg-emerald-400/10 blur-3xl" />
+            <div className="pointer-events-none absolute -bottom-10 -left-10 w-48 h-48 rounded-full bg-amber-400/10 blur-3xl" />
             <div className="relative">
-              <p className="inline-flex items-center gap-2 text-xs font-bold text-emerald-400 uppercase tracking-widest mb-5">
-                <span className="w-6 h-px bg-emerald-600" />Probalo ahora<span className="w-6 h-px bg-emerald-600" />
-              </p>
-              <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-400 text-amber-950 text-[11px] font-black uppercase tracking-widest mb-6 shadow-lg shadow-amber-500/30">
+                <Zap className="h-3 w-3 fill-amber-950" />
+                50% off por tiempo limitado · solo 30 lugares
+              </div>
+              <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight leading-tight">
                 14 días gratis.<br />
-                <span className="text-emerald-400">Sin tarjeta.</span>
+                <span className="text-emerald-400">Sin tarjeta. Sin riesgo.</span>
               </h2>
-              <p className="mt-4 text-slate-400 text-base max-w-sm mx-auto">
-                Sin permanencia. Sin compromisos. Cancelás cuando querés.
+              <p className="mt-4 text-slate-300 text-base max-w-md mx-auto">
+                Más de 100 negocios ya están probando Ventix. Sumate hoy y arrancás en 10 minutos.
               </p>
               <Link
                 href="/registro"
-                className="inline-flex items-center gap-2 mt-8 h-12 px-10 rounded-xl text-base font-black text-slate-900 bg-emerald-400 hover:bg-emerald-300 transition-all hover:shadow-xl hover:shadow-emerald-900/30 hover:-translate-y-0.5"
+                className="inline-flex items-center gap-2 mt-8 h-13 px-10 py-3.5 rounded-xl text-base font-black text-slate-900 bg-emerald-400 hover:bg-emerald-300 transition-all hover:shadow-xl hover:shadow-emerald-900/30 hover:-translate-y-0.5"
               >
                 Crear mi cuenta gratis <ArrowRight className="h-4 w-4" />
               </Link>
+              <p className="mt-4 text-[12px] text-slate-400">
+                ⚡ Listo en 10 minutos · Sin instalaciones · Soporte por WhatsApp
+              </p>
             </div>
           </div>
         </AnimateIn>

@@ -47,15 +47,25 @@ export function SupportChat() {
           userName: ctx?.userFullName,
         }),
       })
-      const data = await res.json()
+      const data = await res.json().catch(() => ({}))
       if (!res.ok || data.error) {
         console.error('[chat] API error:', data.error, res.status)
-        setMessages(prev => [...prev, { role: 'model', content: 'Hubo un error al procesar tu consulta. Intentá de nuevo.' }])
+        let fallback: string
+        if (res.status === 503) {
+          fallback = 'El asistente está temporalmente offline. Escribinos a soporte@ventix.ar y te respondemos a la brevedad.'
+        } else if (res.status === 401) {
+          fallback = 'Tu sesión expiró. Recargá la página para reconectarte.'
+        } else if (res.status >= 500) {
+          fallback = 'No pude responderte ahora. Probá de nuevo en unos segundos o escribinos a soporte@ventix.ar.'
+        } else {
+          fallback = 'Hubo un error al procesar tu consulta. Probá de nuevo o escribinos a soporte@ventix.ar.'
+        }
+        setMessages(prev => [...prev, { role: 'model', content: fallback }])
       } else {
-        setMessages(prev => [...prev, { role: 'model', content: data.reply || 'No pude generar una respuesta.' }])
+        setMessages(prev => [...prev, { role: 'model', content: data.reply || 'No pude generar una respuesta. Escribinos a soporte@ventix.ar.' }])
       }
     } catch {
-      setMessages(prev => [...prev, { role: 'model', content: 'Error de conexión. Intentá de nuevo.' }])
+      setMessages(prev => [...prev, { role: 'model', content: 'Sin conexión a internet. Cuando vuelvas a estar online probá de nuevo, o escribinos a soporte@ventix.ar.' }])
     }
     setLoading(false)
   }

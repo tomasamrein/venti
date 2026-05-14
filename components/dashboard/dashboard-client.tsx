@@ -8,6 +8,7 @@ import { formatARS } from '@/lib/utils/currency'
 import { SalesChart } from '@/components/dashboard/sales-chart'
 import { TopProductsTable } from '@/components/dashboard/top-products-table'
 import { RecentSales } from '@/components/dashboard/recent-sales'
+import { OnboardingChecklist } from '@/components/dashboard/onboarding-checklist'
 
 interface Branch { id: string; name: string }
 
@@ -85,8 +86,22 @@ export function DashboardClient({ orgSlug, isPro, branches, defaultPeriod, defau
   const periodLabel = period === 'year' ? 'este año' : period === 'month' ? 'este mes' : 'hoy'
   const chartSubtitle = period === 'day' ? 'por hora' : period === 'month' ? 'por día' : 'por mes'
 
+  const showOnboarding = !isLoading && data && (
+    (data.totalProducts ?? 0) === 0 ||
+    !data.openSession ||
+    (data.totalCount ?? 0) === 0
+  )
+
   return (
     <div className="space-y-6">
+      {showOnboarding && (
+        <OnboardingChecklist
+          orgSlug={orgSlug}
+          hasProducts={(data?.totalProducts ?? 0) > 0}
+          hasOpenSession={!!data?.openSession}
+          hasSales={(data?.totalCount ?? 0) > 0}
+        />
+      )}
       {/* Filters */}
       <div className="flex items-center gap-3 flex-wrap">
         {data?.openSession && (

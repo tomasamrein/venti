@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import { formatARS } from '@/lib/utils/currency'
 import { Wallet, TrendingUp, TrendingDown, Clock } from 'lucide-react'
 import { CsvExportButton } from '@/components/shared/csv-export-button'
+import { PdfExportButton } from '@/components/shared/pdf-export-button'
 
 interface Props {
   params: Promise<{ orgSlug: string }>
@@ -27,7 +28,7 @@ export default async function ReportesCajaPage({ params, searchParams }: Props) 
   const { from, to } = await searchParams
   const supabase = await createClient()
 
-  const { data: org } = await supabase.from('organizations').select('id').eq('slug', orgSlug).single()
+  const { data: org } = await supabase.from('organizations').select('id, name').eq('slug', orgSlug).single()
   if (!org) notFound()
 
   const now = new Date()
@@ -91,6 +92,42 @@ export default async function ReportesCajaPage({ params, searchParams }: Props) 
               Duración: duration(s),
               Estado: s.status,
             }))}
+          />
+          <PdfExportButton
+            report={{
+              title: 'Reporte de caja',
+              subtitle: `${fromDate.toLocaleDateString('es-AR')} — ${toDate.toLocaleDateString('es-AR')}`,
+              orgName: org.name,
+              filename: `caja-${fromDate.toISOString().slice(0,10)}.pdf`,
+              stats: [
+                { label: 'Sesiones', value: String(closedSessions.length) },
+                { label: 'Total cierre', value: formatARS(totalClosing) },
+                { label: 'Diferencia', value: `${totalDiff >= 0 ? '+' : ''}${formatARS(totalDiff)}` },
+                { label: 'Promedio/sesión', value: formatARS(avgSession) },
+              ],
+              columns: [
+                { key: 'Apertura',    label: 'Apertura',      width: 32 },
+                { key: 'Sucursal',    label: 'Sucursal',      width: 35 },
+                { key: 'Cajero',      label: 'Cajero',        width: 38 },
+                { key: 'Apertura_$',  label: 'Apertura $',    align: 'right', width: 28 },
+                { key: 'Cierre_$',    label: 'Cierre $',      align: 'right', width: 28 },
+                { key: 'Esperado',    label: 'Esperado',      align: 'right', width: 28 },
+                { key: 'Diferencia',  label: 'Diferencia',    align: 'right', width: 28 },
+                { key: 'Duración',    label: 'Duración',      width: 22 },
+                { key: 'Estado',      label: 'Estado',        width: 22 },
+              ],
+              rows: allSessions.map(s => ({
+                Apertura: new Date(s.opened_at).toLocaleString('es-AR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }),
+                Sucursal: s.branches?.name ?? '—',
+                Cajero: s.opened_by_profile?.full_name ?? '—',
+                Apertura_$: formatARS(s.opening_amount),
+                Cierre_$: s.closing_amount != null ? formatARS(s.closing_amount) : '—',
+                Esperado: s.expected_amount != null ? formatARS(s.expected_amount) : '—',
+                Diferencia: s.difference != null ? `${s.difference >= 0 ? '+' : ''}${formatARS(s.difference)}` : '—',
+                Duración: duration(s),
+                Estado: s.status === 'open' ? 'Abierta' : 'Cerrada',
+              })),
+            }}
           />
         </form>
       </div>

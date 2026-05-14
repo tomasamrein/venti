@@ -140,7 +140,7 @@ export default function PreciosPage() {
         <div className="flex items-center justify-center gap-3 bg-emerald-50 border border-emerald-200 rounded-xl px-5 py-3">
           <Tag className="h-4 w-4 text-emerald-600 shrink-0" />
           <p className="text-sm text-emerald-800 font-medium text-center">
-            <span className="font-bold">50% off los primeros 3 meses</span> — Precio de lanzamiento para los primeros clientes
+            <span className="font-bold">50% off por tiempo limitado</span> — Solo para los primeros 30 clientes
           </p>
         </div>
       </div>
@@ -198,7 +198,7 @@ export default function PreciosPage() {
                     <div className="flex items-center gap-1.5 mt-1">
                       <span className="text-xs text-slate-400 line-through">{fmt(plan.priceFull!)}/mes</span>
                       <span className="text-xs font-semibold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded">
-                        50% off × 3 meses
+                        50% off por tiempo limitado
                       </span>
                     </div>
                   </>
@@ -238,7 +238,7 @@ export default function PreciosPage() {
           <p className="text-sm font-semibold text-slate-800 mb-0.5">Pagás con Mercado Pago</p>
           <p className="text-xs text-slate-500 leading-relaxed">
             Tarjeta de débito, crédito o transferencia bancaria. Se cobra mensual de forma automática.
-            Los primeros 3 meses al precio promocional, luego pasa al precio regular.
+            Oferta por tiempo limitado para los primeros 30 clientes. Luego pasa al precio regular.
             Podés cancelar desde tu cuenta en Ventix en cualquier momento, sin permanencia ni penalidades.
           </p>
         </div>

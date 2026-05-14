@@ -3,17 +3,19 @@ import { useEffect, useRef, useCallback } from 'react'
 interface UseBarcodeOptions {
   minLength?: number
   threshold?: number // max ms between chars to be considered a scan
+  cooldownMs?: number // ignore identical scans within this window
 }
 
 export function useBarcodeScanner(
   onScan: (barcode: string) => void,
   options: UseBarcodeOptions = {}
 ) {
-  const { minLength = 5, threshold = 50 } = options
+  const { minLength = 5, threshold = 50, cooldownMs = 1000 } = options
 
   const bufferRef = useRef('')
   const lastKeyTimeRef = useRef(0)
   const timeoutIdRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const lastScanRef = useRef<{ code: string; at: number }>({ code: '', at: 0 })
 
   const resetBuffer = useCallback(() => {
     bufferRef.current = ''
@@ -30,8 +32,14 @@ export function useBarcodeScanner(
       const delta = now - lastKeyTimeRef.current
 
       if (e.key === 'Enter') {
-        if (bufferRef.current.length >= minLength) {
-          onScan(bufferRef.current)
+        const code = bufferRef.current
+        if (code.length >= minLength) {
+          const last = lastScanRef.current
+          const isDuplicate = code === last.code && now - last.at < cooldownMs
+          if (!isDuplicate) {
+            lastScanRef.current = { code, at: now }
+            onScan(code)
+          }
         }
         resetBuffer()
         return
@@ -54,7 +62,7 @@ export function useBarcodeScanner(
         lastKeyTimeRef.current = 0
       }, threshold * 10)
     },
-    [onScan, minLength, threshold, resetBuffer]
+    [onScan, minLength, threshold, cooldownMs, resetBuffer]
   )
 
   useEffect(() => {

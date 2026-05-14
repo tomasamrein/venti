@@ -3,6 +3,7 @@
   "short_name": "Ventix",
   "description": "Sistema de gestión para kioscos, almacenes y negocios argentinos",
   "start_url": "/",
+  "id": "/",
   "scope": "/",
   "display": "standalone",
   "display_override": ["standalone", "minimal-ui", "browser"],
@@ -11,18 +12,14 @@
   "theme_color": "#0c0e14",
   "categories": ["business", "productivity"],
   "lang": "es-AR",
+  "dir": "ltr",
+  "prefer_related_applications": false,
   "icons": [
     {
       "src": "/icons/icon-192.png",
       "sizes": "256x256",
       "type": "image/png",
       "purpose": "any"
-    },
-    {
-      "src": "/icons/icon-192.png",
-      "sizes": "256x256",
-      "type": "image/png",
-      "purpose": "maskable"
     },
     {
       "src": "/icons/icon-512.png",
@@ -41,8 +38,8 @@
     {
       "name": "Punto de Venta",
       "short_name": "POS",
-      "url": "/pos",
-      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+      "url": "/",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "256x256", "type": "image/png" }]
     }
   ]
 }

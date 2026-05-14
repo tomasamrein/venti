@@ -1,4 +1,4 @@
-﻿export type Json =
+export type Json =
   | string
   | number
   | boolean
@@ -433,6 +433,50 @@ export type Database = {
           },
         ]
       }
+      invitations: {
+        Row: {
+          accepted_at: string | null
+          created_at: string
+          email: string
+          expires_at: string
+          id: string
+          invited_by: string | null
+          org_id: string
+          role: Database["public"]["Enums"]["member_role"]
+          token: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          created_at?: string
+          email: string
+          expires_at?: string
+          id?: string
+          invited_by?: string | null
+          org_id: string
+          role?: Database["public"]["Enums"]["member_role"]
+          token?: string
+        }
+        Update: {
+          accepted_at?: string | null
+          created_at?: string
+          email?: string
+          expires_at?: string
+          id?: string
+          invited_by?: string | null
+          org_id?: string
+          role?: Database["public"]["Enums"]["member_role"]
+          token?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invitations_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       invoices: {
         Row: {
           afip_comp_nro: number | null
@@ -647,7 +691,7 @@ export type Database = {
       organizations: {
         Row: {
           address: string | null
-          business_type: 'kiosco' | 'almacen' | 'drugstore' | 'fotocopiadora' | 'otro'
+          business_type: string
           created_at: string
           cuit: string | null
           currency: string
@@ -665,7 +709,7 @@ export type Database = {
         }
         Insert: {
           address?: string | null
-          business_type?: 'kiosco' | 'almacen' | 'drugstore' | 'fotocopiadora' | 'otro'
+          business_type?: string
           created_at?: string
           cuit?: string | null
           currency?: string
@@ -683,7 +727,7 @@ export type Database = {
         }
         Update: {
           address?: string | null
-          business_type?: 'kiosco' | 'almacen' | 'drugstore' | 'fotocopiadora' | 'otro'
+          business_type?: string
           created_at?: string
           cuit?: string | null
           currency?: string
@@ -1011,6 +1055,60 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      purchase_order_items: {
+        Row: {
+          id: string
+          ordered_at: string
+          ordered_by: string | null
+          organization_id: string
+          price_cost: number | null
+          product_id: string | null
+          product_name: string
+          quantity: number
+          supplier_name: string | null
+          unit: string
+        }
+        Insert: {
+          id?: string
+          ordered_at?: string
+          ordered_by?: string | null
+          organization_id: string
+          price_cost?: number | null
+          product_id?: string | null
+          product_name: string
+          quantity: number
+          supplier_name?: string | null
+          unit?: string
+        }
+        Update: {
+          id?: string
+          ordered_at?: string
+          ordered_by?: string | null
+          organization_id?: string
+          price_cost?: number | null
+          product_id?: string | null
+          product_name?: string
+          quantity?: number
+          supplier_name?: string | null
+          unit?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "purchase_order_items_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "purchase_order_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       push_subscriptions: {
         Row: {
@@ -1440,6 +1538,7 @@ export type Database = {
           organization_id: string
           phone: string | null
           updated_at: string
+          website: string | null
         }
         Insert: {
           address?: string | null
@@ -1457,6 +1556,7 @@ export type Database = {
           organization_id: string
           phone?: string | null
           updated_at?: string
+          website?: string | null
         }
         Update: {
           address?: string | null
@@ -1474,6 +1574,7 @@ export type Database = {
           organization_id?: string
           phone?: string | null
           updated_at?: string
+          website?: string | null
         }
         Relationships: [
           {
@@ -1490,19 +1591,76 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      complete_sale: {
+        Args: {
+          p_amount_paid: number
+          p_branch_id: string
+          p_change_amount: number
+          p_customer_id: string
+          p_discount_amount: number
+          p_discount_pct: number
+          p_items: Json
+          p_notes: string
+          p_org_id: string
+          p_payment_method: Database["public"]["Enums"]["payment_method"]
+          p_session_id: string
+          p_subtotal: number
+          p_tax_amount: number
+          p_total: number
+        }
+        Returns: {
+          sale_id: string
+          sale_number: number
+        }[]
+      }
+      get_arca_cert_key: {
+        Args: { p_org_id: string }
+        Returns: {
+          cert_pem: string
+          key_pem: string
+        }[]
+      }
       get_user_org_ids: { Args: never; Returns: string[] }
       get_user_role: {
         Args: { org_id: string }
         Returns: Database["public"]["Enums"]["member_role"]
       }
       is_super_admin: { Args: never; Returns: boolean }
+      record_account_transaction: {
+        Args: {
+          p_account_id: string
+          p_amount: number
+          p_created_by?: string
+          p_description?: string
+          p_organization_id: string
+          p_sale_id?: string
+          p_type: Database["public"]["Enums"]["account_transaction_type"]
+        }
+        Returns: {
+          balance_after: number
+          new_balance: number
+          transaction_id: string
+        }[]
+      }
+      set_arca_vault_creds: {
+        Args: { p_cert_pem: string; p_key_pem: string; p_org_id: string }
+        Returns: {
+          vault_cert_id: string
+          vault_key_id: string
+        }[]
+      }
       show_limit: { Args: never; Returns: number }
       show_trgm: { Args: { "": string }; Returns: string[] }
       unaccent: { Args: { "": string }; Returns: string }
     }
     Enums: {
       account_transaction_type: "charge" | "payment" | "adjustment"
-      alert_type: "low_stock" | "out_of_stock" | "price_change" | "subscription"
+      alert_type:
+        | "low_stock"
+        | "out_of_stock"
+        | "price_change"
+        | "subscription"
+        | "announcement"
       cash_movement_type:
         | "sale"
         | "expense"
@@ -1521,7 +1679,14 @@ export type Database = {
         | "mercadopago"
         | "current_account"
         | "mixed"
-      plan_type: "free_trial" | "basic" | "avanzado" | "pro"
+      plan_type:
+        | "free_trial"
+        | "basic"
+        | "pro"
+        | "avanzado"
+        | "professional"
+        | "basic_annual"
+        | "pro_annual"
       sale_status: "completed" | "on_hold" | "canceled" | "refunded"
       subscription_status:
         | "active"
@@ -1657,7 +1822,13 @@ export const Constants = {
   public: {
     Enums: {
       account_transaction_type: ["charge", "payment", "adjustment"],
-      alert_type: ["low_stock", "out_of_stock", "price_change", "subscription"],
+      alert_type: [
+        "low_stock",
+        "out_of_stock",
+        "price_change",
+        "subscription",
+        "announcement",
+      ],
       cash_movement_type: [
         "sale",
         "expense",
@@ -1678,7 +1849,15 @@ export const Constants = {
         "current_account",
         "mixed",
       ],
-      plan_type: ["free_trial", "basic", "avanzado", "pro"],
+      plan_type: [
+        "free_trial",
+        "basic",
+        "pro",
+        "avanzado",
+        "professional",
+        "basic_annual",
+        "pro_annual",
+      ],
       sale_status: ["completed", "on_hold", "canceled", "refunded"],
       subscription_status: [
         "active",
@@ -1690,4 +1869,3 @@ export const Constants = {
     },
   },
 } as const
-

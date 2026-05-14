@@ -1,6 +1,6 @@
 'use client'
 
-import { X, Minus, Plus, Trash2, Clock, User, Search } from 'lucide-react'
+import { X, Minus, Plus, Trash2, Clock, User, Search, ShoppingCart, Receipt } from 'lucide-react'
 import Link from 'next/link'
 import { useState, useEffect, useRef } from 'react'
 import { Button } from '@/components/ui/button'
@@ -79,15 +79,28 @@ export function CartSummary({ onCheckout, onHold, orgSlug, orgId, checkoutDisabl
   const discountAmount = subtotal * (discount_pct / 100)
   const isEmpty = items.length === 0
 
+  const itemCount = items.reduce((s, i) => s + i.cart_quantity, 0)
+
   return (
-    <Card className="h-full flex flex-col border border-border/60 bg-gradient-to-br from-card to-card/80 rounded-2xl">
+    <Card className="h-full flex flex-col border border-border/60 bg-card rounded-2xl overflow-hidden shadow-sm">
       {/* Header */}
-      <div className="p-4 border-b space-y-2">
+      <div className="p-4 border-b border-border/60 bg-gradient-to-br from-slate-50 to-slate-100/50 dark:from-slate-900 dark:to-slate-900/50 space-y-2.5">
         <div className="flex items-center justify-between">
-          <h2 className="font-semibold">Tu carrito</h2>
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-lg bg-emerald-600 text-white flex items-center justify-center shadow-sm shadow-emerald-500/20">
+              <ShoppingCart className="h-4 w-4" />
+            </div>
+            <div>
+              <h2 className="text-[13px] font-bold leading-none">Carrito</h2>
+              <p className="text-[10px] text-muted-foreground mt-1">
+                {itemCount === 0 ? 'Vacío' : `${itemCount} ${itemCount === 1 ? 'ítem' : 'ítems'}`}
+              </p>
+            </div>
+          </div>
           {!isEmpty && (
-            <Button variant="ghost" size="sm" onClick={() => clear()} className="text-destructive hover:bg-destructive/10">
-              <Trash2 className="h-4 w-4" />
+            <Button variant="ghost" size="sm" onClick={() => clear()} className="h-8 px-2 text-destructive hover:bg-destructive/10 text-[11px]">
+              <Trash2 className="h-3.5 w-3.5 mr-1" />
+              Vaciar
             </Button>
           )}
         </div>
@@ -135,121 +148,131 @@ export function CartSummary({ onCheckout, onHold, orgSlug, orgId, checkoutDisabl
 
       {/* Items */}
       {isEmpty ? (
-        <div className="flex-1 flex items-center justify-center text-muted-foreground text-sm">
-          Carrito vacío
+        <div className="flex-1 flex flex-col items-center justify-center px-6 text-center">
+          <div className="w-14 h-14 rounded-2xl bg-muted/50 flex items-center justify-center mb-3">
+            <ShoppingCart className="h-6 w-6 text-muted-foreground/60" />
+          </div>
+          <p className="text-sm font-medium text-foreground">Carrito vacío</p>
+          <p className="text-[11px] text-muted-foreground mt-1 max-w-[180px]">
+            Tocá un producto o escaneá su código para empezar
+          </p>
         </div>
       ) : (
         <>
-          <ScrollArea className="flex-1 p-4">
-            <div className="space-y-2">
+          <ScrollArea className="flex-1 px-3 py-3">
+            <div className="space-y-1.5">
               {items.map(item => (
                 <div
                   key={item.id}
-                  className="p-3 rounded-lg border border-border/40 bg-background/50 space-y-2"
+                  className="group p-2.5 rounded-xl border border-border/40 bg-background/60 hover:border-border hover:bg-background transition-colors"
                 >
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="flex-1">
-                      <p className="text-sm font-medium line-clamp-1">{item.name}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {formatARS(item.price_sell || 0)} c/u
+                  <div className="flex items-start justify-between gap-2 mb-2">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[12px] font-semibold leading-tight line-clamp-2">{item.name}</p>
+                      <p className="text-[10px] text-muted-foreground mt-0.5 tabular-nums">
+                        {formatARS(item.price_sell || 0)} <span className="text-muted-foreground/60">× unidad</span>
                       </p>
                     </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
+                    <button
                       onClick={() => removeItem(item.id)}
-                      className="h-6 w-6 p-0"
+                      className="shrink-0 w-6 h-6 rounded-md hover:bg-destructive/10 text-muted-foreground hover:text-destructive flex items-center justify-center transition-colors"
                     >
                       <X className="h-3 w-3" />
-                    </Button>
+                    </button>
                   </div>
 
-                  {/* Quantity controls */}
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => updateQuantity(item.id, item.cart_quantity - 1)}
-                      className="h-7 w-7 p-0"
-                    >
-                      <Minus className="h-3 w-3" />
-                    </Button>
-                    <Input
-                      type="number"
-                      value={item.cart_quantity}
-                      onChange={e => updateQuantity(item.id, parseInt(e.target.value) || 1)}
-                      className="h-7 text-center text-sm flex-1 rounded-lg"
-                    />
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => updateQuantity(item.id, item.cart_quantity + 1)}
-                      className="h-7 w-7 p-0"
-                    >
-                      <Plus className="h-3 w-3" />
-                    </Button>
-                  </div>
+                  <div className="flex items-center justify-between gap-2">
+                    {/* Quantity controls */}
+                    <div className="inline-flex items-center bg-muted/60 rounded-lg">
+                      <button
+                        onClick={() => updateQuantity(item.id, item.cart_quantity - 1)}
+                        className="w-7 h-7 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted rounded-l-lg"
+                      >
+                        <Minus className="h-3 w-3" />
+                      </button>
+                      <input
+                        type="number"
+                        value={item.cart_quantity}
+                        onChange={e => updateQuantity(item.id, parseInt(e.target.value) || 1)}
+                        className="w-9 h-7 text-center text-[12px] font-bold bg-transparent border-0 outline-none tabular-nums focus:bg-background focus:ring-1 focus:ring-emerald-500"
+                      />
+                      <button
+                        onClick={() => updateQuantity(item.id, item.cart_quantity + 1)}
+                        className="w-7 h-7 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted rounded-r-lg"
+                      >
+                        <Plus className="h-3 w-3" />
+                      </button>
+                    </div>
 
-                  <div className="text-right text-sm font-semibold text-emerald-700 dark:text-emerald-400">
-                    {formatARS((item.price_sell || 0) * item.cart_quantity)}
+                    <span className="text-[13px] font-bold text-emerald-700 dark:text-emerald-400 tabular-nums">
+                      {formatARS((item.price_sell || 0) * item.cart_quantity)}
+                    </span>
                   </div>
                 </div>
               ))}
             </div>
           </ScrollArea>
 
-          {/* Discount */}
-          <div className="border-t p-4 space-y-3">
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground">Descuento %</span>
-              <Input
-                type="number"
-                value={discount_pct}
-                onChange={e => setDiscount(parseFloat(e.target.value) || 0)}
-                min="0"
-                max="100"
-                className="h-8 text-sm flex-1"
-              />
+          {/* Totals + actions */}
+          <div className="border-t border-border/60 bg-gradient-to-br from-slate-50 to-white dark:from-slate-900 dark:to-slate-950 p-4 space-y-3">
+            {/* Discount */}
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-[11px] font-medium text-muted-foreground">Descuento</span>
+              <div className="relative">
+                <Input
+                  type="number"
+                  value={discount_pct || ''}
+                  onChange={e => setDiscount(parseFloat(e.target.value) || 0)}
+                  min="0"
+                  max="100"
+                  placeholder="0"
+                  className="h-7 w-16 text-[12px] text-right pr-5 rounded-lg tabular-nums"
+                />
+                <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[11px] text-muted-foreground pointer-events-none">%</span>
+              </div>
             </div>
 
-            {/* Totals */}
-            <div className="space-y-2 text-sm py-2 border-t">
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Subtotal</span>
-                <span className="font-medium">{formatARS(subtotal)}</span>
+            {/* Subtotal/discount */}
+            <div className="space-y-1 text-[11px]">
+              <div className="flex justify-between text-muted-foreground">
+                <span>Subtotal</span>
+                <span className="tabular-nums">{formatARS(subtotal)}</span>
               </div>
               {discountAmount > 0 && (
-                <div className="flex justify-between text-red-600 dark:text-red-400">
-                  <span>Descuento</span>
-                  <span>-{formatARS(discountAmount)}</span>
+                <div className="flex justify-between text-red-600 dark:text-red-400 font-medium">
+                  <span>Descuento ({discount_pct}%)</span>
+                  <span className="tabular-nums">-{formatARS(discountAmount)}</span>
                 </div>
               )}
-              <div className="flex justify-between text-lg font-bold text-emerald-700 dark:text-emerald-400 pt-2 border-t">
-                <span>Total</span>
-                <span>{formatARS(total)}</span>
-              </div>
+            </div>
+
+            {/* Big total */}
+            <div className="rounded-xl bg-slate-900 dark:bg-slate-800 text-white p-3 flex items-end justify-between border border-slate-800 dark:border-slate-700">
+              <span className="text-[11px] uppercase font-bold tracking-wider text-slate-400">Total a pagar</span>
+              <span className="text-2xl font-black tabular-nums leading-none text-white">{formatARS(total)}</span>
             </div>
 
             {/* Action buttons */}
-            <div className="space-y-2">
+            <div className="space-y-2 pt-1">
               <Button
-                className="w-full h-10 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold"
+                className="w-full h-12 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[14px] rounded-xl shadow-sm hover:shadow-md hover:shadow-emerald-500/20 transition-all"
                 onClick={onCheckout}
                 disabled={checkoutDisabled}
               >
-                Cobrar
+                <Receipt className="h-4 w-4 mr-2" />
+                Cobrar {formatARS(total)}
               </Button>
               <div className="flex gap-2">
                 <Button
                   variant="outline"
-                  className="flex-1 h-10 rounded-xl"
+                  className="flex-1 h-9 rounded-lg text-[12px] font-semibold"
                   onClick={onHold}
                 >
                   Guardar
                 </Button>
                 {orgSlug && (
                   <Link href={`/${orgSlug}/pos/espera`}>
-                    <Button variant="outline" size="icon" className="h-10 w-10 rounded-xl" title="Ver ventas en espera">
+                    <Button variant="outline" size="icon" className="h-9 w-9 rounded-lg" title="Ver ventas en espera">
                       <Clock className="h-4 w-4" />
                     </Button>
                   </Link>

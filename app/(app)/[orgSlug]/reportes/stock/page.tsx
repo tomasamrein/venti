@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import { formatARS } from '@/lib/utils/currency'
 import { Package, AlertTriangle, TrendingDown, DollarSign } from 'lucide-react'
 import { CsvExportButton } from '@/components/shared/csv-export-button'
+import { PdfExportButton } from '@/components/shared/pdf-export-button'
 
 interface Props {
   params: Promise<{ orgSlug: string }>
@@ -14,7 +15,7 @@ export default async function ReportesStockPage({ params, searchParams }: Props)
   const { filter, q } = await searchParams
   const supabase = await createClient()
 
-  const { data: org } = await supabase.from('organizations').select('id').eq('slug', orgSlug).single()
+  const { data: org } = await supabase.from('organizations').select('id, name').eq('slug', orgSlug).single()
   if (!org) notFound()
 
   let query = supabase
@@ -75,6 +76,40 @@ export default async function ReportesStockPage({ params, searchParams }: Props)
               'Precio venta': p.price_sell,
               Estado: p.track_stock && p.stock_current <= 0 ? 'Sin stock' : p.track_stock && p.stock_current <= p.stock_min ? 'Stock bajo' : 'OK',
             }))}
+          />
+          <PdfExportButton
+            report={{
+              title: 'Reporte de stock',
+              subtitle: 'Estado actual del inventario',
+              orgName: org.name,
+              filename: 'stock.pdf',
+              stats: [
+                { label: 'Productos', value: String(totalProducts) },
+                { label: 'Stock bajo', value: String(lowStockCount) },
+                { label: 'Sin stock', value: String(outStockCount) },
+                { label: 'Valor inventario', value: formatARS(stockValue) },
+              ],
+              columns: [
+                { key: 'Producto',  label: 'Producto',        width: 70 },
+                { key: 'Categoria', label: 'Categoría',       width: 40 },
+                { key: 'Codigo',    label: 'Código',          width: 35 },
+                { key: 'Stock',     label: 'Stock',           align: 'right', width: 22 },
+                { key: 'Minimo',    label: 'Mínimo',          align: 'right', width: 22 },
+                { key: 'Costo',     label: 'P. Costo',        align: 'right', width: 28 },
+                { key: 'Venta',     label: 'P. Venta',        align: 'right', width: 28 },
+                { key: 'Valor',     label: 'Valor stock',     align: 'right', width: 30 },
+              ],
+              rows: filtered.map(p => ({
+                Producto: p.name,
+                Categoria: (p.product_categories as { name: string } | null)?.name ?? '—',
+                Codigo: p.barcode ?? p.sku ?? '—',
+                Stock: p.stock_current,
+                Minimo: p.stock_min,
+                Costo: p.price_cost ? formatARS(p.price_cost) : '—',
+                Venta: formatARS(p.price_sell),
+                Valor: p.price_cost ? formatARS(p.price_cost * Math.max(0, p.stock_current)) : '—',
+              })),
+            }}
           />
         </form>
       </div>
