@@ -3,6 +3,7 @@ import { getOrgBySlug } from '@/lib/supabase/get-org'
 import { toZonedTime } from 'date-fns-tz'
 import { OnboardingBanner } from '@/components/dashboard/onboarding-banner'
 import { DashboardClient } from '@/components/dashboard/dashboard-client'
+import { hasMultiBranch } from '@/lib/utils/plan'
 
 interface Props {
   params: Promise<{ orgSlug: string }>
@@ -36,7 +37,7 @@ export default async function DashboardPage({ params, searchParams }: Props) {
   ])
 
   const planType = (subscription?.subscription_plans as any)?.type ?? 'free_trial'
-  const isPro = planType === 'pro'
+  const isPro = hasMultiBranch(planType)
 
   let branches: { id: string; name: string }[] = []
   if (isPro) {

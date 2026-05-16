@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { z } from 'zod'
+import { getBusinessPreset } from '@/lib/utils/business-presets'
 
 const BUSINESS_TYPES = ['kiosco', 'almacen', 'drugstore', 'fotocopiadora', 'otro'] as const
 
@@ -143,13 +144,16 @@ export async function POST(request: Request) {
     const trialEnds = new Date()
     trialEnds.setDate(trialEnds.getDate() + 14)
 
-    // 2. Create organization
+    // 2. Create organization (settings pre-configurados según rubro)
+    const preset = getBusinessPreset(data.business_type)
+
     const { data: org, error: orgError } = await supabase
       .from('organizations')
       .insert({
         name: data.org_name,
         slug: data.org_slug,
         business_type: data.business_type,
+        settings: preset.settings as never,
         trial_ends_at: trialEnds.toISOString(),
       })
       .select('id')
@@ -200,6 +204,23 @@ export async function POST(request: Request) {
         { error: 'Error al configurar la cuenta. Intentá de nuevo.' },
         { status: 500 }
       )
+    }
+
+    // 4b. Seed categorías por rubro (non-blocking)
+    try {
+      if (preset.categories.length > 0) {
+        await supabase.from('product_categories').insert(
+          preset.categories.map((c, i) => ({
+            organization_id: org.id,
+            name: c.name,
+            color: c.color,
+            icon: c.icon,
+            sort_order: i,
+          }))
+        )
+      }
+    } catch (catError) {
+      console.error('[register] Categories seed error (non-fatal):', catError)
     }
 
     // 5. Create trial subscription (non-blocking)

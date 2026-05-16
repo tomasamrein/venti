@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
-import { Plus, Search, FileText, XCircle, Receipt, Download, Lock } from 'lucide-react'
+import { Plus, Search, FileText, XCircle, Receipt, Lock, Sparkles } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
@@ -15,6 +15,7 @@ import {
 } from '@/components/ui/dialog'
 import type { Database } from '@/types/database'
 import { useOrg } from '@/hooks/use-org'
+import { hasInvoicing } from '@/lib/utils/plan'
 
 interface Props {
   params: Promise<{ orgSlug: string }>
@@ -59,12 +60,12 @@ const PAYMENT_LABEL: Record<string, string> = {
 }
 
 export default function FacturacionPage({ params }: Props) {
-  const { planType, org } = useOrg()
-  const isSimplePlan = planType !== 'pro'
+  const { org } = useOrg()
   const [orgSlug, setOrgSlug] = useState('')
   const [orgId, setOrgId] = useState('')
   const [orgBranchId, setOrgBranchId] = useState('')
   const [hasArca, setHasArca] = useState(false)
+  const [planType, setPlanType] = useState<string | null>(null)
   const [invoices, setInvoices] = useState<Invoice[]>([])
   const [unfacturadas, setUnfacturadas] = useState<Sale[]>([])
   const [loading, setLoading] = useState(true)
@@ -94,6 +95,16 @@ export default function FacturacionPage({ params }: Props) {
     if (!org) return
     setOrgId(org.id)
     setHasArca(!!((org.settings as any)?.arca?.vault_cert_id))
+
+    const { data: sub } = await supabase
+      .from('subscriptions')
+      .select('subscription_plans(type)')
+      .eq('organization_id', org.id)
+      .in('status', ['active', 'trialing'])
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle()
+    setPlanType((sub?.subscription_plans as { type?: string } | null)?.type ?? null)
 
     const { data: branch } = await supabase
       .from('branches')
@@ -239,52 +250,38 @@ export default function FacturacionPage({ params }: Props) {
     }
   }
 
-  if (isSimplePlan) {
-    const totalVentas = unfacturadas.reduce((s, v) => s + v.total, 0)
+  const planAllowsInvoicing = hasInvoicing(planType)
+
+  if (!loading && planType !== null && !planAllowsInvoicing) {
     return (
       <div className="space-y-6 max-w-2xl">
         <div>
-          <h1 className="text-[28px] font-extrabold tracking-[-0.03em]">Facturación</h1>
-          <p className="text-[14px] text-muted-foreground mt-1">Resumen de ventas del período</p>
+          <h1 className="text-2xl font-bold">Facturación</h1>
+          <p className="text-sm text-muted-foreground">Emitir facturas A, B y C con CAE de ARCA</p>
         </div>
-        <div className="rounded-xl border border-border bg-card p-6 space-y-4">
+        <div className="rounded-2xl border-2 border-emerald-300/60 bg-gradient-to-br from-emerald-50 to-white dark:from-emerald-950/30 dark:to-background p-8 space-y-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
-              <Receipt className="h-5 w-5 text-emerald-600" />
+            <div className="w-12 h-12 rounded-2xl bg-emerald-500/15 flex items-center justify-center">
+              <Lock className="h-6 w-6 text-emerald-600" />
             </div>
             <div>
-              <p className="text-[13px] text-muted-foreground">Total facturado (ventas completadas)</p>
-              <p className="text-[28px] font-extrabold tracking-tight">{loading ? '...' : formatARS(totalVentas)}</p>
+              <h2 className="text-lg font-bold">Disponible en plan Avanzado</h2>
+              <p className="text-sm text-muted-foreground">
+                La facturación electrónica con ARCA/AFIP está incluida desde el plan Avanzado en adelante.
+              </p>
             </div>
           </div>
-          <p className="text-[13px] text-muted-foreground">
-            {loading ? '' : `${unfacturadas.length} ventas registradas`}
-          </p>
-          <a
-            href={`/api/exports/business?org=${org.slug}`}
-            className="inline-flex items-center gap-2 rounded-xl text-[13px] font-semibold h-9 px-4 border border-border bg-muted/30 hover:bg-muted transition-colors"
+          <ul className="space-y-2 pl-1 text-sm">
+            <li className="flex items-start gap-2"><Sparkles className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" /> Factura A, B y C con CAE al instante</li>
+            <li className="flex items-start gap-2"><Sparkles className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" /> PDF y envío por WhatsApp</li>
+            <li className="flex items-start gap-2"><Sparkles className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" /> Notas de crédito y anulaciones</li>
+          </ul>
+          <Link
+            href={`/${orgSlug}/configuracion/suscripcion`}
+            className="inline-flex items-center gap-2 h-10 px-5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold transition-colors"
           >
-            <Download className="h-4 w-4" />
-            Exportar ventas en Excel
-          </a>
-        </div>
-        <div className="rounded-xl border border-border bg-card p-6 flex items-start gap-4">
-          <div className="w-10 h-10 rounded-xl bg-slate-500/10 flex items-center justify-center shrink-0">
-            <Lock className="h-5 w-5 text-slate-500" />
-          </div>
-          <div>
-            <p className="text-[14px] font-semibold">Emisión de facturas ARCA — Plan Profesional</p>
-            <p className="text-[13px] text-muted-foreground mt-1">
-              Para emitir Facturas A, B y C electrónicas con CAE de ARCA/AFIP, actualizá al plan Profesional.
-            </p>
-            <Link
-              href={`/${org.slug}/configuracion/suscripcion`}
-              className="inline-flex items-center gap-2 mt-3 rounded-xl text-[13px] font-semibold h-9 px-4 text-white transition-opacity hover:opacity-90"
-              style={{ background: 'linear-gradient(135deg, oklch(0.55 0.16 155), oklch(0.50 0.16 158))' }}
-            >
-              Ver planes
-            </Link>
-          </div>
+            Ver planes
+          </Link>
         </div>
       </div>
     )

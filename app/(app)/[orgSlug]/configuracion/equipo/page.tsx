@@ -135,9 +135,20 @@ export default function EquipoPage() {
   }
 
   async function handleRoleChange(memberId: string, newRole: 'admin' | 'cashier') {
+    const target = members.find(m => m.id === memberId)
+    if (target?.role === 'owner') {
+      toast.error('No podés cambiar el rol del dueño')
+      return
+    }
+    if (myRole !== 'owner' && newRole === 'admin') {
+      toast.error('Solo el dueño puede asignar el rol de Admin')
+      return
+    }
     const supabase = createClient()
     const { error } = await supabase.from('organization_members')
-      .update({ role: newRole }).eq('id', memberId)
+      .update({ role: newRole })
+      .eq('id', memberId)
+      .neq('role', 'owner')
     if (error) toast.error('Error al cambiar rol')
     else { toast.success('Rol actualizado'); await loadMembers(orgId) }
   }

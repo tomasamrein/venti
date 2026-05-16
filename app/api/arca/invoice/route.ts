@@ -39,6 +39,23 @@ export async function POST(req: NextRequest) {
 
     const admin = createAdminClient()
 
+    // Plan gate: Simple no incluye facturación ARCA
+    const { data: sub } = await admin
+      .from('subscriptions')
+      .select('subscription_plans(type)')
+      .eq('organization_id', invoiceReq.org_id)
+      .in('status', ['active', 'trialing'])
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle()
+    const planType = (sub?.subscription_plans as { type?: string } | null)?.type ?? null
+    if (planType === 'basic' || planType === 'basic_annual') {
+      return NextResponse.json(
+        { error: 'Tu plan Simple no incluye facturación ARCA. Actualizá a Avanzado para habilitarla.' },
+        { status: 402 }
+      )
+    }
+
     // Idempotency: if this sale already has an issued invoice, return it
     if (invoiceReq.sale_id) {
       const { data: existing } = await admin

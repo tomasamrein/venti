@@ -70,7 +70,7 @@ const FEATURES_MAIN = [
     num: '02',
     title: 'Factura A, B o C en 10 segundos',
     desc: 'Conectás tu CUIT y tu certificado una sola vez. Desde ahí, cada factura sale con número CAE al instante, sin abrir AFIP, sin buscar claves, sin demoras.',
-    badge: 'ARCA / AFIP',
+    badge: 'Desde plan Avanzado',
     icon: Receipt,
     highlights: ['Factura A, B y C con CAE automático', 'PDF descargable con un clic', 'Enviás la factura por WhatsApp'],
   },
@@ -403,9 +403,6 @@ export default function LandingPage() {
         {FEATURES_MAIN.map((feat, i) => {
           const Icon = feat.icon
           const isEven = i % 2 === 0
-          const planLabel = feat.badge
-            ? 'Plan Con Facturación'
-            : 'Incluido en todos los planes'
           return (
             <div key={feat.num} className={`flex flex-col gap-10 ${isEven ? 'lg:flex-row' : 'lg:flex-row-reverse'} items-center`}>
               <AnimateIn from={isEven ? 'left' : 'right'} className="flex-1 space-y-5">
@@ -437,7 +434,9 @@ export default function LandingPage() {
                     <Icon className="h-8 w-8 text-emerald-600" />
                   </div>
                   <p className="text-sm font-bold text-slate-700 text-center">{feat.title}</p>
-                  <p className="text-xs text-slate-400 text-center mt-1">{planLabel}</p>
+                  <p className="text-xs text-slate-400 text-center mt-1">
+                    {feat.badge ?? 'Incluido en todos los planes'}
+                  </p>
                 </div>
               </AnimateIn>
             </div>

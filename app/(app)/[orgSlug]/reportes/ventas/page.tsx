@@ -23,10 +23,13 @@ export default async function ReportesVentasPage({ params, searchParams }: Props
   const { data: org } = await supabase.from('organizations').select('id').eq('slug', orgSlug).single()
   if (!org) notFound()
 
+  // Parse dates in Argentina timezone (-03:00) so a `from=2026-05-01` selected by the user
+  // means "00:00 of 2026-05-01 in Buenos Aires", not 00:00 UTC.
+  const AR_OFFSET = '-03:00'
   const now = new Date()
   const defaultFrom = new Date(now); defaultFrom.setDate(now.getDate() - 29); defaultFrom.setHours(0, 0, 0, 0)
-  const fromDate = from ? new Date(from) : defaultFrom
-  const toDate = to ? new Date(to + 'T23:59:59') : now
+  const fromDate = from ? new Date(`${from}T00:00:00${AR_OFFSET}`) : defaultFrom
+  const toDate = to ? new Date(`${to}T23:59:59${AR_OFFSET}`) : now
 
   let query = supabase
     .from('sales')

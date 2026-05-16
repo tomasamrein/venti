@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { z } from 'zod'
+import { getBusinessPreset } from '@/lib/utils/business-presets'
 
 const BUSINESS_TYPES = ['kiosco', 'almacen', 'drugstore', 'fotocopiadora', 'otro'] as const
 
@@ -28,10 +29,13 @@ export async function POST(request: Request) {
   const trialEnds = new Date()
   trialEnds.setDate(trialEnds.getDate() + 14)
 
+  const preset = getBusinessPreset(data.business_type)
+
   const { data: org, error: orgError } = await admin.from('organizations').insert({
     name: data.org_name,
     slug: data.org_slug,
     business_type: data.business_type,
+    settings: preset.settings as never,
     trial_ends_at: trialEnds.toISOString(),
   }).select('id').single()
 
@@ -58,6 +62,20 @@ export async function POST(request: Request) {
     await admin.from('organizations').delete().eq('id', org.id)
     return NextResponse.json({ error: 'Error al configurar la cuenta.' }, { status: 500 })
   }
+
+  try {
+    if (preset.categories.length > 0) {
+      await admin.from('product_categories').insert(
+        preset.categories.map((c, i) => ({
+          organization_id: org.id,
+          name: c.name,
+          color: c.color,
+          icon: c.icon,
+          sort_order: i,
+        }))
+      )
+    }
+  } catch {}
 
   try {
     const { data: plan } = await admin.from('subscription_plans').select('id').eq('type', 'free_trial').maybeSingle()

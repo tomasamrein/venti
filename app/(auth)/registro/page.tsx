@@ -24,10 +24,11 @@ const BUSINESS_TYPES: {
   description: string
   icon: React.ElementType
 }[] = [
-  { value: 'kiosco',   label: 'Kiosco',                 description: 'Golosinas, bebidas y snacks',     icon: ShoppingBag },
-  { value: 'almacen',  label: 'Almacén / Autoservicio', description: 'Productos variados y fiambrería', icon: Store },
-  { value: 'drugstore',label: 'Drugstore',               description: 'Perfumería y productos 24hs',     icon: Shield },
-  { value: 'otro',     label: 'Otro comercio',           description: 'Minimarket, librería u otro',     icon: HelpCircle },
+  { value: 'kiosco',       label: 'Kiosco',                 description: 'Golosinas, bebidas y snacks',     icon: ShoppingBag },
+  { value: 'almacen',      label: 'Almacén / Autoservicio', description: 'Productos variados y fiambrería', icon: Store },
+  { value: 'drugstore',    label: 'Drugstore',               description: 'Perfumería y productos 24hs',     icon: Shield },
+  { value: 'fotocopiadora',label: 'Fotocopiadora',           description: 'Copias, anillado e impresión',    icon: Printer },
+  { value: 'otro',         label: 'Otro comercio',           description: 'Minimarket, librería u otro',     icon: HelpCircle },
 ]
 
 const steps = ['Tu cuenta', 'Tu negocio', 'Tu local'] as const
@@ -306,7 +307,7 @@ function RegistroContent() {
           {step === 1 && (
             <div>
               <div className="px-6 pb-2">
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-2 gap-2.5">
                   {BUSINESS_TYPES.map(({ value, label, description, icon: Icon }) => {
                     const selected = businessType === value
                     return (

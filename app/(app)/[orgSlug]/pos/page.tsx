@@ -53,9 +53,10 @@ export default function POSPage() {
   const isOffline = useOffline(org.id, branch.id)
 
   const businessType = org.business_type
-  const isFotocopiadora = !!(org.settings as any)?.copy_service_enabled
-  const isDrugstore = businessType === 'drugstore'
-  const hasArcaEnabled = !!((org.settings as any)?.arca?.vault_cert_id)
+  const settings = (org.settings as any) ?? {}
+  const isFotocopiadora = !!settings.copy_service_enabled
+  const isDrugstore = businessType === 'drugstore' || !!settings.employee_switcher_enabled
+  const hasArcaEnabled = !!settings.arca?.vault_cert_id
 
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
@@ -221,16 +222,20 @@ export default function POSPage() {
     const total = getTotal()
     const discountAmount = subtotal * (cartDiscount / 100)
 
-    const itemsPayload = cartItems.map(item => ({
-      product_id: item.is_service ? null : item.product_id,
-      name: item.name,
-      barcode: item.barcode,
-      unit_price: item.price_sell,
-      quantity: item.cart_quantity,
-      discount_pct: item.cart_discount_pct,
-      tax_rate: item.tax_rate,
-      subtotal: item.price_sell * item.cart_quantity,
-    }))
+    const itemsPayload = cartItems.map(item => {
+      const itemDiscount = item.cart_discount_pct ?? 0
+      const lineSubtotal = item.price_sell * item.cart_quantity * (1 - itemDiscount / 100)
+      return {
+        product_id: item.is_service ? null : item.product_id,
+        name: item.name,
+        barcode: item.barcode,
+        unit_price: item.price_sell,
+        quantity: item.cart_quantity,
+        discount_pct: itemDiscount,
+        tax_rate: item.tax_rate,
+        subtotal: lineSubtotal,
+      }
+    })
 
     const saleNotes = isDrugstore && activeCashierName
       ? `[Cajero: ${activeCashierName}]`

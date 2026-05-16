@@ -4,10 +4,12 @@ import { createClient } from '@/lib/supabase/server'
 const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions'
 
 const PLAN_FEATURES: Record<string, string> = {
-  free_trial: 'período de prueba gratuito de 14 días con acceso completo',
-  basic: 'plan Simple — POS, stock, clientes, cuentas corrientes y export de ventas para contador. Sin facturación ARCA.',
-  pro: 'plan Avanzado — todo lo del Simple más facturación ARCA, reportes, proveedores e historial de precios.',
-  professional: 'plan Profesional — todo lo del Avanzado más múltiples sucursales, gestión de equipo con roles y notificaciones push.',
+  free_trial:   'período de prueba gratuito de 14 días con acceso completo a todas las funciones, INCLUIDA facturación ARCA',
+  basic:        'plan Simple — POS, stock, clientes, cuentas corrientes, reportes, proveedores y etiquetas. 1 sucursal, hasta 2 usuarios. NO incluye facturación ARCA (requiere upgrade a Avanzado).',
+  basic_annual: 'plan Simple Anual — mismas funciones que Simple (POS, stock, reportes, clientes, cuentas corrientes), 1 sucursal, 2 usuarios. Pagado anualmente con descuento. NO incluye facturación ARCA.',
+  pro:          'plan Avanzado — todas las funciones del Simple MÁS facturación ARCA con CAE. 1 sucursal, usuarios ilimitados.',
+  pro_annual:   'plan Avanzado Anual — todas las funciones del Avanzado (incluida facturación ARCA), 1 sucursal, usuarios ilimitados. Pagado anualmente con descuento.',
+  professional: 'plan Profesional — todas las funciones del Avanzado MÁS sucursales ilimitadas, usuarios ilimitados y soporte prioritario.',
 }
 
 function buildSystemPrompt(context: {

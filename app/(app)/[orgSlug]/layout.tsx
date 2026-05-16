@@ -62,6 +62,7 @@ export default async function OrgLayout({ children, params }: Props) {
     || (subStatus === 'trialing' && trialExpired)
     || subStatus === 'canceled'
     || subStatus === 'past_due'
+    || subStatus === 'paused'
 
   if (isBlocked && !isOnSuscripcion) {
     redirect(`/${orgSlug}/configuracion/suscripcion`)
