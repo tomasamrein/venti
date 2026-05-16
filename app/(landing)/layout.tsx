@@ -50,7 +50,6 @@ const NAV_LINKS = [
   { href: '/#funcionalidades', label: 'Funcionalidades' },
   { href: '/#precios', label: 'Precios' },
   { href: '/#faq', label: 'FAQ' },
-  { href: '/docs', label: 'Documentación' },
   { href: '/#contacto', label: 'Contacto' },
 ]
 
@@ -141,7 +140,6 @@ export default function LandingLayout({ children }: { children: React.ReactNode 
                   { href: '/#funcionalidades', label: 'Funcionalidades' },
                   { href: '/#precios', label: 'Precios' },
                   { href: '/#faq', label: 'Preguntas frecuentes' },
-                  { href: '/docs', label: 'Documentación' },
                 ].map(l => (
                   <Link key={l.href} href={l.href}
                     className="block text-sm text-slate-500 hover:text-slate-800 transition-colors">

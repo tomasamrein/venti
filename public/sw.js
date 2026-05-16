@@ -1,7 +1,7 @@
-const STATIC_CACHE = 'venti-static-v2'
-const DYNAMIC_CACHE = 'venti-dynamic-v2'
-const IMAGE_CACHE = 'venti-images-v2'
-const FONT_CACHE = 'venti-fonts-v2'
+const STATIC_CACHE = 'venti-static-v3'
+const DYNAMIC_CACHE = 'venti-dynamic-v3'
+const IMAGE_CACHE = 'venti-images-v3'
+const FONT_CACHE = 'venti-fonts-v3'
 const OFFLINE_URL = '/offline'
 
 const PRECACHE = [OFFLINE_URL]
@@ -35,6 +35,9 @@ self.addEventListener('fetch', (event) => {
 
   // Skip: API calls and Supabase (always fresh)
   if (url.pathname.startsWith('/api/') || url.hostname.includes('supabase.co')) return
+
+  // Skip: manifest y service worker (siempre frescos, evita servir HTML cacheado)
+  if (url.pathname === '/manifest.json' || url.pathname === '/sw.js') return
 
   // Fonts: Cache-First (1 year)
   if (url.hostname === 'fonts.gstatic.com' || url.hostname === 'fonts.googleapis.com') {
