@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { toast } from 'sonner'
 import { TrendingUp, TrendingDown } from 'lucide-react'
 import {
@@ -37,17 +37,15 @@ export function BulkPriceUpdate({ open, onClose, orgId, onDone }: BulkPriceUpdat
   const [categories, setCategories] = useState<{ id: string; name: string }[]>([])
   const [submitting, setSubmitting] = useState(false)
 
-  // Load categories on open
-  const loadCategories = async () => {
-    if (!orgId) return
-    const supabase = createClient()
-    const { data } = await supabase
+  useEffect(() => {
+    if (!open || !orgId) return
+    createClient()
       .from('product_categories')
       .select('id, name')
       .eq('organization_id', orgId)
       .order('name')
-    setCategories(data || [])
-  }
+      .then(({ data }) => setCategories(data || []))
+  }, [open, orgId])
 
   const handleApply = async () => {
     const numVal = parseFloat(value)
@@ -114,13 +112,7 @@ export function BulkPriceUpdate({ open, onClose, orgId, onDone }: BulkPriceUpdat
   }
 
   return (
-    <Dialog
-      open={open}
-      onOpenChange={v => {
-        if (v) loadCategories()
-        else onClose()
-      }}
-    >
+    <Dialog open={open} onOpenChange={v => { if (!v) onClose() }}>
       <DialogContent className="max-w-md rounded-2xl">
         <DialogHeader>
           <DialogTitle>Actualización masiva de precios</DialogTitle>
