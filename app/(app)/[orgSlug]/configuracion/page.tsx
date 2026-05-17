@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { toast } from 'sonner'
-import { Loader2, Building2, User, Globe, FileText, CreditCard, Users, GitBranch, ChevronRight, Download } from 'lucide-react'
+import { Loader2, Building2, User, FileText, CreditCard, Users, GitBranch, ChevronRight, Download } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -19,11 +19,6 @@ interface ProfileForm {
   full_name: string; phone: string
 }
 
-const TIMEZONES = [
-  'America/Argentina/Buenos_Aires',
-  'America/Argentina/Cordoba',
-  'America/Argentina/Mendoza',
-]
 
 export default function ConfiguracionPage() {
   const params = useParams()
@@ -39,7 +34,6 @@ export default function ConfiguracionPage() {
   const [exportingData, setExportingData] = useState(false)
   const [orgForm, setOrgForm] = useState<OrgForm>({ name: '', cuit: '', address: '', phone: '', email: '' })
   const [profileForm, setProfileForm] = useState<ProfileForm>({ full_name: '', phone: '' })
-  const [timezone, setTimezone] = useState('America/Argentina/Buenos_Aires')
 
   function setOrg<K extends keyof OrgForm>(k: K, v: string) { setOrgForm(f => ({ ...f, [k]: v })) }
   function setProf<K extends keyof ProfileForm>(k: K, v: string) { setProfileForm(f => ({ ...f, [k]: v })) }
@@ -58,7 +52,6 @@ export default function ConfiguracionPage() {
         name: org.name ?? '', cuit: org.cuit ?? '',
         address: org.address ?? '', phone: org.phone ?? '', email: org.email ?? '',
       })
-      setTimezone(org.timezone ?? 'America/Argentina/Buenos_Aires')
 
       const { data: profile } = await supabase.from('profiles').select('*').eq('id', user.id).single()
       if (profile) {
@@ -99,7 +92,6 @@ export default function ConfiguracionPage() {
       address: orgForm.address || null,
       phone: orgForm.phone || null,
       email: orgForm.email || null,
-      timezone,
       updated_at: new Date().toISOString(),
     }).eq('id', orgId)
 
@@ -204,15 +196,7 @@ export default function ConfiguracionPage() {
             <Input value={orgForm.address} onChange={e => setOrg('address', e.target.value)}
               className="h-10 bg-muted/30 border-border rounded-xl text-[14px]" />
           </div>
-          <div className="space-y-1.5">
-            <Label className="flex items-center gap-1.5 text-[12px] font-semibold text-muted-foreground uppercase tracking-[0.06em]">
-              <Globe className="h-3 w-3" />Zona horaria
-            </Label>
-            <select value={timezone} onChange={e => setTimezone(e.target.value)}
-              className="w-full h-10 px-3 rounded-xl bg-muted/30 border border-border text-[14px] text-foreground focus:outline-none focus:border-emerald-300/50">
-              {TIMEZONES.map(tz => <option key={tz} value={tz}>{tz.replace('America/Argentina/', '')}</option>)}
-            </select>
-          </div>
+
         </div>
         <div className="px-6 py-4 border-t border-border flex justify-end bg-muted/30">
           <Button type="submit" disabled={loadingOrg} className="rounded-xl text-white"

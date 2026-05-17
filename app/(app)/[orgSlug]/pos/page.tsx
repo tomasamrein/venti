@@ -23,6 +23,7 @@ import { usePosStore } from '@/stores/pos-store'
 import { useBarcodeScanner } from '@/hooks/use-barcode-scanner'
 import { useOffline } from '@/hooks/use-offline'
 import { useOrg } from '@/hooks/use-org'
+import { hasInvoicing } from '@/lib/utils/plan'
 import { useCashSession } from '@/hooks/use-cash-session'
 import { db } from '@/lib/offline/db'
 import { queueMutation } from '@/lib/offline/sync'
@@ -48,7 +49,7 @@ interface SaleData {
 }
 
 export default function POSPage() {
-  const { org, branch, userId } = useOrg()
+  const { org, branch, userId, planType } = useOrg()
   const { session, isOpen, isLoading: sessionLoading } = useCashSession()
   const { activeCashierName } = usePosStore()
   const isOffline = useOffline(org.id, branch.id)
@@ -503,6 +504,7 @@ export default function POSPage() {
         total={getTotal()}
         hasCustomer={!!customerId}
         hasArcaEnabled={hasArcaEnabled}
+        hasInvoicingEnabled={hasInvoicing(planType)}
         customerCuit={customerCuit}
         customerName={customerName}
         onClose={() => setPaymentOpen(false)}

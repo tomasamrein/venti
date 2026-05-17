@@ -30,6 +30,7 @@ interface PaymentModalProps {
   total: number
   hasCustomer: boolean
   hasArcaEnabled: boolean
+  hasInvoicingEnabled: boolean
   customerCuit?: string
   customerName?: string
   onClose: () => void
@@ -40,7 +41,7 @@ type Step = 'payment' | 'invoice'
 type FiscalType = 'A' | 'B' | 'C'
 
 export function PaymentModal({
-  open, total, hasCustomer, hasArcaEnabled,
+  open, total, hasCustomer, hasArcaEnabled, hasInvoicingEnabled,
   customerCuit: prefillCuit, customerName: prefillName,
   onClose, onConfirm,
 }: PaymentModalProps) {
@@ -75,7 +76,7 @@ export function PaymentModal({
   function advanceToInvoice() {
     const finalAmount = method === 'cash' ? amount : total
     setPendingAmount(finalAmount)
-    if (hasArcaEnabled) {
+    if (hasArcaEnabled && hasInvoicingEnabled) {
       setStep('invoice')
     } else {
       onConfirm(method, finalAmount, { type: 'non_fiscal' })
@@ -171,7 +172,7 @@ export function PaymentModal({
                   disabled={method === 'cash' && amount < total}
                   className="flex-1 h-11 rounded-xl bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
                 >
-                  {hasArcaEnabled ? 'Siguiente' : 'Confirmar'}
+                  {hasArcaEnabled && hasInvoicingEnabled ? 'Siguiente' : 'Confirmar'}
                 </Button>
               </div>
             </div>
