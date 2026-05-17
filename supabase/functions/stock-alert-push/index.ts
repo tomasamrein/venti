@@ -31,8 +31,8 @@ Deno.serve(async (req) => {
   const isOut = record.alert_type === 'out_of_stock'
   const title = isOut ? 'Sin stock' : 'Stock bajo'
   const body = isOut
-    ? `${productName} se agotó`
-    : `${productName} — ${record.current_stock} unidades (mín: ${record.threshold})`
+    ? `${productName} se agotó — agregalo a tu lista de compras`
+    : `${productName} — quedan ${record.current_stock} unidades, es hora de reponer`
 
   // Insert in-app notifications for owners and admins
   const { data: members } = await supabase
