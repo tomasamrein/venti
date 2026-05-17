@@ -57,7 +57,6 @@ export function ProductForm({ orgSlug, orgId, product, initialBarcode }: Product
   const [priceSellB, setPriceSellB] = useState(product?.price_sell_b?.toString() ?? '')
   const [taxRate, setTaxRate] = useState(product?.tax_rate?.toString() ?? '21')
   const [stockCurrent, setStockCurrent] = useState(product?.stock_current?.toString() ?? '0')
-  const [stockMax, setStockMax] = useState(product?.stock_max?.toString() ?? '')
   const [trackStock, setTrackStock] = useState(product?.track_stock ?? true)
   const [allowNegative, setAllowNegative] = useState(product?.allow_negative ?? false)
   const [isFeatured, setIsFeatured] = useState(product?.is_featured ?? false)
@@ -115,8 +114,8 @@ export function ProductForm({ orgSlug, orgId, product, initialBarcode }: Product
   const isDecimalUnit = ['kg', 'g', 'l', 'ml', 'm'].includes(unit)
   const stockStep = isDecimalUnit ? '0.001' : '1'
   const stockNum = parseFloat(stockCurrent) || 0
-  const stockMaxNum = parseFloat(stockMax) || 0
-  const alertThreshold = stockMaxNum > 0 ? stockMaxNum / 2 : 5
+  const refStock = product?.stock_max ?? stockNum
+  const alertThreshold = refStock > 0 ? refStock / 2 : 5
   const stockStatus =
     !trackStock ? 'untracked'
       : stockNum <= 0 ? 'out'
@@ -179,7 +178,7 @@ export function ProductForm({ orgSlug, orgId, product, initialBarcode }: Product
         tax_rate: parseFloat(taxRate) || 21,
         stock_current: parseFloat(stockCurrent) || 0,
         stock_min: 0,
-        stock_max: parseFloat(stockMax) || null,
+        stock_max: Math.max(parseFloat(stockCurrent) || 0, product?.stock_max ?? 0) || null,
         track_stock: trackStock,
         allow_negative: allowNegative,
         is_featured: isFeatured,
@@ -571,27 +570,16 @@ export function ProductForm({ orgSlug, orgId, product, initialBarcode }: Product
 
               {trackStock && (
                 <>
-                  <div className="grid grid-cols-2 gap-2.5">
-                    <div>
-                      <Label htmlFor="stock_current" className="mb-1.5 block text-xs">Actual</Label>
-                      <Input
-                        id="stock_current" type="number" step={stockStep}
-                        value={stockCurrent} onChange={e => setStockCurrent(e.target.value)}
-                        className="rounded-lg text-center font-bold tabular-nums"
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="stock_max" className="mb-1.5 block text-xs">
-                        Cant. normal
-                        <span className="ml-1 text-muted-foreground font-normal">(alerta al 50%)</span>
-                      </Label>
-                      <Input
-                        id="stock_max" type="number" step={stockStep} min="0"
-                        placeholder="ej: 20"
-                        value={stockMax} onChange={e => setStockMax(e.target.value)}
-                        className="rounded-lg text-center tabular-nums"
-                      />
-                    </div>
+                  <div>
+                    <Label htmlFor="stock_current" className="mb-1.5 block text-xs">
+                      Stock actual
+                      <span className="ml-1.5 text-muted-foreground font-normal">— avisa al llegar al 50%</span>
+                    </Label>
+                    <Input
+                      id="stock_current" type="number" step={stockStep}
+                      value={stockCurrent} onChange={e => setStockCurrent(e.target.value)}
+                      className="rounded-lg text-center font-bold tabular-nums"
+                    />
                   </div>
 
                   {/* Stock health */}
