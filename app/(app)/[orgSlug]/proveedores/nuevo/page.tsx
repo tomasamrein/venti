@@ -79,6 +79,7 @@ export default function NuevoProveedorPage() {
     }
     toast.success('Proveedor creado')
     router.push(`/${orgSlug}/proveedores`)
+    router.refresh()
   }
 
   return (

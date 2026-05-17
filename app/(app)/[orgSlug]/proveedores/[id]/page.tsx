@@ -98,6 +98,7 @@ export default function EditarProveedorPage() {
     }
     toast.success('Proveedor actualizado')
     router.push(`/${orgSlug}/proveedores`)
+    router.refresh()
   }
 
   async function handleDelete() {
@@ -105,6 +106,7 @@ export default function EditarProveedorPage() {
     await supabase.from('suppliers').update({ is_active: false }).eq('id', supplierId)
     toast.success('Proveedor desactivado')
     router.push(`/${orgSlug}/proveedores`)
+    router.refresh()
   }
 
   if (fetching) {

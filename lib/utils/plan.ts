@@ -46,10 +46,10 @@ export function isBusinessTier(planType: string | null | undefined): boolean {
   return t === 'business' || t === 'enterprise'
 }
 
-/** Plan habilita facturación ARCA. Trial sí (para probar), Simple no, Avanzado+ sí. */
+/** Plan habilita facturación ARCA. Trial replica Simple (sin facturación). Avanzado+ sí. */
 export function hasInvoicing(planType: string | null | undefined): boolean {
   if (!planType) return false
-  if (planType === 'basic' || planType === 'basic_annual') return false
+  if (planType === 'free_trial' || planType === 'basic' || planType === 'basic_annual') return false
   return true
 }
 

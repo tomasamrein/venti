@@ -1,8 +1,8 @@
 import { createClient } from '@/lib/supabase/server'
 import { getOrgBySlug } from '@/lib/supabase/get-org'
-import { toZonedTime } from 'date-fns-tz'
-import { OnboardingBanner } from '@/components/dashboard/onboarding-banner'
+import { WelcomeDialog } from '@/components/dashboard/welcome-dialog'
 import { DashboardClient } from '@/components/dashboard/dashboard-client'
+import { SuppliersWidget } from '@/components/dashboard/suppliers-widget'
 import { hasMultiBranch } from '@/lib/utils/plan'
 
 interface Props {
@@ -54,34 +54,24 @@ export default async function DashboardPage({ params, searchParams }: Props) {
     ? (sp.branch && sp.branch !== 'all' ? sp.branch : null)
     : (membership?.branch_id ?? null)
 
+  const orgSettings = (org.settings as Record<string, unknown> | null) ?? {}
+  const showSuppliersPanel = org.business_type === 'almacen' || !!orgSettings.suppliers_panel
+
   const nowUtc = new Date()
-  const nowAR = toZonedTime(nowUtc, TZ)
   const dateLabel = new Intl.DateTimeFormat('es-AR', {
     weekday: 'long', day: 'numeric', month: 'long', timeZone: TZ,
   }).format(nowUtc)
 
-  // These counts are static (not period-dependent) — fetch once server-side for onboarding banner
-  const [{ count: totalProducts }, { count: totalSales }, { count: totalSessions }] = await Promise.all([
-    supabase.from('products').select('*', { count: 'exact', head: true }).eq('organization_id', org.id).eq('is_active', true),
-    supabase.from('sales').select('*', { count: 'exact', head: true }).eq('organization_id', org.id).eq('status', 'completed'),
-    supabase.from('cash_sessions').select('*', { count: 'exact', head: true }).eq('organization_id', org.id),
-  ])
-
   return (
     <div className="space-y-6 max-w-6xl">
+      <WelcomeDialog orgSlug={orgSlug} orgName={org.name} />
+
       <div className="space-y-0.5">
         <h1 className="text-xl font-bold text-foreground">Buen día</h1>
         <p className="text-sm text-muted-foreground">
           {org.name} — <span className="capitalize">{dateLabel}</span>
         </p>
       </div>
-
-      <OnboardingBanner
-        orgSlug={orgSlug}
-        hasProducts={(totalProducts ?? 0) > 0}
-        hasSales={(totalSales ?? 0) > 0}
-        hasCashSession={(totalSessions ?? 0) > 0}
-      />
 
       <DashboardClient
         orgSlug={orgSlug}
@@ -90,6 +80,8 @@ export default async function DashboardPage({ params, searchParams }: Props) {
         defaultPeriod={period}
         defaultBranchId={defaultBranchId}
       />
+
+      {showSuppliersPanel && <SuppliersWidget orgId={org.id} orgSlug={orgSlug} />}
     </div>
   )
 }

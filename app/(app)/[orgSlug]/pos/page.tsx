@@ -12,6 +12,7 @@ import { PaymentModal, type InvoiceChoice } from '@/components/pos/payment-modal
 import { SaleTicket } from '@/components/pos/sale-ticket'
 import { CopyServicePanel } from '@/components/pos/copy-service-panel'
 import { EmployeeSwitcher } from '@/components/pos/employee-switcher'
+import { WeightInputModal, isWeightUnit } from '@/components/pos/weight-input-modal'
 import { UsbScannerInput } from '@/components/pos/usb-scanner-input'
 import { RemoteScannerModal } from '@/components/pos/remote-scanner-modal'
 import { OfflineBanner } from '@/components/shared/offline-banner'
@@ -56,6 +57,7 @@ export default function POSPage() {
   const settings = (org.settings as any) ?? {}
   const isFotocopiadora = !!settings.copy_service_enabled
   const isDrugstore = businessType === 'drugstore' || !!settings.employee_switcher_enabled
+  const weightSalesEnabled = businessType === 'almacen' || !!settings.weight_sales_enabled
   const hasArcaEnabled = !!settings.arca?.vault_cert_id
 
   const [products, setProducts] = useState<Product[]>([])
@@ -76,6 +78,7 @@ export default function POSPage() {
     return id
   })
   const [lastRemoteScan, setLastRemoteScan] = useState<string | null>(null)
+  const [weightProduct, setWeightProduct] = useState<Product | null>(null)
 
   const cartItems = useCartStore(s => s.items)
   const cartDiscount = useCartStore(s => s.discount_pct)
@@ -84,6 +87,7 @@ export default function POSPage() {
   const getSubtotal = useCartStore(s => s.getSubtotal)
   const clearCart = useCartStore(s => s.clear)
   const addItem = useCartStore(s => s.addItem)
+  const updateItemQuantity = useCartStore(s => s.updateItemQuantity)
 
   useEffect(() => {
     if (isOffline) {
@@ -122,13 +126,17 @@ export default function POSPage() {
 
   const handleBarcodeFound = useCallback((barcode: string) => {
     const product = products.find(p => p.barcode === barcode)
-    if (product) {
-      addItem(product, 1)
-      toast.success(`${product.name} agregado`)
-    } else {
+    if (!product) {
       toast.error(`Código ${barcode} no encontrado`)
+      return
     }
-  }, [products, addItem])
+    if (weightSalesEnabled && isWeightUnit(product.unit)) {
+      setWeightProduct(product)
+      return
+    }
+    addItem(product, 1)
+    toast.success(`${product.name} agregado`)
+  }, [products, addItem, weightSalesEnabled])
 
   useBarcodeScanner(handleBarcodeFound)
 
@@ -404,7 +412,12 @@ export default function POSPage() {
 
         {/* Product grid — hidden on mobile when "services" tab is active */}
         <div className={`flex-1 overflow-hidden relative ${isFotocopiadora && mobileTab === 'services' ? 'hidden md:block' : 'block'}`}>
-          <ProductGrid products={products} loading={loading} />
+          <ProductGrid
+            products={products}
+            loading={loading}
+            weightSalesEnabled={weightSalesEnabled}
+            onWeightProduct={setWeightProduct}
+          />
           {/* Camera scanner button — mobile: above tab bar; desktop: bottom-left */}
           <div className="absolute bottom-16 md:bottom-3 left-3 flex flex-col gap-2 z-10">
             <Button
@@ -508,6 +521,25 @@ export default function POSPage() {
         open={usbInputOpen}
         onScan={handleBarcodeFound}
         onClose={() => setUsbInputOpen(false)}
+      />
+
+      <WeightInputModal
+        open={!!weightProduct}
+        product={weightProduct}
+        onClose={() => setWeightProduct(null)}
+        onConfirm={(p, weight) => {
+          // unit is grams → store quantity in kg so price math stays in $/kg.
+          const u = (p.unit ?? '').toLowerCase()
+          const qty = (u === 'g' || u === 'gr' || u === 'gramo' || u === 'gramos') ? weight / 1000 : weight
+          const existing = useCartStore.getState().items.find(i => i.product_id === p.id)
+          if (existing) {
+            updateItemQuantity(existing.id, qty)
+          } else {
+            addItem(p, qty)
+          }
+          toast.success(`${p.name} · ${weight} ${u || 'kg'}`)
+          setWeightProduct(null)
+        }}
       />
 
       <RemoteScannerModal

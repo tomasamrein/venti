@@ -10,6 +10,7 @@ import {
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useOrg } from '@/hooks/use-org'
+import { hasInvoicing } from '@/lib/utils/plan'
 
 interface SidebarProps {
   orgSlug: string
@@ -74,7 +75,9 @@ export function Sidebar({ orgSlug, className }: SidebarProps) {
           title: 'Finanzas',
           items: [
             navItem('Gastos', `${base}/gastos`, <Receipt className="h-4 w-4" />),
-            navItem('Facturación', `${base}/facturacion`, <FileText className="h-4 w-4" />),
+            ...(hasInvoicing(planType)
+              ? [navItem('Facturación', `${base}/facturacion`, <FileText className="h-4 w-4" />)]
+              : []),
           ],
         },
         {

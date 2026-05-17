@@ -1,18 +1,23 @@
 'use client'
 
 import { useState } from 'react'
-import { Search, Plus, PackageX, Package2 } from 'lucide-react'
+import { Search, Plus, PackageX, Package2, Scale } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { useCartStore } from '@/stores/cart-store'
 import { formatARS } from '@/lib/utils/currency'
+import { isWeightUnit } from '@/components/pos/weight-input-modal'
 import type { Database } from '@/types/database'
 
+type Product = Database['public']['Tables']['products']['Row']
+
 interface ProductGridProps {
-  products: Database['public']['Tables']['products']['Row'][]
+  products: Product[]
   loading?: boolean
+  weightSalesEnabled?: boolean
+  onWeightProduct?: (product: Product) => void
 }
 
-export function ProductGrid({ products, loading }: ProductGridProps) {
+export function ProductGrid({ products, loading, weightSalesEnabled, onWeightProduct }: ProductGridProps) {
   const [search, setSearch] = useState('')
   const addItem = useCartStore(s => s.addItem)
 
@@ -75,11 +80,12 @@ export function ProductGrid({ products, loading }: ProductGridProps) {
               const trackStock = product.track_stock !== false
               const outOfStock = trackStock && stock <= 0
               const lowStock = trackStock && stock > 0 && stock <= (product.stock_min ?? 0)
+              const isWeight = !!weightSalesEnabled && isWeightUnit(product.unit) && !!onWeightProduct
               return (
                 <button
                   key={product.id}
                   type="button"
-                  onClick={() => addItem(product, 1)}
+                  onClick={() => isWeight ? onWeightProduct!(product) : addItem(product, 1)}
                   disabled={outOfStock && !product.allow_negative}
                   className="group relative text-left rounded-xl border border-border/60 bg-card hover:border-emerald-500 hover:shadow-md hover:shadow-emerald-100/40 dark:hover:shadow-emerald-900/20 hover:-translate-y-0.5 active:translate-y-0 transition-all overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:border-border/60 disabled:hover:shadow-none"
                 >
@@ -120,11 +126,15 @@ export function ProductGrid({ products, loading }: ProductGridProps) {
                     <div className="flex items-end justify-between gap-1">
                       <p className="text-[15px] font-black text-emerald-700 dark:text-emerald-400 tabular-nums leading-none">
                         {formatARS(product.price_sell || 0)}
+                        {isWeight && <span className="text-[10px] font-semibold text-muted-foreground ml-0.5">/kg</span>}
                       </p>
-                      {trackStock && !outOfStock && !lowStock && (
+                      {trackStock && !outOfStock && !lowStock && !isWeight && (
                         <span className="text-[10px] text-muted-foreground tabular-nums leading-none pb-0.5">
                           {stock}
                         </span>
+                      )}
+                      {isWeight && (
+                        <Scale className="h-3 w-3 text-emerald-600 dark:text-emerald-400" />
                       )}
                     </div>
                   </div>
