@@ -57,10 +57,28 @@ self.addEventListener('fetch', (event) => {
     return
   }
 
-  // App pages: Stale-While-Revalidate (serve cached, update in background)
+  // Navegación HTML: Network-First (evita servir HTML viejo con chunks que ya no existen)
+  if (request.mode === 'navigate' || (request.headers.get('accept') || '').includes('text/html')) {
+    event.respondWith(networkFirst(request, DYNAMIC_CACHE))
+    return
+  }
+
+  // Resto same-origin: Stale-While-Revalidate
   if (url.hostname === self.location.hostname) {
     event.respondWith(staleWhileRevalidate(request, DYNAMIC_CACHE))
     return
+  }
+}
+
+async function networkFirst(request, cacheName) {
+  const cache = await caches.open(cacheName)
+  try {
+    const response = await fetch(request)
+    if (response.ok) cache.put(request, response.clone())
+    return response
+  } catch {
+    const cached = await cache.match(request)
+    return cached ?? caches.match(OFFLINE_URL)
   }
 })
 
