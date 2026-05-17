@@ -7,6 +7,7 @@ import { Bell, AlertTriangle, Package, CheckCheck, Megaphone } from 'lucide-reac
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { toast } from 'sonner'
+import { useNotificationStore } from '@/stores/notification-store'
 
 interface Notification {
   id: string
@@ -31,6 +32,7 @@ export default function NotificacionesPage() {
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [fetching, setFetching] = useState(true)
   const [orgId, setOrgId] = useState('')
+  const { markAsRead: storeMarkAsRead, markAllAsRead: storeMarkAllAsRead } = useNotificationStore()
 
   useEffect(() => {
     async function load() {
@@ -60,6 +62,7 @@ export default function NotificacionesPage() {
       .eq('organization_id', orgId)
       .eq('is_read', false)
     setNotifications(prev => prev.map(n => ({ ...n, is_read: true })))
+    storeMarkAllAsRead()
     toast.success('Todas marcadas como leídas')
   }
 
@@ -67,6 +70,7 @@ export default function NotificacionesPage() {
     const supabase = createClient()
     await supabase.from('notifications').update({ is_read: true, read_at: new Date().toISOString() }).eq('id', id)
     setNotifications(prev => prev.map(n => n.id === id ? { ...n, is_read: true } : n))
+    storeMarkAsRead(id)
   }
 
   const unreadCount = notifications.filter(n => !n.is_read).length
