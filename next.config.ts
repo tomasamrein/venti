@@ -16,6 +16,8 @@ const securityHeaders = [
       "font-src 'self' https://fonts.gstatic.com",
       "img-src 'self' data: blob: https:",
       "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.mercadopago.com https://wsaahomo.afip.gov.ar https://wswhomo.afip.gov.ar https://wsaa.afip.gov.ar https://servicios1.afip.gov.ar",
+      "manifest-src 'self'",
+      "worker-src 'self' blob:",
       "frame-ancestors 'none'",
     ].join('; '),
   },
