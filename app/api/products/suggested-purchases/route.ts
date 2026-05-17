@@ -19,12 +19,18 @@ export async function GET(request: Request) {
     .order('stock_current', { ascending: true })
     .limit(200)
 
+  const DEFAULT_THRESHOLD = 5
+
   const suggestions = (allProducts || [])
-    .filter(p => p.stock_current <= p.stock_min)
+    .filter(p => {
+      const threshold = p.stock_min > 0 ? p.stock_min : DEFAULT_THRESHOLD
+      return p.stock_current <= threshold
+    })
     .map(p => {
+      const threshold = p.stock_min > 0 ? p.stock_min : DEFAULT_THRESHOLD
       const suggestedQty = p.stock_max
         ? Math.max(0, p.stock_max - p.stock_current)
-        : Math.max(1, p.stock_min * 2 - p.stock_current)
+        : Math.max(1, threshold * 2 - p.stock_current)
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const spList = (p as any).supplier_products as { supplier_id: string; suppliers: { name: string; phone: string | null; email: string | null } | null }[] | null

@@ -154,7 +154,7 @@ export default function ComprasPage() {
             Lista de compras sugerida
           </h1>
           <p className="text-sm text-muted-foreground mt-0.5">
-            Productos con stock por debajo del mínimo
+            Productos con stock bajo (umbral: 5 unidades o mínimo configurado)
           </p>
         </div>
         <Button variant="outline" size="sm" onClick={loadSuggestions} disabled={loading} className="gap-2">
@@ -168,7 +168,7 @@ export default function ComprasPage() {
         <div className="flex flex-col items-center py-16 text-center gap-3">
           <CheckCircle2 className="h-12 w-12 text-emerald-500" />
           <p className="text-lg font-semibold">¡Stock al día!</p>
-          <p className="text-sm text-muted-foreground">Todos los productos tienen stock por encima del mínimo.</p>
+          <p className="text-sm text-muted-foreground">Todos los productos tienen más de 5 unidades en stock.</p>
         </div>
       )}
 
@@ -275,6 +275,9 @@ export default function ComprasPage() {
                           >
                             {s.stock_current <= 0 ? 'Sin stock' : `Stock: ${s.stock_current}`}
                           </Badge>
+                          <span className="text-xs text-muted-foreground">
+                            mín: {s.stock_min > 0 ? s.stock_min : 5}
+                          </span>
                           <span className="text-sm font-semibold text-emerald-600">
                             Pedir: {s.suggested_qty} {s.unit}
                           </span>
