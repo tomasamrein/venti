@@ -23,13 +23,17 @@ export async function GET(request: Request) {
 
   const suggestions = (allProducts || [])
     .filter(p => {
-      const threshold = p.stock_min > 0 ? p.stock_min : DEFAULT_THRESHOLD
+      const threshold = p.stock_max != null && p.stock_max > 0
+        ? p.stock_max / 2
+        : DEFAULT_THRESHOLD
       return p.stock_current <= threshold
     })
     .map(p => {
-      const threshold = p.stock_min > 0 ? p.stock_min : DEFAULT_THRESHOLD
-      const suggestedQty = p.stock_max
-        ? Math.max(0, p.stock_max - p.stock_current)
+      const threshold = p.stock_max != null && p.stock_max > 0
+        ? p.stock_max / 2
+        : DEFAULT_THRESHOLD
+      const suggestedQty = p.stock_max != null && p.stock_max > 0
+        ? Math.max(1, p.stock_max - p.stock_current)
         : Math.max(1, threshold * 2 - p.stock_current)
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any

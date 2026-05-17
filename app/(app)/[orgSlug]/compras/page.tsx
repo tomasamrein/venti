@@ -276,7 +276,7 @@ export default function ComprasPage() {
                             {s.stock_current <= 0 ? 'Sin stock' : `Stock: ${s.stock_current}`}
                           </Badge>
                           <span className="text-xs text-muted-foreground">
-                            mín: {s.stock_min > 0 ? s.stock_min : 5}
+                            alerta: ≤{s.stock_max != null && s.stock_max > 0 ? s.stock_max / 2 : 5}
                           </span>
                           <span className="text-sm font-semibold text-emerald-600">
                             Pedir: {s.suggested_qty} {s.unit}

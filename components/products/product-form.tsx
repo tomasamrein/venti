@@ -57,7 +57,7 @@ export function ProductForm({ orgSlug, orgId, product, initialBarcode }: Product
   const [priceSellB, setPriceSellB] = useState(product?.price_sell_b?.toString() ?? '')
   const [taxRate, setTaxRate] = useState(product?.tax_rate?.toString() ?? '21')
   const [stockCurrent, setStockCurrent] = useState(product?.stock_current?.toString() ?? '0')
-  const [stockMin, setStockMin] = useState(product?.stock_min?.toString() ?? '0')
+  const [stockMax, setStockMax] = useState(product?.stock_max?.toString() ?? '')
   const [trackStock, setTrackStock] = useState(product?.track_stock ?? true)
   const [allowNegative, setAllowNegative] = useState(product?.allow_negative ?? false)
   const [isFeatured, setIsFeatured] = useState(product?.is_featured ?? false)
@@ -115,11 +115,12 @@ export function ProductForm({ orgSlug, orgId, product, initialBarcode }: Product
   const isDecimalUnit = ['kg', 'g', 'l', 'ml', 'm'].includes(unit)
   const stockStep = isDecimalUnit ? '0.001' : '1'
   const stockNum = parseFloat(stockCurrent) || 0
-  const stockMinNum = parseFloat(stockMin) || 0
+  const stockMaxNum = parseFloat(stockMax) || 0
+  const alertThreshold = stockMaxNum > 0 ? stockMaxNum / 2 : 5
   const stockStatus =
     !trackStock ? 'untracked'
       : stockNum <= 0 ? 'out'
-      : stockNum <= stockMinNum ? 'low'
+      : stockNum <= alertThreshold ? 'low'
       : 'ok'
 
   useEffect(() => {
@@ -177,7 +178,8 @@ export function ProductForm({ orgSlug, orgId, product, initialBarcode }: Product
         price_sell_b: priceSellB ? parseFloat(priceSellB) : null,
         tax_rate: parseFloat(taxRate) || 21,
         stock_current: parseFloat(stockCurrent) || 0,
-        stock_min: parseFloat(stockMin) || 0,
+        stock_min: 0,
+        stock_max: parseFloat(stockMax) || null,
         track_stock: trackStock,
         allow_negative: allowNegative,
         is_featured: isFeatured,
@@ -579,10 +581,14 @@ export function ProductForm({ orgSlug, orgId, product, initialBarcode }: Product
                       />
                     </div>
                     <div>
-                      <Label htmlFor="stock_min" className="mb-1.5 block text-xs">Mínimo</Label>
+                      <Label htmlFor="stock_max" className="mb-1.5 block text-xs">
+                        Cant. normal
+                        <span className="ml-1 text-muted-foreground font-normal">(alerta al 50%)</span>
+                      </Label>
                       <Input
-                        id="stock_min" type="number" step={stockStep} min="0"
-                        value={stockMin} onChange={e => setStockMin(e.target.value)}
+                        id="stock_max" type="number" step={stockStep} min="0"
+                        placeholder="ej: 20"
+                        value={stockMax} onChange={e => setStockMax(e.target.value)}
                         className="rounded-lg text-center tabular-nums"
                       />
                     </div>
@@ -595,7 +601,7 @@ export function ProductForm({ orgSlug, orgId, product, initialBarcode }: Product
                     'border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/30 dark:text-emerald-300'
                   }`}>
                     {stockStatus === 'out' ? <><AlertCircle className="h-3.5 w-3.5" /> Sin stock</> :
-                     stockStatus === 'low' ? <><AlertCircle className="h-3.5 w-3.5" /> Stock bajo</> :
+                     stockStatus === 'low' ? <><AlertCircle className="h-3.5 w-3.5" /> Stock bajo — reponer pronto</> :
                      <><CircleCheck className="h-3.5 w-3.5" /> Stock saludable</>}
                   </div>
 
