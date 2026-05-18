@@ -2,11 +2,10 @@
 
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
-import { CreditCard, CheckCircle2, Clock, AlertCircle, Zap, Loader2, Calendar, Tag } from 'lucide-react'
+import { CreditCard, CheckCircle2, Clock, AlertCircle, Zap, Calendar, Tag, MessageCircle } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { formatARS } from '@/lib/utils/currency'
 import { Button } from '@/components/ui/button'
-import { toast } from 'sonner'
 
 interface Plan {
   id: string
@@ -42,17 +41,12 @@ export default function SuscripcionPage() {
   const [plans, setPlans] = useState<Plan[]>([])
   const [trialEndsAt, setTrialEndsAt] = useState<string | null>(null)
   const [orgId, setOrgId] = useState<string | null>(null)
-  const [userEmail, setUserEmail] = useState<string | null>(null)
   const [fetching, setFetching] = useState(true)
-  const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null)
   const [billing, setBilling] = useState<'monthly' | 'annual'>('monthly')
 
   useEffect(() => {
     async function load() {
       const supabase = createClient()
-      const { data: { user } } = await supabase.auth.getUser()
-      setUserEmail(user?.email ?? null)
-
       const { data: org } = await supabase
         .from('organizations').select('id, trial_ends_at').eq('slug', orgSlug).single()
       if (!org) return
@@ -81,24 +75,14 @@ export default function SuscripcionPage() {
   const statusInfo = STATUS_INFO[status] ?? STATUS_INFO.trialing
   const StatusIcon = statusInfo.icon
 
-  async function handleCheckout(plan: Plan) {
-    const email = userEmail ?? window.prompt('Ingresá tu email:')
-    if (!email?.includes('@')) { toast.error('Email inválido'); return }
-    setCheckoutLoading(plan.id)
-    try {
-      const res = await fetch('/api/checkout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ plan_type: plan.type, email, org_id: orgId }),
-      })
-      const json = await res.json()
-      if (!res.ok) { toast.error(json.error ?? 'Error al iniciar el pago'); return }
-      window.location.href = json.init_point
-    } catch {
-      toast.error('Error de red')
-    } finally {
-      setCheckoutLoading(null)
-    }
+  const contactPhone = process.env.NEXT_PUBLIC_CONTACT_PHONE ?? ''
+
+  function handleContact(plan: Plan) {
+    const msg = `Hola! Quiero contratar el plan ${plan.name} de Ventix para mi negocio.`
+    const url = contactPhone
+      ? `https://wa.me/${contactPhone}?text=${encodeURIComponent(msg)}`
+      : `mailto:tomasamrein72@gmail.com?subject=${encodeURIComponent(`Contratar plan ${plan.name}`)}&body=${encodeURIComponent(msg)}`
+    window.open(url, '_blank')
   }
 
   const trialDaysLeft = trialEndsAt
@@ -235,13 +219,11 @@ export default function SuscripcionPage() {
                         <span className="text-[10px] font-bold text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 px-1.5 py-0.5 rounded-full">50% off</span>
                       </div>
                     )}
-                    <Button size="sm" className="mt-2 rounded-lg text-[12px] text-white"
-                      disabled={checkoutLoading === plan.id}
+                    <Button size="sm" className="mt-2 rounded-lg text-[12px] text-white gap-1.5"
                       style={{ background: 'linear-gradient(135deg, oklch(0.55 0.16 155), oklch(0.50 0.16 158))' }}
-                      onClick={() => handleCheckout(plan)}>
-                      {checkoutLoading === plan.id
-                        ? <Loader2 className="h-3 w-3 animate-spin" />
-                        : subscription?.status === 'active' ? 'Actualizar plan' : 'Suscribirme'}
+                      onClick={() => handleContact(plan)}>
+                      <MessageCircle className="h-3 w-3" />
+                      Quiero este plan
                     </Button>
                   </div>
                 </div>
