@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { Building2, Users, CreditCard, TrendingUp } from 'lucide-react'
+import Link from 'next/link'
 
 function formatARS(n: number) {
   return new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 }).format(n)
@@ -30,10 +31,10 @@ export default async function AdminDashboardPage() {
   const pastDueCount = subs?.filter(s => s.status === 'past_due').length ?? 0
 
   const stats = [
-    { label: 'Organizaciones', value: totalOrgs ?? 0, sub: `${activeOrgs ?? 0} activas`, icon: Building2, color: 'text-blue-400', bg: 'bg-blue-500/10' },
-    { label: 'Suscripciones activas', value: activeSubs.length, sub: `${trialCount} en trial`, icon: CreditCard, color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
-    { label: 'MRR estimado', value: formatARS(mrr), sub: `${pastDueCount} vencidas`, icon: TrendingUp, color: 'text-emerald-600', bg: 'bg-emerald-100' },
-    { label: 'Usuarios totales', value: totalUsers ?? 0, sub: 'en todas las orgs', icon: Users, color: 'text-amber-400', bg: 'bg-amber-500/10' },
+    { label: 'Organizaciones', value: totalOrgs ?? 0, sub: `${activeOrgs ?? 0} activas`, icon: Building2, color: 'text-blue-400', bg: 'bg-blue-500/10 border-blue-500/20' },
+    { label: 'Suscripciones activas', value: activeSubs.length, sub: `${trialCount} en trial`, icon: CreditCard, color: 'text-emerald-400', bg: 'bg-emerald-500/10 border-emerald-500/20' },
+    { label: 'MRR estimado', value: formatARS(mrr), sub: `${pastDueCount} vencidas`, icon: TrendingUp, color: 'text-emerald-400', bg: 'bg-emerald-500/10 border-emerald-500/20' },
+    { label: 'Usuarios totales', value: totalUsers ?? 0, sub: 'en todas las orgs', icon: Users, color: 'text-amber-400', bg: 'bg-amber-500/10 border-amber-500/20' },
   ]
 
   const { data: recentOrgs } = await supabase
@@ -45,58 +46,62 @@ export default async function AdminDashboardPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-[22px] font-bold tracking-tight text-foreground">Dashboard</h1>
-        <p className="text-[13px] text-muted-foreground mt-0.5">Resumen global del sistema</p>
+        <h1 className="text-xl font-bold text-zinc-100">Dashboard</h1>
+        <p className="text-[13px] text-zinc-500 mt-0.5">Resumen global del sistema</p>
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         {stats.map(s => {
           const Icon = s.icon
           return (
-            <div key={s.label} className="rounded-xl border border-border bg-white p-4 space-y-3">
-              <div className={`w-9 h-9 rounded-lg ${s.bg} flex items-center justify-center`}>
-                <Icon className={`h-4.5 w-4.5 ${s.color}`} />
+            <div key={s.label} className="rounded-xl border border-zinc-800 bg-zinc-900 p-4 space-y-3">
+              <div className={`w-8 h-8 rounded-lg border ${s.bg} flex items-center justify-center`}>
+                <Icon className={`h-4 w-4 ${s.color}`} />
               </div>
               <div>
-                <p className="text-[22px] font-bold text-foreground tracking-tight">{s.value}</p>
-                <p className="text-[12px] text-muted-foreground mt-0.5">{s.label}</p>
-                <p className="text-[11px] text-muted-foreground mt-0.5">{s.sub}</p>
+                <p className="text-2xl font-bold text-zinc-100 tracking-tight leading-none">{s.value}</p>
+                <p className="text-[11px] text-zinc-400 mt-1.5">{s.label}</p>
+                <p className="text-[11px] text-zinc-600 mt-0.5">{s.sub}</p>
               </div>
             </div>
           )
         })}
       </div>
 
-      <div className="rounded-xl border border-border bg-white overflow-hidden">
-        <div className="px-5 py-4 border-b border-border">
-          <h2 className="text-[14px] font-semibold text-foreground">Organizaciones recientes</h2>
+      <div className="rounded-xl border border-zinc-800 bg-zinc-900 overflow-x-auto">
+        <div className="px-5 py-4 border-b border-zinc-800">
+          <h2 className="text-[14px] font-semibold text-zinc-100">Organizaciones recientes</h2>
         </div>
-        <table className="w-full">
+        <table className="w-full min-w-[480px]">
           <thead>
-            <tr className="border-b border-border">
-              <th className="text-left px-5 py-3 text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Nombre</th>
-              <th className="text-left px-5 py-3 text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Slug</th>
-              <th className="text-left px-5 py-3 text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Estado</th>
-              <th className="text-left px-5 py-3 text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Creada</th>
+            <tr className="border-b border-zinc-800">
+              <th className="text-left px-5 py-3 text-[11px] font-medium text-zinc-500 uppercase tracking-wider">Nombre</th>
+              <th className="text-left px-5 py-3 text-[11px] font-medium text-zinc-500 uppercase tracking-wider">Slug</th>
+              <th className="text-left px-5 py-3 text-[11px] font-medium text-zinc-500 uppercase tracking-wider">Estado</th>
+              <th className="text-left px-5 py-3 text-[11px] font-medium text-zinc-500 uppercase tracking-wider">Creada</th>
             </tr>
           </thead>
           <tbody>
             {recentOrgs?.map(org => (
-              <tr key={org.id} className="border-b border-border hover:bg-muted/40 transition-colors">
-                <td className="px-5 py-3 text-[13px] text-foreground font-medium">{org.name}</td>
-                <td className="px-5 py-3 text-[13px] text-muted-foreground font-mono">{org.slug}</td>
+              <tr key={org.id} className="border-b border-zinc-800 hover:bg-zinc-800/40 transition-colors last:border-0">
                 <td className="px-5 py-3">
-                  <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium ${org.is_active ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'}`}>
+                  <Link href={`/admin/organizaciones/${org.id}`} className="text-[13px] font-medium text-zinc-100 hover:text-red-400 transition-colors">
+                    {org.name}
+                  </Link>
+                </td>
+                <td className="px-5 py-3 text-[13px] text-zinc-500 font-mono">{org.slug}</td>
+                <td className="px-5 py-3">
+                  <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium ${org.is_active ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-red-500/10 text-red-400 border border-red-500/20'}`}>
                     {org.is_active ? 'Activa' : 'Inactiva'}
                   </span>
                 </td>
-                <td className="px-5 py-3 text-[13px] text-muted-foreground">
+                <td className="px-5 py-3 text-[13px] text-zinc-500">
                   {new Date(org.created_at).toLocaleDateString('es-AR')}
                 </td>
               </tr>
             ))}
             {!recentOrgs?.length && (
-              <tr><td colSpan={4} className="px-5 py-8 text-center text-[13px] text-muted-foreground">Sin organizaciones aún</td></tr>
+              <tr><td colSpan={4} className="px-5 py-10 text-center text-[13px] text-zinc-600">Sin organizaciones aún</td></tr>
             )}
           </tbody>
         </table>

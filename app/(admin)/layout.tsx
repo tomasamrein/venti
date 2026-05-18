@@ -1,9 +1,9 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import Link from 'next/link'
 import { LayoutDashboard, Building2, CreditCard, Users, MessageSquare } from 'lucide-react'
 import { LogoutButton } from './logout-button'
 import { AdminMobileNav } from './admin-mobile-nav'
+import { AdminNavLinks } from './admin-nav-links'
 
 const NAV = [
   { label: 'Dashboard', href: '/admin', icon: LayoutDashboard },
@@ -28,54 +28,44 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   const displayName = profile.full_name ?? user.email ?? ''
 
   return (
-    <div className="flex h-screen overflow-hidden bg-background">
+    <div className="flex h-screen overflow-hidden bg-zinc-950">
       {/* Sidebar desktop */}
-      <aside className="hidden md:flex w-56 shrink-0 flex-col border-r border-border bg-sidebar">
-        <div className="px-5 py-5 border-b border-border">
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-red-600 flex items-center justify-center">
-              <span className="text-white text-xs font-black">V</span>
+      <aside className="hidden md:flex w-56 shrink-0 flex-col bg-zinc-900 border-r border-zinc-800">
+        {/* Logo */}
+        <div className="px-4 py-5 border-b border-zinc-800">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-red-600 flex items-center justify-center shadow-lg shadow-red-900/30 shrink-0">
+              <span className="text-white text-sm font-black">V</span>
             </div>
             <div>
-              <p className="text-sm font-bold text-foreground">Ventix Admin</p>
-              <p className="text-xs text-red-500 font-semibold">Super Admin</p>
+              <p className="text-[13px] font-bold text-zinc-100 leading-none">Ventix Admin</p>
+              <p className="text-[11px] text-red-400 font-semibold mt-0.5">Super Admin</p>
             </div>
           </div>
         </div>
-        <nav className="flex-1 px-3 py-4 space-y-0.5">
-          {NAV.map(item => {
-            const Icon = item.icon
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-              >
-                <Icon className="h-4 w-4 shrink-0" />
-                {item.label}
-              </Link>
-            )
-          })}
-        </nav>
-        <div className="px-3 py-4 border-t border-border">
-          <p className="text-xs text-muted-foreground px-3 mb-2 truncate">{displayName}</p>
+
+        <AdminNavLinks nav={NAV} />
+
+        {/* Footer */}
+        <div className="px-2 py-4 border-t border-zinc-800 space-y-1">
+          <p className="text-[11px] text-zinc-500 px-3 truncate">{displayName}</p>
           <LogoutButton />
         </div>
       </aside>
 
-      <div className="flex flex-col flex-1 overflow-hidden">
+      <div className="flex flex-col flex-1 overflow-hidden min-w-0">
         {/* Top bar mobile */}
-        <header className="md:hidden h-14 flex items-center px-4 gap-3 border-b border-border bg-background shrink-0">
+        <header className="md:hidden h-14 flex items-center px-4 gap-3 border-b border-zinc-800 bg-zinc-900 shrink-0">
           <AdminMobileNav nav={NAV} displayName={displayName} />
           <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-md bg-red-600 flex items-center justify-center">
+            <div className="w-6 h-6 rounded-md bg-red-600 flex items-center justify-center shrink-0">
               <span className="text-white text-[10px] font-black">V</span>
             </div>
-            <span className="text-sm font-bold text-foreground">Ventix Admin</span>
+            <span className="text-[13px] font-bold text-zinc-100">Ventix Admin</span>
           </div>
         </header>
 
-        <main className="flex-1 overflow-y-auto p-4 md:p-6 scrollbar-thin">
+        <main className="flex-1 overflow-y-auto p-4 md:p-6">
           {children}
         </main>
       </div>

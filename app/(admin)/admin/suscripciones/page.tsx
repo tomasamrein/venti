@@ -14,11 +14,11 @@ const STATUS_LABEL: Record<string, string> = {
 }
 
 const STATUS_COLOR: Record<string, string> = {
-  active: 'bg-emerald-100 text-emerald-700',
-  trialing: 'bg-blue-100 text-blue-700',
-  past_due: 'bg-red-100 text-red-700',
-  canceled: 'bg-slate-100 text-slate-500',
-  paused: 'bg-amber-100 text-amber-700',
+  active: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
+  trialing: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
+  past_due: 'bg-red-500/10 text-red-400 border-red-500/20',
+  canceled: 'bg-zinc-700/30 text-zinc-500 border-zinc-700/30',
+  paused: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
 }
 
 export default async function AdminSubscriptionsPage({ searchParams }: Props) {
@@ -40,16 +40,16 @@ export default async function AdminSubscriptionsPage({ searchParams }: Props) {
   all?.forEach(s => { counts[s.status] = (counts[s.status] ?? 0) + 1 })
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <div>
-        <h1 className="text-[22px] font-bold tracking-tight text-foreground">Suscripciones</h1>
-        <p className="text-[13px] text-muted-foreground mt-0.5">{subs?.length ?? 0} resultados</p>
+        <h1 className="text-xl font-bold text-zinc-100">Suscripciones</h1>
+        <p className="text-[13px] text-zinc-500 mt-0.5">{subs?.length ?? 0} resultados</p>
       </div>
 
       <div className="flex gap-2 flex-wrap">
         <Link
           href="/admin/suscripciones"
-          className={`px-3 py-1.5 rounded-lg text-[12px] font-medium transition-colors ${!status ? 'bg-muted text-foreground' : 'text-muted-foreground hover:text-foreground hover:bg-muted'}`}
+          className={`px-3 py-1.5 rounded-lg text-[12px] font-medium transition-colors border ${!status ? 'bg-zinc-800 text-zinc-100 border-zinc-700' : 'text-zinc-500 hover:text-zinc-100 hover:bg-zinc-800/50 border-transparent'}`}
         >
           Todas ({all?.length ?? 0})
         </Link>
@@ -57,22 +57,22 @@ export default async function AdminSubscriptionsPage({ searchParams }: Props) {
           <Link
             key={key}
             href={`/admin/suscripciones?status=${key}`}
-            className={`px-3 py-1.5 rounded-lg text-[12px] font-medium transition-colors ${status === key ? 'bg-muted text-foreground' : 'text-muted-foreground hover:text-foreground hover:bg-muted'}`}
+            className={`px-3 py-1.5 rounded-lg text-[12px] font-medium transition-colors border ${status === key ? 'bg-zinc-800 text-zinc-100 border-zinc-700' : 'text-zinc-500 hover:text-zinc-100 hover:bg-zinc-800/50 border-transparent'}`}
           >
             {label} ({counts[key] ?? 0})
           </Link>
         ))}
       </div>
 
-      <div className="rounded-xl border border-border bg-white overflow-hidden">
-        <table className="w-full">
+      <div className="rounded-xl border border-zinc-800 bg-zinc-900 overflow-x-auto">
+        <table className="w-full min-w-[580px]">
           <thead>
-            <tr className="border-b border-border">
-              <th className="text-left px-5 py-3 text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Organización</th>
-              <th className="text-left px-5 py-3 text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Plan</th>
-              <th className="text-left px-5 py-3 text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Estado</th>
-              <th className="text-left px-5 py-3 text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Período</th>
-              <th className="text-left px-5 py-3 text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Precio</th>
+            <tr className="border-b border-zinc-800">
+              <th className="text-left px-5 py-3 text-[11px] font-medium text-zinc-500 uppercase tracking-wider">Organización</th>
+              <th className="text-left px-5 py-3 text-[11px] font-medium text-zinc-500 uppercase tracking-wider">Plan</th>
+              <th className="text-left px-5 py-3 text-[11px] font-medium text-zinc-500 uppercase tracking-wider">Estado</th>
+              <th className="text-left px-5 py-3 text-[11px] font-medium text-zinc-500 uppercase tracking-wider">Vencimiento</th>
+              <th className="text-left px-5 py-3 text-[11px] font-medium text-zinc-500 uppercase tracking-wider">Precio</th>
             </tr>
           </thead>
           <tbody>
@@ -80,31 +80,31 @@ export default async function AdminSubscriptionsPage({ searchParams }: Props) {
               const org = sub.organizations as { id: string; name: string; slug: string } | null
               const plan = sub.subscription_plans as { name: string; price_ars: number; type: string } | null
               return (
-                <tr key={sub.id} className="border-b border-border hover:bg-muted/40 transition-colors">
+                <tr key={sub.id} className="border-b border-zinc-800 hover:bg-zinc-800/40 transition-colors last:border-0">
                   <td className="px-5 py-3">
                     {org ? (
-                      <Link href={`/admin/organizaciones/${org.id}`} className="text-[13px] font-medium text-foreground hover:text-blue-600 transition-colors">
+                      <Link href={`/admin/organizaciones/${org.id}`} className="text-[13px] font-medium text-zinc-100 hover:text-red-400 transition-colors">
                         {org.name}
                       </Link>
-                    ) : <span className="text-[13px] text-muted-foreground">—</span>}
+                    ) : <span className="text-[13px] text-zinc-600">—</span>}
                   </td>
-                  <td className="px-5 py-3 text-[13px] text-muted-foreground">{plan?.name ?? '—'}</td>
+                  <td className="px-5 py-3 text-[13px] text-zinc-400">{plan?.name ?? '—'}</td>
                   <td className="px-5 py-3">
-                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium ${STATUS_COLOR[sub.status] ?? 'bg-muted text-foreground'}`}>
+                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium border ${STATUS_COLOR[sub.status] ?? 'bg-zinc-800 text-zinc-400 border-zinc-700'}`}>
                       {STATUS_LABEL[sub.status] ?? sub.status}
                     </span>
                   </td>
-                  <td className="px-5 py-3 text-[12px] text-muted-foreground">
+                  <td className="px-5 py-3 text-[13px] text-zinc-500">
                     {sub.current_period_end ? new Date(sub.current_period_end).toLocaleDateString('es-AR') : '—'}
                   </td>
-                  <td className="px-5 py-3 text-[13px] text-foreground">
+                  <td className="px-5 py-3 text-[13px] text-zinc-100">
                     {plan ? new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 }).format(plan.price_ars) : '—'}
                   </td>
                 </tr>
               )
             })}
             {!subs?.length && (
-              <tr><td colSpan={5} className="px-5 py-10 text-center text-[13px] text-muted-foreground">Sin suscripciones</td></tr>
+              <tr><td colSpan={5} className="px-5 py-10 text-center text-[13px] text-zinc-600">Sin suscripciones</td></tr>
             )}
           </tbody>
         </table>

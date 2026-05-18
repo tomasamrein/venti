@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { Menu, X, LogOut } from 'lucide-react'
+import { usePathname } from 'next/navigation'
 import type { LucideIcon } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
@@ -20,6 +21,7 @@ interface Props {
 
 export function AdminMobileNav({ nav, displayName }: Props) {
   const [open, setOpen] = useState(false)
+  const pathname = usePathname()
   const router = useRouter()
 
   async function handleLogout() {
@@ -31,45 +33,48 @@ export function AdminMobileNav({ nav, displayName }: Props) {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="h-8 w-8 rounded-lg flex items-center justify-center text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+        className="h-9 w-9 rounded-lg flex items-center justify-center text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800 transition-colors"
       >
         <Menu className="h-5 w-5" />
       </button>
 
       {open && (
         <div className="fixed inset-0 z-50 flex">
-          {/* Backdrop */}
-          <div className="absolute inset-0 bg-black/40" onClick={() => setOpen(false)} />
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setOpen(false)} />
 
-          {/* Drawer */}
-          <aside className="relative z-10 w-64 flex flex-col bg-background border-r border-border h-full">
-            <div className="px-5 py-5 border-b border-border flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-lg bg-red-600 flex items-center justify-center">
-                  <span className="text-white text-xs font-black">V</span>
+          <aside className="relative z-10 w-64 flex flex-col bg-zinc-900 border-r border-zinc-800 h-full">
+            <div className="px-4 py-5 border-b border-zinc-800 flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-lg bg-red-600 flex items-center justify-center shrink-0">
+                  <span className="text-white text-sm font-black">V</span>
                 </div>
                 <div>
-                  <p className="text-sm font-bold text-foreground">Ventix Admin</p>
-                  <p className="text-xs text-red-500 font-semibold">Super Admin</p>
+                  <p className="text-[13px] font-bold text-zinc-100 leading-none">Ventix Admin</p>
+                  <p className="text-[11px] text-red-400 font-semibold mt-0.5">Super Admin</p>
                 </div>
               </div>
               <button
                 onClick={() => setOpen(false)}
-                className="h-7 w-7 rounded-lg flex items-center justify-center text-muted-foreground hover:bg-muted transition-colors"
+                className="h-7 w-7 rounded-lg flex items-center justify-center text-zinc-500 hover:text-zinc-100 hover:bg-zinc-800 transition-colors"
               >
                 <X className="h-4 w-4" />
               </button>
             </div>
 
-            <nav className="flex-1 px-3 py-4 space-y-0.5">
+            <nav className="flex-1 px-2 py-3 space-y-0.5">
               {nav.map(item => {
                 const Icon = item.icon
+                const active = item.href === '/admin' ? pathname === '/admin' : pathname.startsWith(item.href)
                 return (
                   <Link
                     key={item.href}
                     href={item.href}
                     onClick={() => setOpen(false)}
-                    className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                    className={`flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-[13px] font-medium transition-all ${
+                      active
+                        ? 'bg-red-600/15 text-red-400 border border-red-600/20'
+                        : 'text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800/70 border border-transparent'
+                    }`}
                   >
                     <Icon className="h-4 w-4 shrink-0" />
                     {item.label}
@@ -78,13 +83,13 @@ export function AdminMobileNav({ nav, displayName }: Props) {
               })}
             </nav>
 
-            <div className="px-3 py-4 border-t border-border">
-              <p className="text-xs text-muted-foreground px-3 mb-2 truncate">{displayName}</p>
+            <div className="px-2 py-4 border-t border-zinc-800">
+              <p className="text-[11px] text-zinc-500 px-3 mb-2 truncate">{displayName}</p>
               <button
                 onClick={handleLogout}
-                className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-destructive hover:bg-destructive/10 transition-colors w-full"
+                className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] text-zinc-500 hover:text-red-400 hover:bg-red-950/30 transition-colors w-full"
               >
-                <LogOut className="h-4 w-4" />
+                <LogOut className="h-3.5 w-3.5" />
                 Salir
               </button>
             </div>
