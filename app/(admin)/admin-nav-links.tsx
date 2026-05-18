@@ -2,16 +2,11 @@
 
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
-import type { LucideIcon } from 'lucide-react'
+import { ADMIN_NAV } from './admin-nav'
 
-interface NavItem {
-  label: string
-  href: string
-  icon: LucideIcon
-}
-
-export function AdminNavLinks({ nav }: { nav: NavItem[] }) {
+export function AdminNavLinks() {
   const pathname = usePathname()
+  const nav = ADMIN_NAV
   return (
     <nav className="flex-1 px-2 py-3 space-y-0.5">
       {nav.map(item => {

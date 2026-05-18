@@ -4,25 +4,19 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { Menu, X, LogOut } from 'lucide-react'
 import { usePathname } from 'next/navigation'
-import type { LucideIcon } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
-
-interface NavItem {
-  label: string
-  href: string
-  icon: LucideIcon
-}
+import { ADMIN_NAV } from './admin-nav'
 
 interface Props {
-  nav: NavItem[]
   displayName: string
 }
 
-export function AdminMobileNav({ nav, displayName }: Props) {
+export function AdminMobileNav({ displayName }: Props) {
   const [open, setOpen] = useState(false)
   const pathname = usePathname()
   const router = useRouter()
+  const nav = ADMIN_NAV
 
   async function handleLogout() {
     await createClient().auth.signOut()
