@@ -585,7 +585,7 @@ export default function LandingPage() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <a
-                href="https://wa.me/543585123456?text=Hola!%20Quiero%20saber%20m%C3%A1s%20sobre%20Ventix"
+                href="https://wa.me/543437479134?text=Hola!%20Quiero%20saber%20m%C3%A1s%20sobre%20Ventix"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center gap-2.5 h-12 px-7 rounded-xl bg-[#25D366] hover:bg-[#20b558] text-white text-sm font-bold transition-all hover:shadow-md"

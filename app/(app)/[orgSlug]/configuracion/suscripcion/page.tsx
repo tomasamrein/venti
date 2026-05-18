@@ -75,14 +75,10 @@ export default function SuscripcionPage() {
   const statusInfo = STATUS_INFO[status] ?? STATUS_INFO.trialing
   const StatusIcon = statusInfo.icon
 
-  const contactPhone = process.env.NEXT_PUBLIC_CONTACT_PHONE ?? ''
-
   function handleContact(plan: Plan) {
     const msg = `Hola! Quiero contratar el plan ${plan.name} de Ventix para mi negocio.`
-    const url = contactPhone
-      ? `https://wa.me/${contactPhone}?text=${encodeURIComponent(msg)}`
-      : `mailto:tomasamrein72@gmail.com?subject=${encodeURIComponent(`Contratar plan ${plan.name}`)}&body=${encodeURIComponent(msg)}`
-    window.open(url, '_blank')
+    const phone = process.env.NEXT_PUBLIC_CONTACT_PHONE ?? '543437479134'
+    window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank')
   }
 
   const trialDaysLeft = trialEndsAt

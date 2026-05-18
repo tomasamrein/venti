@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { toast } from 'sonner'
-import { Save, TestTube2, Upload, Eye, EyeOff, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react'
+import { Save, TestTube2, Upload, Eye, EyeOff, CheckCircle2, AlertCircle, Loader2, FileText } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -14,6 +14,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { useOrg } from '@/hooks/use-org'
+import { hasInvoicing } from '@/lib/utils/plan'
 import { getArcaConfig, saveArcaConfig, testArcaConnection } from './actions'
 
 interface LocalSettings {
@@ -26,8 +27,30 @@ interface LocalSettings {
 }
 
 export default function ConfiguracionFacturacionPage() {
-  const { org } = useOrg()
+  const { org, planType } = useOrg()
   const orgId = org.id
+
+  if (!hasInvoicing(planType)) {
+    return (
+      <div className="max-w-xl flex flex-col items-center justify-center py-24 text-center gap-4">
+        <div className="w-14 h-14 rounded-2xl bg-blue-50 dark:bg-blue-950/30 flex items-center justify-center">
+          <FileText className="h-7 w-7 text-blue-500" />
+        </div>
+        <h2 className="text-[20px] font-extrabold tracking-tight">Facturación ARCA</h2>
+        <p className="text-[14px] text-muted-foreground max-w-sm">
+          La facturación electrónica está disponible a partir del plan <span className="font-semibold text-foreground">Avanzado</span>. Contactanos para actualizar tu plan.
+        </p>
+        <a
+          href="https://wa.me/543437479134?text=Hola!%20Quiero%20habilitar%20la%20facturaci%C3%B3n%20ARCA%20en%20Ventix"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-2 h-10 px-5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-[14px] font-semibold transition-colors"
+        >
+          Contactar por WhatsApp
+        </a>
+      </div>
+    )
+  }
 
   const [settings, setSettings] = useState<LocalSettings>({
     cuit: '',
