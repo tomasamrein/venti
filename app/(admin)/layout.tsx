@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { LogoutButton } from './logout-button'
 import { AdminMobileNav } from './admin-mobile-nav'
 import { AdminNavLinks } from './admin-nav-links'
+import { Logo } from '@/components/ui/logo'
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient()
@@ -23,9 +24,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         {/* Logo */}
         <div className="px-4 py-5 border-b border-zinc-800">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-red-600 flex items-center justify-center shadow-lg shadow-red-900/30 shrink-0">
-              <span className="text-white text-sm font-black">V</span>
-            </div>
+            <Logo variant="icon" iconSize={28} />
             <div>
               <p className="text-[13px] font-bold text-zinc-100 leading-none">Ventix Admin</p>
               <p className="text-[11px] text-red-400 font-semibold mt-0.5">Super Admin</p>
@@ -47,9 +46,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         <header className="md:hidden h-14 flex items-center px-4 gap-3 border-b border-zinc-800 bg-zinc-900 shrink-0">
           <AdminMobileNav displayName={displayName} />
           <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-md bg-red-600 flex items-center justify-center shrink-0">
-              <span className="text-white text-[10px] font-black">V</span>
-            </div>
+            <Logo variant="icon" iconSize={22} />
             <span className="text-[13px] font-bold text-zinc-100">Ventix Admin</span>
           </div>
         </header>

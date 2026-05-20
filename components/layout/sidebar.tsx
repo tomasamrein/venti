@@ -1,8 +1,8 @@
 'use client'
 
 import Link from 'next/link'
-import Image from 'next/image'
 import { usePathname, useRouter } from 'next/navigation'
+import { Logo } from '@/components/ui/logo'
 import {
   LayoutDashboard, ShoppingCart, Package, FileText,
   Users, Briefcase, CreditCard, BarChart3, Settings,
@@ -136,9 +136,8 @@ export function Sidebar({ orgSlug, className }: SidebarProps) {
     )}>
       {/* Logo */}
       <div className={`flex items-center px-5 border-b border-border shrink-0 ${planType === 'free_trial' && daysLeft !== null ? 'flex-col items-start gap-0.5 py-2.5' : 'h-14'}`}>
-        <Link href={`${base}/dashboard`} className="flex items-center gap-2">
-          <Image src="/isotipo.png" alt="Ventix" width={28} height={28} className="h-7 w-7 object-contain" priority />
-          <span className="text-base font-extrabold text-slate-900 dark:text-slate-100 tracking-tight">Ventix</span>
+        <Link href={`${base}/dashboard`}>
+          <Logo className="text-base font-extrabold text-slate-900 dark:text-slate-100 tracking-tight" iconSize={28} />
         </Link>
         {planType === 'free_trial' && daysLeft !== null && (
           <p className={`text-[11px] font-semibold px-1 ${daysLeft <= 2 ? 'text-red-500' : 'text-amber-500'}`}>

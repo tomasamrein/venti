@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import Image from 'next/image'
 import { Mail } from 'lucide-react'
+import { Logo } from '@/components/ui/logo'
 
 const jsonLd = {
   '@context': 'https://schema.org',
@@ -63,11 +63,8 @@ export default function LandingLayout({ children }: { children: React.ReactNode 
       {/* Header */}
       <header className="fixed top-0 left-0 right-0 z-50 border-b border-slate-200/80 bg-white/95 backdrop-blur-md">
         <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 shrink-0">
-            <div className="h-8 w-8 rounded-lg bg-white shadow-sm border border-slate-100 flex items-center justify-center overflow-hidden">
-              <Image src="/isotipo.png" alt="Ventix" width={28} height={28} className="h-7 w-7 object-contain" priority />
-            </div>
-            <span className="text-base font-black text-slate-900 tracking-tight">Ventix</span>
+          <Link href="/" className="flex items-center shrink-0">
+            <Logo className="text-base font-black text-slate-900" iconSize={28} />
           </Link>
 
           <nav className="hidden md:flex items-center gap-0.5">
@@ -115,11 +112,8 @@ export default function LandingLayout({ children }: { children: React.ReactNode 
         <div className="max-w-6xl mx-auto px-4 py-12">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-10">
             <div className="col-span-2 md:col-span-1">
-              <div className="flex items-center gap-2 mb-3">
-                <div className="h-7 w-7 rounded-lg bg-white shadow-sm border border-slate-100 flex items-center justify-center overflow-hidden">
-                  <Image src="/isotipo.png" alt="Ventix" width={24} height={24} className="h-6 w-6 object-contain" />
-                </div>
-                <span className="text-sm font-black text-slate-800 tracking-tight">Ventix</span>
+              <div className="flex items-center mb-3">
+                <Logo className="text-sm font-black text-slate-800" iconSize={24} />
               </div>
               <p className="text-xs text-slate-500 leading-relaxed max-w-xs">
                 POS y CRM para kioscos, almacenes y comercios argentinos. Con facturación ARCA y modo offline.

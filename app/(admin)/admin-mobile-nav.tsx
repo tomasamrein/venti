@@ -7,6 +7,7 @@ import { usePathname } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { ADMIN_NAV } from './admin-nav'
+import { Logo } from '@/components/ui/logo'
 
 interface Props {
   displayName: string
@@ -39,9 +40,7 @@ export function AdminMobileNav({ displayName }: Props) {
           <aside className="relative z-10 w-64 flex flex-col bg-zinc-900 border-r border-zinc-800 h-full">
             <div className="px-4 py-5 border-b border-zinc-800 flex items-center justify-between">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-lg bg-red-600 flex items-center justify-center shrink-0">
-                  <span className="text-white text-sm font-black">V</span>
-                </div>
+                <Logo variant="icon" iconSize={28} />
                 <div>
                   <p className="text-[13px] font-bold text-zinc-100 leading-none">Ventix Admin</p>
                   <p className="text-[11px] text-red-400 font-semibold mt-0.5">Super Admin</p>
