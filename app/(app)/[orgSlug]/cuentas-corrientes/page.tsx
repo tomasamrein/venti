@@ -45,14 +45,14 @@ export default async function CuentasCorrientesPage({ params, searchParams }: Pr
             <TrendingDown className="h-4 w-4 text-red-400" />
             <p className="text-[12px] font-medium text-muted-foreground uppercase tracking-wider">Total adeudado</p>
           </div>
-          <p className="text-[22px] font-extrabold tracking-[-0.03em] text-red-400">{formatARS(Math.abs(totalDebt))}</p>
+          <p className="text-[18px] sm:text-[22px] font-extrabold tracking-[-0.03em] text-red-400 truncate">{formatARS(Math.abs(totalDebt))}</p>
         </div>
         <div className="rounded-xl border border-border bg-card p-5">
           <div className="flex items-center gap-2 mb-2">
             <TrendingUp className="h-4 w-4 text-emerald-400" />
             <p className="text-[12px] font-medium text-muted-foreground uppercase tracking-wider">Total a favor clientes</p>
           </div>
-          <p className="text-[22px] font-extrabold tracking-[-0.03em] text-emerald-400">{formatARS(totalCredit)}</p>
+          <p className="text-[18px] sm:text-[22px] font-extrabold tracking-[-0.03em] text-emerald-400 truncate">{formatARS(totalCredit)}</p>
         </div>
       </div>
 
@@ -66,8 +66,8 @@ export default async function CuentasCorrientesPage({ params, searchParams }: Pr
         />
       </form>
 
-      <div className="rounded-xl border border-border bg-card overflow-hidden">
-        <table className="w-full">
+      <div className="rounded-xl border border-border bg-card overflow-x-auto">
+        <table className="w-full min-w-[380px]">
           <thead>
             <tr className="border-b border-border">
               <th className="text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-5 py-3">Cliente</th>

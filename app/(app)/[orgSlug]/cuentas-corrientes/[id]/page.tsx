@@ -145,10 +145,10 @@ export default function CuentaCorrientePage() {
       </div>
 
       <div className="rounded-xl border border-border bg-card p-6">
-        <div className="flex items-end justify-between mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-6">
           <div>
             <p className="text-[12px] font-semibold text-muted-foreground uppercase tracking-wider mb-1">Saldo actual</p>
-            <p className={`text-[36px] font-extrabold tracking-[-0.04em] ${(account?.balance ?? 0) < 0 ? 'text-red-400' : 'text-emerald-400'}`}>
+            <p className={`text-[32px] font-extrabold tracking-[-0.04em] ${(account?.balance ?? 0) < 0 ? 'text-red-400' : 'text-emerald-400'}`}>
               {formatARS(account?.balance ?? 0)}
             </p>
             {account?.credit_limit && (
@@ -157,7 +157,7 @@ export default function CuentaCorrientePage() {
               </p>
             )}
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap">
             <Button
               variant="ghost" size="sm"
               className="h-8 px-3 rounded-lg text-[12px] text-green-500 hover:text-green-400 hover:bg-green-500/10 gap-1.5"
@@ -187,7 +187,7 @@ export default function CuentaCorrientePage() {
             <p className="text-[13px] font-semibold text-foreground">
               {showForm === 'charge' ? 'Registrar cargo' : 'Registrar pago'}
             </p>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="space-y-1.5">
                 <Label className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Monto *</Label>
                 <div className="relative">
@@ -241,11 +241,17 @@ export default function CuentaCorrientePage() {
                     ? <Minus className="h-3.5 w-3.5 text-emerald-400" />
                     : <Plus className="h-3.5 w-3.5 text-red-400" />}
                 </div>
-                <div>
-                  <p className="text-[13px] font-medium">{tx.description}</p>
-                  <p className="text-[11px] text-muted-foreground">
+                <div className="min-w-0">
+                  <p className="text-[13px] font-medium leading-snug">
+                    {tx.description || (tx.type === 'charge' ? 'Cargo en cuenta' : tx.type === 'payment' ? 'Pago recibido' : 'Ajuste')}
+                  </p>
+                  <p className="text-[11px] text-muted-foreground mt-0.5 flex items-center gap-1.5 flex-wrap">
                     {new Date(tx.created_at).toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
-                    {tx.sale_id && <span className="ml-2"><Badge variant="outline" className="text-[10px] border-border">Venta</Badge></span>}
+                    {tx.sale_id && (
+                      <Link href={`/${orgSlug}/ventas/${tx.sale_id}`} className="inline-flex items-center gap-0.5 hover:underline">
+                        <Badge variant="outline" className="text-[10px] border-border hover:border-emerald-400">Ver venta</Badge>
+                      </Link>
+                    )}
                   </p>
                 </div>
               </div>

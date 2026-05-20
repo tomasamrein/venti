@@ -71,10 +71,10 @@ export function SupportChat() {
   }
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">
+    <div className="fixed bottom-4 right-3 sm:bottom-6 sm:right-6 z-50 flex flex-col items-end gap-2 sm:gap-3">
       {/* Chat window */}
       {open && (
-        <div className="w-80 h-[420px] flex flex-col rounded-2xl border border-border bg-card shadow-2xl shadow-black/10 dark:shadow-black/30 overflow-hidden">
+        <div className="w-[calc(100vw-1.5rem)] sm:w-80 h-[420px] flex flex-col rounded-2xl border border-border bg-card shadow-2xl shadow-black/10 dark:shadow-black/30 overflow-hidden">
           {/* Header */}
           <div className="flex items-center justify-between px-4 py-3 bg-emerald-600 text-white">
             <div className="flex items-center gap-2">
@@ -146,9 +146,9 @@ export function SupportChat() {
 
       {/* Fila: tooltip a la izquierda + botón a la derecha */}
       <div className="flex items-center gap-3">
-        {/* Tooltip "¿Necesitás ayuda?" */}
+        {/* Tooltip — solo desktop */}
         {!open && !dismissed && (
-          <div className="relative bg-card text-foreground text-sm font-medium px-3 py-2 rounded-xl shadow-md border border-border whitespace-nowrap animate-in fade-in slide-in-from-left-4 duration-300">
+          <div className="hidden sm:block relative bg-card text-foreground text-sm font-medium px-3 py-2 rounded-xl shadow-md border border-border whitespace-nowrap animate-in fade-in slide-in-from-left-4 duration-300">
             ¿Necesitás ayuda?
             <span className="absolute right-[-6px] top-1/2 -translate-y-1/2 w-0 h-0 border-t-[6px] border-t-transparent border-b-[6px] border-b-transparent border-l-[6px] border-l-border" />
             <span className="absolute right-[-5px] top-1/2 -translate-y-1/2 w-0 h-0 border-t-[6px] border-t-transparent border-b-[6px] border-b-transparent border-l-[6px] border-l-card" />
@@ -158,15 +158,15 @@ export function SupportChat() {
         {/* Floating button */}
         <button
           onClick={() => { setOpen(v => !v); setDismissed(true) }}
-          className="relative w-14 h-14 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-600/30 flex items-center justify-center transition-all duration-200 hover:scale-105"
+          className="relative w-10 h-10 sm:w-14 sm:h-14 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-600/30 flex items-center justify-center transition-all duration-200 hover:scale-105"
         >
           {open ? (
-            <X className="h-6 w-6" />
+            <X className="h-4 w-4 sm:h-6 sm:w-6" />
           ) : (
             <>
-              <Bot className="h-7 w-7" />
+              <Bot className="h-5 w-5 sm:h-7 sm:w-7" />
               {!dismissed && (
-                <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center shadow">
+                <span className="absolute -top-0.5 -right-0.5 w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full bg-red-500 text-white text-[9px] font-bold flex items-center justify-center shadow">
                   1
                 </span>
               )}

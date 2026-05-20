@@ -100,6 +100,15 @@ export default function SuscripcionPage() {
         <p className="text-[14px] text-muted-foreground mt-1">Tu plan actual y opciones de facturación</p>
       </div>
 
+      {/* Aviso cobro manual */}
+      <div className="flex items-start gap-3 px-4 py-3 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800">
+        <AlertCircle className="h-4 w-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+        <p className="text-[13px] text-amber-800 dark:text-amber-300 leading-relaxed">
+          <span className="font-bold">Cobro automático temporalmente desactivado.</span>{' '}
+          Los pagos se gestionan de forma manual. Para activar o cambiar tu plan, contactanos por WhatsApp.
+        </p>
+      </div>
+
       {/* Current status */}
       <div className="rounded-xl border border-border bg-card overflow-hidden">
         <div className="px-5 py-4 border-b border-border flex items-center gap-2">
