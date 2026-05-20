@@ -1,7 +1,7 @@
-const STATIC_CACHE = 'venti-static-v3'
-const DYNAMIC_CACHE = 'venti-dynamic-v3'
-const IMAGE_CACHE = 'venti-images-v3'
-const FONT_CACHE = 'venti-fonts-v3'
+const STATIC_CACHE = 'venti-static-v4'
+const DYNAMIC_CACHE = 'venti-dynamic-v4'
+const IMAGE_CACHE = 'venti-images-v4'
+const FONT_CACHE = 'venti-fonts-v4'
 const OFFLINE_URL = '/offline'
 
 const PRECACHE = [OFFLINE_URL]
