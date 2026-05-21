@@ -125,22 +125,23 @@ export default function AdminOrgDetailPage() {
   async function saveSubscription() {
     if (!sub) return
     setSaving(true)
-    // If reactivating from canceled/past_due, also activate the org
-    if ((sub.status === 'canceled' || sub.status === 'past_due') && editStatus === 'active') {
-      await supabase.from('organizations').update({ is_active: true }).eq('id', id)
+
+    const res = await fetch('/api/admin/subscription', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        subscriptionId: sub.id,
+        planId: editPlanId,
+        status: editStatus,
+        currentPeriodEnd: editPeriodEnd || undefined,
+        orgId: (editStatus === 'active' || editStatus === 'trialing') ? id : undefined,
+      }),
+    })
+    if (!res.ok) { toast.error('Error al guardar suscripción'); setSaving(false); return }
+
+    if (editStatus === 'active' || editStatus === 'trialing') {
       setOrg(prev => prev ? { ...prev, is_active: true } : prev)
     }
-
-    type SubStatus = 'active' | 'trialing' | 'past_due' | 'canceled' | 'paused'
-    const subUpdate: { plan_id: string; status: SubStatus; updated_at: string; current_period_end?: string } = {
-      plan_id: editPlanId,
-      status: editStatus as SubStatus,
-      updated_at: new Date().toISOString(),
-    }
-    if (editPeriodEnd) subUpdate.current_period_end = new Date(editPeriodEnd).toISOString()
-
-    const { error } = await supabase.from('subscriptions').update(subUpdate).eq('id', sub.id)
-    if (error) { toast.error('Error al guardar suscripción'); setSaving(false); return }
 
     const selectedPlan = plans.find(p => p.id === editPlanId)
     setSub(prev => prev ? {
@@ -157,9 +158,12 @@ export default function AdminOrgDetailPage() {
   async function cancelSubscription() {
     if (!sub) return
     setSaving(true)
-    const now = new Date().toISOString()
-    const { error } = await supabase.from('subscriptions').update({ status: 'canceled', canceled_at: now, updated_at: now }).eq('id', sub.id)
-    if (error) { toast.error('Error al cancelar'); setSaving(false); return }
+    const res = await fetch('/api/admin/subscription', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ subscriptionId: sub.id, status: 'canceled' }),
+    })
+    if (!res.ok) { toast.error('Error al cancelar'); setSaving(false); return }
     setSub(prev => prev ? { ...prev, status: 'canceled' } : prev)
     setEditStatus('canceled')
     toast.success('Suscripción cancelada')
