@@ -6,6 +6,7 @@ import { Plus, Search, User, Phone } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { formatARS } from '@/lib/utils/currency'
+import { EmptyState } from '@/components/shared/empty-state'
 
 interface Props {
   params: Promise<{ orgSlug: string }>
@@ -82,8 +83,12 @@ export default async function ClientesPage({ params, searchParams }: Props) {
           <tbody className="divide-y divide-border">
             {!customers?.length && (
               <tr>
-                <td colSpan={5} className="text-center py-14 text-[14px] text-muted-foreground">
-                  No hay clientes{q ? ` para "${q}"` : ''}
+                <td colSpan={5}>
+                  <EmptyState
+                    variant="no-clients"
+                    title={q ? `Sin resultados para "${q}"` : 'Sin clientes'}
+                    description={q ? 'Probá con otro nombre, teléfono o DNI' : 'Agregá tu primer cliente para empezar a fidelizar'}
+                  />
                 </td>
               </tr>
             )}

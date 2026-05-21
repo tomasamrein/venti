@@ -9,6 +9,7 @@ import {
   Plus, Search, Package, TrendingUp, TrendingDown,
   MoreHorizontal, Pencil, Trash2, AlertTriangle, Upload, Tag, Send, Smartphone,
 } from 'lucide-react'
+import { EmptyState } from '@/components/shared/empty-state'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent } from '@/components/ui/card'
@@ -396,21 +397,20 @@ export default function ProductosPage() {
           {loading ? (
             <div className="py-16 text-center text-muted-foreground">Cargando...</div>
           ) : filtered.length === 0 ? (
-            <div className="py-16 text-center">
-              <Package className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <p className="text-muted-foreground">
-                {products.length === 0
-                  ? 'No hay productos todavía. ¡Cargá el primero!'
-                  : 'No hay productos que coincidan con los filtros.'}
-              </p>
-              {products.length === 0 && (
+            <EmptyState
+              variant="no-products"
+              title={products.length === 0 ? 'Sin productos' : 'Sin resultados'}
+              description={products.length === 0
+                ? 'Cargá tu primer producto para empezar a vender'
+                : 'No hay productos que coincidan con los filtros'}
+              action={products.length === 0 ? (
                 <Link href={`/${orgSlug}/productos/nuevo`}>
-                  <Button className="mt-4 bg-emerald-600 hover:bg-emerald-600">
-                    Crear primer producto
+                  <Button className="bg-emerald-600 hover:bg-emerald-700">
+                    <Plus className="h-4 w-4 mr-1.5" /> Crear primer producto
                   </Button>
                 </Link>
-              )}
-            </div>
+              ) : undefined}
+            />
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">

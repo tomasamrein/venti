@@ -63,6 +63,7 @@ export default function CajaPage() {
 
   const [session, setSession] = useState<CashSession | null>(null)
   const [movements, setMovements] = useState<CashMovement[]>([])
+  const [paymentBreakdown, setPaymentBreakdown] = useState<Record<string, number>>({})
   const [loading, setLoading] = useState(true)
 
   // Dialog states
@@ -101,6 +102,18 @@ export default function CajaPage() {
         .limit(50)
 
       setMovements(movs || [])
+
+      const { data: sessionSales } = await supabase
+        .from('sales')
+        .select('payment_method, total')
+        .eq('session_id', openSession.id)
+        .eq('status', 'completed')
+
+      const breakdown: Record<string, number> = {}
+      for (const s of sessionSales ?? []) {
+        breakdown[s.payment_method] = (breakdown[s.payment_method] ?? 0) + s.total
+      }
+      setPaymentBreakdown(breakdown)
     }
 
     setLoading(false)
@@ -600,6 +613,22 @@ export default function CajaPage() {
                 <p className="font-bold text-blue-600">{formatARS(getExpectedAmount())}</p>
               </div>
             </div>
+
+            {Object.keys(paymentBreakdown).length > 1 && (
+              <div className="space-y-1.5">
+                <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Ventas por método</p>
+                <div className="rounded-xl border border-border divide-y divide-border overflow-hidden">
+                  {Object.entries(paymentBreakdown).map(([method, amount]) => (
+                    <div key={method} className="flex items-center justify-between px-3 py-2 text-[13px]">
+                      <span className="text-muted-foreground capitalize">
+                        {{ cash: 'Efectivo', debit: 'Débito', credit: 'Crédito', transfer: 'Transferencia', mercadopago: 'Mercado Pago', current_account: 'Cta. Corriente', mixed: 'Mixto' }[method] ?? method}
+                      </span>
+                      <span className="font-semibold tabular-nums">{formatARS(amount)}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
             <div>
               <Label htmlFor="closing-amount" className="mb-2 block">

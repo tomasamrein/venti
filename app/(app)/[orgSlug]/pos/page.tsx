@@ -25,6 +25,7 @@ import { useOffline } from '@/hooks/use-offline'
 import { useOrg } from '@/hooks/use-org'
 import { hasInvoicing } from '@/lib/utils/plan'
 import { useCashSession } from '@/hooks/use-cash-session'
+import { usePosShortcuts } from '@/hooks/use-pos-shortcuts'
 import { db } from '@/lib/offline/db'
 import { queueMutation } from '@/lib/offline/sync'
 import type { Database } from '@/types/database'
@@ -161,6 +162,15 @@ export default function POSPage() {
     if (!isOpen) return toast.error('No hay caja abierta. Abrí la caja primero.')
     setPaymentOpen(true)
   }
+
+  usePosShortcuts({
+    onCheckout: handleCheckout,
+    onClearCart: () => {
+      if (window.confirm('¿Limpiar el carrito?')) clearCart()
+    },
+    cartEmpty: cartItems.length === 0,
+    disabled: paymentOpen,
+  })
 
   const handleHoldSale = async () => {
     if (cartItems.length === 0) return toast.error('El carrito está vacío')

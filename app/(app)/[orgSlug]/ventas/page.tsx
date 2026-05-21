@@ -6,6 +6,7 @@ import { ShoppingCart, Download } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { formatARS } from '@/lib/utils/currency'
+import { EmptyState } from '@/components/shared/empty-state'
 
 interface Props {
   params: Promise<{ orgSlug: string }>
@@ -124,8 +125,12 @@ export default async function VentasPage({ params, searchParams }: Props) {
           <tbody className="divide-y divide-border">
             {!sales?.length && (
               <tr>
-                <td colSpan={7} className="text-center py-14 text-[14px] text-muted-foreground">
-                  No hay ventas para los filtros seleccionados
+                <td colSpan={7}>
+                  <EmptyState
+                    variant="no-sales"
+                    title="Sin ventas"
+                    description="No hay ventas para los filtros seleccionados"
+                  />
                 </td>
               </tr>
             )}

@@ -5,6 +5,7 @@ import { ArrowLeft, User, CreditCard, Package } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { formatARS } from '@/lib/utils/currency'
+import { RefundButton } from '@/components/ventas/refund-button'
 
 interface Props {
   params: Promise<{ orgSlug: string; id: string }>
@@ -46,13 +47,20 @@ export default async function VentaDetailPage({ params }: Props) {
           <ArrowLeft className="h-4 w-4" />
         </Link>
         <div className="flex-1">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <h1 className="text-[22px] font-extrabold tracking-[-0.03em]">
               Venta {sale.sale_number ? `#${sale.sale_number}` : sale.id.slice(0, 8)}
             </h1>
             <Badge variant="outline" className={`text-[11px] border ${statusInfo.color}`}>
               {statusInfo.label}
             </Badge>
+            {sale.status === 'completed' && (
+              <RefundButton
+                saleId={sale.id}
+                hasCustomer={!!sale.customer_id}
+                total={sale.total}
+              />
+            )}
           </div>
           <p className="text-[13px] text-muted-foreground">
             {new Date(sale.created_at).toLocaleDateString('es-AR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}

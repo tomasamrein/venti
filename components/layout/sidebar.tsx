@@ -6,7 +6,7 @@ import { Logo } from '@/components/ui/logo'
 import {
   LayoutDashboard, ShoppingCart, Package, FileText,
   Users, Briefcase, CreditCard, BarChart3, Settings,
-  Bell, DollarSign, TrendingUp, Receipt, ShoppingBag,
+  Bell, DollarSign, TrendingUp, Receipt, ShoppingBag, Shield,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useOrg } from '@/hooks/use-org'
@@ -101,6 +101,7 @@ export function Sidebar({ orgSlug, className }: SidebarProps) {
     : [
         navItem('Notificaciones', `${base}/notificaciones`, <Bell className="h-4 w-4" />),
         navItem('Configuración', `${base}/configuracion`, <Settings className="h-4 w-4" />),
+        ...(role === 'owner' ? [navItem('Auditoría', `${base}/configuracion/auditoria`, <Shield className="h-4 w-4" />)] : []),
       ]
 
   function NavLink({ item }: { item: NavItem }) {

@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation'
 import { Search, TrendingDown, TrendingUp, CreditCard } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { formatARS } from '@/lib/utils/currency'
+import { EmptyState } from '@/components/shared/empty-state'
 
 interface Props {
   params: Promise<{ orgSlug: string }>
@@ -80,8 +81,12 @@ export default async function CuentasCorrientesPage({ params, searchParams }: Pr
           <tbody className="divide-y divide-border">
             {!accounts?.length && (
               <tr>
-                <td colSpan={5} className="text-center py-14 text-[14px] text-muted-foreground">
-                  No hay cuentas corrientes{q ? ` para "${q}"` : ''}
+                <td colSpan={5}>
+                  <EmptyState
+                    variant="no-accounts"
+                    title={q ? `Sin resultados para "${q}"` : 'Sin cuentas corrientes'}
+                    description={q ? 'Probá con otro nombre o teléfono' : 'Las cuentas se crean desde el perfil de cada cliente'}
+                  />
                 </td>
               </tr>
             )}
