@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Plus, Package, CheckCircle2, Clock, XCircle, ChevronDown, ChevronUp, MessageCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { formatARS, waEncode } from '@/lib/utils/currency'
@@ -47,6 +47,9 @@ const STATUS_CONFIG: Record<string, { label: string; icon: React.ReactNode; clas
 export function StockOrdersClient({ orders: initial, orgSlug }: { orders: Order[]; orgSlug: string }) {
   const router = useRouter()
   const [orders, setOrders] = useState(initial)
+  // Re-sincronizar cuando router.refresh() trae datos nuevos del servidor
+  // (useState ignora cambios de prop tras el montaje → sin esto hay que apretar F5).
+  useEffect(() => { setOrders(initial) }, [initial])
   const [showForm, setShowForm] = useState(false)
   const [expanded, setExpanded] = useState<string | null>(null)
   const [updating, setUpdating] = useState<string | null>(null)
