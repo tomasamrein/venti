@@ -1,9 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { Plus, Package, CheckCircle2, Clock, XCircle, ChevronDown, ChevronUp } from 'lucide-react'
+import { Plus, Package, CheckCircle2, Clock, XCircle, ChevronDown, ChevronUp, MessageCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { formatARS } from '@/lib/utils/currency'
+import { formatARS, waEncode } from '@/lib/utils/currency'
 import { StockOrderForm } from './stock-order-form'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
@@ -63,6 +63,16 @@ export function StockOrdersClient({ orders: initial, orgSlug }: { orders: Order[
     toast.success('Orden marcada como recibida')
     setUpdating(null)
     router.refresh()
+  }
+
+  function shareWhatsApp(order: Order) {
+    const date = new Date(order.ordered_at).toLocaleDateString('es-AR')
+    const lines = order.stock_order_items.map(i =>
+      `• ${i.product_name} — ${i.quantity} u. @ ${formatARS(i.unit_cost)} = ${formatARS(i.subtotal)}`
+    ).join('\n')
+    const header = order.supplier_name ? `Pedido para *${order.supplier_name}* (${date})` : `Pedido del ${date}`
+    const text = `${header}:\n\n${lines}\n\n*Total: ${formatARS(order.total_cost)}*`
+    window.open(`https://wa.me/?text=${waEncode(text)}`, '_blank')
   }
 
   async function cancelOrder(orderId: string) {
@@ -159,6 +169,13 @@ export function StockOrdersClient({ orders: initial, orgSlug }: { orders: Order[
                         </Button>
                       </>
                     )}
+                    <button
+                      onClick={() => shareWhatsApp(order)}
+                      title="Compartir por WhatsApp"
+                      className="h-8 w-8 flex items-center justify-center rounded-lg text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 transition-colors"
+                    >
+                      <MessageCircle className="h-4 w-4" />
+                    </button>
                     <button
                       onClick={() => setExpanded(isExpanded ? null : order.id)}
                       className="text-muted-foreground hover:text-foreground"
