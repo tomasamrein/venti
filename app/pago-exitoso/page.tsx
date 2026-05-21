@@ -1,17 +1,32 @@
-import Link from 'next/link'
-import { CheckCircle2, ArrowRight, Sparkles } from 'lucide-react'
+'use client'
 
-export const metadata = {
-  title: 'Pago exitoso — Ventix',
-  description: 'Tu pago fue procesado correctamente. Bienvenido a Ventix.',
-}
+import { useEffect, useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
+import Link from 'next/link'
+import { CheckCircle2, ArrowRight, Sparkles, Loader2 } from 'lucide-react'
 
 export default function PagoExitosoPage() {
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const [countdown, setCountdown] = useState(5)
+
+  // MP envía external_reference con el orgSlug cuando configuramos el preference
+  const orgSlug = searchParams.get('external_reference')
+  const redirectTo = orgSlug ? `/${orgSlug}/dashboard` : '/login'
+
+  useEffect(() => {
+    if (countdown <= 0) {
+      router.push(redirectTo)
+      return
+    }
+    const t = setTimeout(() => setCountdown(c => c - 1), 1000)
+    return () => clearTimeout(t)
+  }, [countdown, redirectTo, router])
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-slate-50 flex items-center justify-center p-6">
       <div className="max-w-md w-full text-center space-y-8">
 
-        {/* Ícono de éxito */}
         <div className="flex justify-center">
           <div className="relative">
             <div className="w-24 h-24 rounded-full bg-emerald-100 flex items-center justify-center">
@@ -23,7 +38,6 @@ export default function PagoExitosoPage() {
           </div>
         </div>
 
-        {/* Mensaje principal */}
         <div className="space-y-3">
           <h1 className="text-[32px] font-extrabold tracking-[-0.03em] text-slate-900">
             ¡Pago exitoso!
@@ -36,7 +50,6 @@ export default function PagoExitosoPage() {
           </p>
         </div>
 
-        {/* Steps de onboarding */}
         <div className="rounded-2xl border border-slate-200 bg-white p-5 text-left space-y-3 shadow-sm">
           <p className="text-[12px] font-bold text-slate-400 uppercase tracking-wider mb-4">Próximos pasos</p>
           {[
@@ -53,14 +66,19 @@ export default function PagoExitosoPage() {
           ))}
         </div>
 
-        {/* CTA */}
         <div className="space-y-3">
           <Link
-            href="/login"
+            href={redirectTo}
             className="inline-flex items-center gap-2 h-12 px-8 rounded-xl text-base font-bold text-white bg-emerald-600 hover:bg-emerald-700 transition-all hover:shadow-lg hover:shadow-emerald-200 hover:-translate-y-0.5 w-full justify-center"
           >
             Ir al panel <ArrowRight className="h-4 w-4" />
           </Link>
+
+          <div className="flex items-center justify-center gap-1.5 text-[12px] text-slate-400">
+            <Loader2 className="h-3 w-3 animate-spin" />
+            <span>Redirigiendo automáticamente en {countdown}s…</span>
+          </div>
+
           <p className="text-[12px] text-slate-400">
             Si tuviste algún problema, escribinos a{' '}
             <a href="mailto:soporte@ventix.ar" className="text-emerald-600 hover:underline font-semibold">
