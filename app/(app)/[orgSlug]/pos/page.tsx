@@ -25,6 +25,7 @@ import { useOffline } from '@/hooks/use-offline'
 import { useOrg } from '@/hooks/use-org'
 import { hasInvoicing } from '@/lib/utils/plan'
 import { useCashSession } from '@/hooks/use-cash-session'
+import { useRealtime } from '@/hooks/use-realtime'
 import { usePosShortcuts } from '@/hooks/use-pos-shortcuts'
 import { db } from '@/lib/offline/db'
 import { queueMutation } from '@/lib/offline/sync'
@@ -91,7 +92,7 @@ export default function POSPage() {
   const addItem = useCartStore(s => s.addItem)
   const updateItemQuantity = useCartStore(s => s.updateItemQuantity)
 
-  useEffect(() => {
+  const loadProducts = useCallback(() => {
     if (isOffline) {
       db.products
         .where('organization_id').equals(org.id)
@@ -115,6 +116,11 @@ export default function POSPage() {
         setLoading(false)
       })
   }, [org.id, isOffline])
+
+  useEffect(() => { loadProducts() }, [loadProducts])
+
+  // Realtime: si otra caja vende o el dueño cambia precio/stock, recargar
+  useRealtime('products', isOffline ? undefined : org.id, loadProducts)
 
   useEffect(() => {
     if (!customerId) { setCustomerCuit(undefined); setCustomerName(undefined); return }

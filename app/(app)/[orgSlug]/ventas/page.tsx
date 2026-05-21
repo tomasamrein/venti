@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { formatARS } from '@/lib/utils/currency'
 import { EmptyState } from '@/components/shared/empty-state'
+import { RealtimeRefresher } from '@/components/shared/realtime-refresher'
 
 interface Props {
   params: Promise<{ orgSlug: string }>
@@ -55,6 +56,7 @@ export default async function VentasPage({ params, searchParams }: Props) {
 
   return (
     <div className="space-y-6 max-w-5xl">
+      <RealtimeRefresher table="sales" orgId={org.id} />
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-[28px] font-extrabold tracking-[-0.03em]">Ventas</h1>

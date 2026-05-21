@@ -1,8 +1,10 @@
 'use client'
 
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useCallback } from 'react'
+import { useOrg } from '@/hooks/use-org'
+import { useRealtime } from '@/hooks/use-realtime'
 import { ShoppingCart, DollarSign, Package, AlertTriangle, Building2, ChevronDown } from 'lucide-react'
 import { formatARS } from '@/lib/utils/currency'
 import { SalesChart } from '@/components/dashboard/sales-chart'
@@ -66,10 +68,18 @@ export function DashboardClient({ orgSlug, isPro, branches, defaultPeriod, defau
     ? (searchParams.get('branch') && searchParams.get('branch') !== 'all' ? searchParams.get('branch') : null)
     : defaultBranchId
 
+  const queryClient = useQueryClient()
+  const { org } = useOrg()
+
   const { data, isLoading } = useQuery({
     queryKey: ['dashboard', orgSlug, period, activeBranchId],
     queryFn: () => fetchDashboard(orgSlug, period, activeBranchId),
     staleTime: 60_000,
+  })
+
+  // Realtime: actualizar totales y ventas recientes en vivo a medida que se cobra
+  useRealtime('sales', org.id, () => {
+    queryClient.invalidateQueries({ queryKey: ['dashboard', orgSlug] })
   })
 
   const navigate = useCallback((newPeriod: string, branch?: string | null) => {

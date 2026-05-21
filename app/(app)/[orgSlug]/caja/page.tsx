@@ -35,6 +35,7 @@ import { formatARS, waEncode } from '@/lib/utils/currency'
 import { format } from 'date-fns'
 import { es } from 'date-fns/locale'
 import { useOrg } from '@/hooks/use-org'
+import { useRealtime } from '@/hooks/use-realtime'
 
 interface CashSession {
   id: string
@@ -122,6 +123,11 @@ export default function CajaPage() {
   useEffect(() => {
     loadData()
   }, [loadData])
+
+  // Realtime: caja, movimientos y ventas se reflejan al instante en todos los dispositivos
+  useRealtime('cash_sessions', orgId, loadData)
+  useRealtime('cash_movements', orgId, loadData)
+  useRealtime('sales', orgId, loadData)
 
   async function handleOpenSession() {
     setSubmitting(true)

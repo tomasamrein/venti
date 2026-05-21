@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useOrg } from '@/hooks/use-org'
+import { useRealtime } from '@/hooks/use-realtime'
 import { db } from '@/lib/offline/db'
 import type { Database } from '@/types/database'
 
@@ -125,6 +126,11 @@ export function useCashSession() {
       return data
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: key }),
+  })
+
+  // Realtime: si otro dispositivo abre/cierra la caja, se refleja al instante
+  useRealtime('cash_sessions', isOffline ? undefined : org?.id, () => {
+    queryClient.invalidateQueries({ queryKey: key })
   })
 
   const effectiveSession = isOffline ? offlineSession : (query.data ?? null)

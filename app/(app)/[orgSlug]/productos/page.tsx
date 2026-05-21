@@ -45,6 +45,7 @@ import { CsvProductImport } from '@/components/products/csv-product-import'
 import { createClient } from '@/lib/supabase/client'
 import { formatARS, waEncode } from '@/lib/utils/currency'
 import { useOrg } from '@/hooks/use-org'
+import { useRealtime } from '@/hooks/use-realtime'
 import type { Database } from '@/types/database'
 
 type Product = Database['public']['Tables']['products']['Row'] & {
@@ -135,6 +136,9 @@ export default function ProductosPage() {
   const suppliers = data?.suppliers ?? []
   const supplierProductMap = data?.supplierProductMap ?? {}
   const loadData = () => queryClient.invalidateQueries({ queryKey: ['productos-page', orgId] })
+
+  // Realtime: refrescar el listado si cambia el stock/precio desde otra caja
+  useRealtime('products', orgId, loadData)
 
   async function handleDelete(id: string) {
     const supabase = createClient()
