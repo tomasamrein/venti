@@ -4,21 +4,41 @@ import { useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { CheckCircle2, ArrowRight, Sparkles, Loader2 } from 'lucide-react'
+import { createClient } from '@/lib/supabase/client'
 
 export default function PagoExitosoPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [countdown, setCountdown] = useState(5)
+  const [redirectTo, setRedirectTo] = useState<string | null>(null)
 
-  // MP envía external_reference con el orgSlug cuando configuramos el preference
-  const orgSlug = searchParams.get('external_reference')
-  const redirectTo = orgSlug ? `/${orgSlug}/dashboard` : '/login'
+  const orgSlugParam = searchParams.get('external_reference')
 
   useEffect(() => {
-    if (countdown <= 0) {
-      router.push(redirectTo)
-      return
+    async function resolveRedirect() {
+      if (orgSlugParam) {
+        setRedirectTo(`/${orgSlugParam}/dashboard`)
+        return
+      }
+      const supabase = createClient()
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session) { setRedirectTo('/login'); return }
+      const { data } = await supabase
+        .from('organization_members')
+        .select('organizations(slug)')
+        .eq('user_id', session.user.id)
+        .eq('is_active', true)
+        .limit(1)
+        .single()
+      const slug = (data?.organizations as { slug: string } | null)?.slug
+      setRedirectTo(slug ? `/${slug}/dashboard` : '/login')
     }
+    resolveRedirect()
+  }, [orgSlugParam])
+
+  useEffect(() => {
+    if (!redirectTo) return
+    if (countdown <= 0) { router.push(redirectTo); return }
     const t = setTimeout(() => setCountdown(c => c - 1), 1000)
     return () => clearTimeout(t)
   }, [countdown, redirectTo, router])
@@ -68,7 +88,7 @@ export default function PagoExitosoPage() {
 
         <div className="space-y-3">
           <Link
-            href={redirectTo}
+            href={redirectTo ?? '#'}
             className="inline-flex items-center gap-2 h-12 px-8 rounded-xl text-base font-bold text-white bg-emerald-600 hover:bg-emerald-700 transition-all hover:shadow-lg hover:shadow-emerald-200 hover:-translate-y-0.5 w-full justify-center"
           >
             Ir al panel <ArrowRight className="h-4 w-4" />
@@ -76,7 +96,7 @@ export default function PagoExitosoPage() {
 
           <div className="flex items-center justify-center gap-1.5 text-[12px] text-slate-400">
             <Loader2 className="h-3 w-3 animate-spin" />
-            <span>Redirigiendo automáticamente en {countdown}s…</span>
+            <span>{redirectTo ? `Redirigiendo automáticamente en ${countdown}s…` : 'Preparando redirección…'}</span>
           </div>
 
           <p className="text-[12px] text-slate-400">
