@@ -31,17 +31,17 @@ export async function POST(req: NextRequest) {
   const items = Array.isArray(sale.sale_items) ? sale.sale_items : []
   for (const item of items) {
     if (item.product_id) {
-      await admin.rpc('increment_stock', { product_id: item.product_id, qty: item.quantity }).maybeSingle()
-        .catch(() => admin
+      const { data: prod } = await admin
+        .from('products')
+        .select('stock_current, track_stock')
+        .eq('id', item.product_id)
+        .single()
+      if (prod?.track_stock) {
+        await admin
           .from('products')
-          .select('stock_current')
+          .update({ stock_current: (prod.stock_current ?? 0) + item.quantity })
           .eq('id', item.product_id)
-          .single()
-          .then(({ data }) => data
-            ? admin.from('products').update({ stock_current: (data.stock_current ?? 0) + item.quantity }).eq('id', item.product_id)
-            : null
-          )
-        )
+      }
     }
   }
 
