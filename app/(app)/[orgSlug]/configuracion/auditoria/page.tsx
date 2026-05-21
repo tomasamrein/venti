@@ -26,12 +26,13 @@ export default async function AuditoriaPage({ params }: Props) {
   const org = await getOrgBySlug(orgSlug)
   if (!org) notFound()
 
-  const { data: logs } = await supabase
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: logs } = await (supabase as any)
     .from('audit_logs')
     .select('id, table_name, record_id, action, old_data, new_data, created_at, user_id')
     .eq('organization_id', org.id)
     .order('created_at', { ascending: false })
-    .limit(100)
+    .limit(100) as { data: Array<{ id: string; table_name: string; record_id: string; action: string; old_data: Record<string,string>|null; new_data: Record<string,string>|null; created_at: string; user_id: string|null }> | null }
 
   const userIds = [...new Set((logs ?? []).map(l => l.user_id).filter(Boolean))]
 
