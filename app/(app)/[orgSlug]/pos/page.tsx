@@ -473,38 +473,29 @@ export default function POSPage() {
 
       {/* Mobile tab bar */}
       <div className="md:hidden fixed bottom-0 left-0 right-0 z-30 bg-background border-t border-border flex h-14 shrink-0">
-        <button
-          onClick={() => setMobileTab('products')}
-          className={`flex-1 flex flex-col items-center justify-center gap-0.5 text-xs font-medium transition-colors ${mobileTab === 'products' ? 'text-emerald-600' : 'text-muted-foreground'}`}
-        >
-          <Grid3X3 className="h-5 w-5" />
-          Productos
-        </button>
-
-        {isFotocopiadora && (
-          <button
-            onClick={() => setMobileTab('services')}
-            className={`flex-1 flex flex-col items-center justify-center gap-0.5 text-xs font-medium transition-colors ${mobileTab === 'services' ? 'text-emerald-600' : 'text-muted-foreground'}`}
-          >
-            <Printer className="h-5 w-5" />
-            Servicios
-          </button>
-        )}
-
-        <button
-          onClick={() => setMobileTab('cart')}
-          className={`flex-1 flex flex-col items-center justify-center gap-0.5 text-xs font-medium transition-colors relative ${mobileTab === 'cart' ? 'text-emerald-600' : 'text-muted-foreground'}`}
-        >
-          <span className="relative">
-            <ShoppingCart className="h-5 w-5" />
-            {cartCount > 0 && (
-              <span className="absolute -top-1.5 -right-2 bg-emerald-600 text-white text-[10px] font-bold rounded-full h-4 min-w-4 flex items-center justify-center px-0.5">
-                {cartCount}
+        {(['products', ...(isFotocopiadora ? ['services'] : []), 'cart'] as MobileTab[]).map(tab => {
+          const active = mobileTab === tab
+          const Icon = tab === 'products' ? Grid3X3 : tab === 'services' ? Printer : ShoppingCart
+          const label = tab === 'products' ? 'Productos' : tab === 'services' ? 'Servicios' : 'Carrito'
+          return (
+            <button
+              key={tab}
+              onClick={() => setMobileTab(tab)}
+              className={`flex-1 flex flex-col items-center justify-center gap-0.5 text-xs font-medium transition-all relative ${active ? 'text-emerald-600' : 'text-muted-foreground'}`}
+            >
+              {active && <span className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-0.5 rounded-full bg-emerald-500" />}
+              <span className="relative">
+                <Icon className="h-5 w-5" />
+                {tab === 'cart' && cartCount > 0 && (
+                  <span className="absolute -top-1.5 -right-2 bg-emerald-600 text-white text-[10px] font-bold rounded-full h-4 min-w-4 flex items-center justify-center px-0.5">
+                    {cartCount}
+                  </span>
+                )}
               </span>
-            )}
-          </span>
-          Carrito
-        </button>
+              {label}
+            </button>
+          )
+        })}
       </div>
 
       <div className="md:hidden h-14 shrink-0" />

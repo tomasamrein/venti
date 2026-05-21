@@ -21,9 +21,18 @@ interface TopNavProps {
   organizationId: string
   userName?: string
   userAvatar?: string
+  orgName?: string
+  planType?: string
+  trialEndsAt?: string
 }
 
-export function TopNav({ orgSlug, organizationId, userName, userAvatar }: TopNavProps) {
+const PLAN_LABELS: Record<string, { label: string; color: string }> = {
+  free_trial: { label: 'Trial', color: 'text-amber-600 bg-amber-50 dark:bg-amber-900/30 border-amber-200 dark:border-amber-800' },
+  basic: { label: 'Basic', color: 'text-blue-600 bg-blue-50 dark:bg-blue-900/30 border-blue-200 dark:border-blue-800' },
+  pro: { label: 'Pro', color: 'text-emerald-600 bg-emerald-50 dark:bg-emerald-900/30 border-emerald-200 dark:border-emerald-800' },
+}
+
+export function TopNav({ orgSlug, organizationId, userName, userAvatar, orgName, planType, trialEndsAt }: TopNavProps) {
   const router = useRouter()
   const { theme, setTheme } = useTheme()
   const [mobileOpen, setMobileOpen] = useState(false)
@@ -55,6 +64,18 @@ export function TopNav({ orgSlug, organizationId, userName, userAvatar }: TopNav
           <Sidebar orgSlug={orgSlug} className="h-full" />
         </SheetContent>
       </Sheet>
+
+      {/* Org name + plan — visible en mobile, oculto en desktop (el sidebar ya lo muestra) */}
+      {orgName && (
+        <div className="flex items-center gap-2 md:hidden">
+          <span className="text-[14px] font-bold truncate max-w-[140px]">{orgName}</span>
+          {planType && PLAN_LABELS[planType] && (
+            <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full border ${PLAN_LABELS[planType].color}`}>
+              {PLAN_LABELS[planType].label}
+            </span>
+          )}
+        </div>
+      )}
 
       <div className="flex-1" />
 
@@ -99,6 +120,20 @@ export function TopNav({ orgSlug, organizationId, userName, userAvatar }: TopNav
           <DropdownMenuContent align="end" className="w-52">
             <div className="px-3 py-2">
               <p className="text-sm font-semibold truncate">{userName || 'Mi cuenta'}</p>
+              {orgName && <p className="text-[11px] text-muted-foreground truncate">{orgName}</p>}
+              {planType && PLAN_LABELS[planType] && (
+                <div className="flex items-center gap-1.5 mt-1.5">
+                  <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full border ${PLAN_LABELS[planType].color}`}>
+                    {PLAN_LABELS[planType].label}
+                  </span>
+                  {planType === 'free_trial' && trialEndsAt && (() => {
+                    const days = Math.max(0, Math.ceil((new Date(trialEndsAt).getTime() - Date.now()) / 86400000))
+                    return days > 0
+                      ? <span className="text-[10px] text-amber-600">{days} días restantes</span>
+                      : <span className="text-[10px] text-red-500">Trial vencido</span>
+                  })()}
+                </div>
+              )}
             </div>
             <DropdownMenuSeparator />
             <DropdownMenuItem

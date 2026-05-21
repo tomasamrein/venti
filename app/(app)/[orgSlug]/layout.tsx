@@ -98,6 +98,9 @@ export default async function OrgLayout({ children, params }: Props) {
             organizationId={org.id}
             userName={profile?.full_name ?? undefined}
             userAvatar={profile?.avatar_url ?? undefined}
+            orgName={org.name}
+            planType={planType}
+            trialEndsAt={org.trial_ends_at ?? undefined}
           />
           <TrialBanner trialEndsAt={org.trial_ends_at} isActive={org.is_active} />
           <main className="flex-1 overflow-y-auto bg-background p-4 md:p-6 scrollbar-thin">
