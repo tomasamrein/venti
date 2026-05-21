@@ -1,8 +1,9 @@
 import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 import { formatARS } from '@/lib/utils/currency'
-import { ShoppingCart, TrendingUp, DollarSign, Users } from 'lucide-react'
+import { ShoppingCart, TrendingUp, DollarSign, Users, PackageMinus, TrendingDown } from 'lucide-react'
 import { CsvExportButton } from '@/components/shared/csv-export-button'
+import { isBusinessTier } from '@/lib/utils/plan'
 
 interface Props {
   params: Promise<{ orgSlug: string }>
@@ -22,6 +23,14 @@ export default async function ReportesVentasPage({ params, searchParams }: Props
 
   const { data: org } = await supabase.from('organizations').select('id').eq('slug', orgSlug).single()
   if (!org) notFound()
+
+  const { data: subscription } = await supabase
+    .from('subscriptions')
+    .select('plan:subscription_plans(type)')
+    .eq('organization_id', org.id)
+    .maybeSingle()
+  const planType = (subscription?.plan as { type?: string } | null)?.type ?? 'free_trial'
+  const showMargin = isBusinessTier(planType)
 
   // Parse dates in Argentina timezone (-03:00) so a `from=2026-05-01` selected by the user
   // means "00:00 of 2026-05-01 in Buenos Aires", not 00:00 UTC.
@@ -43,6 +52,19 @@ export default async function ReportesVentasPage({ params, searchParams }: Props
   if (method) query = query.eq('payment_method', method as 'cash')
 
   const { data: sales } = await query
+
+  // Stock orders cost (Pro only)
+  let totalStockCost = 0
+  if (showMargin) {
+    const { data: stockOrders } = await (supabase as any)
+      .from('stock_orders')
+      .select('total_cost')
+      .eq('organization_id', org.id)
+      .eq('status', 'received')
+      .gte('received_at', fromDate.toISOString())
+      .lte('received_at', toDate.toISOString())
+    totalStockCost = ((stockOrders ?? []) as { total_cost: number }[]).reduce((s, o) => s + o.total_cost, 0)
+  }
 
   const totalRevenue = (sales ?? []).reduce((s, v) => s + v.total, 0)
   const totalTax = (sales ?? []).reduce((s, v) => s + (v.tax_amount ?? 0), 0)
@@ -116,6 +138,45 @@ export default async function ReportesVentasPage({ params, searchParams }: Props
           )
         })}
       </div>
+
+      {/* Margin (Pro only) */}
+      {showMargin && (
+        <div className="grid grid-cols-2 gap-4">
+          {[
+            {
+              label: 'Costo de reposición',
+              value: formatARS(totalStockCost),
+              icon: PackageMinus,
+              color: 'text-red-400',
+              bg: 'bg-red-500/10',
+              note: 'Órdenes de compra recibidas en el período',
+            },
+            {
+              label: 'Margen neto estimado',
+              value: formatARS(totalRevenue - totalStockCost),
+              icon: TrendingDown,
+              color: totalRevenue - totalStockCost >= 0 ? 'text-emerald-400' : 'text-red-400',
+              bg: totalRevenue - totalStockCost >= 0 ? 'bg-emerald-500/10' : 'bg-red-500/10',
+              note: 'Facturado − Costo de reposición',
+            },
+          ].map(s => {
+            const Icon = s.icon
+            return (
+              <div key={s.label} className="rounded-xl border border-border bg-card p-5">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className={`w-8 h-8 rounded-lg ${s.bg} flex items-center justify-center`}>
+                    <Icon className={`h-4 w-4 ${s.color}`} />
+                  </div>
+                  <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">{s.label}</p>
+                  <span className="ml-auto text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">PRO</span>
+                </div>
+                <p className="text-[20px] font-extrabold tracking-tight">{s.value}</p>
+                <p className="text-[11px] text-muted-foreground mt-1">{s.note}</p>
+              </div>
+            )
+          })}
+        </div>
+      )}
 
       {/* By method */}
       <div className="rounded-xl border border-border bg-card overflow-hidden">

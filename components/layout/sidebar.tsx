@@ -10,7 +10,7 @@ import {
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useOrg } from '@/hooks/use-org'
-import { hasInvoicing } from '@/lib/utils/plan'
+import { hasInvoicing, isBusinessTier } from '@/lib/utils/plan'
 
 interface SidebarProps {
   orgSlug: string
@@ -68,6 +68,9 @@ export function Sidebar({ orgSlug, className }: SidebarProps) {
           items: [
             navItem('Productos', `${base}/productos`, <Package className="h-4 w-4" />),
             navItem('Compras sugeridas', `${base}/compras`, <ShoppingBag className="h-4 w-4" />),
+            ...(isBusinessTier(planType)
+              ? [navItem('Órdenes de compra', `${base}/compras/ordenes`, <Package className="h-4 w-4" />)]
+              : []),
             navItem('Proveedores', `${base}/proveedores`, <Briefcase className="h-4 w-4" />),
           ],
         },
