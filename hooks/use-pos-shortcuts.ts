@@ -27,10 +27,6 @@ export function usePosShortcuts({ onCheckout, onClearCart, onFocusSearch, cartEm
         return
       }
 
-      if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
-        e.preventDefault()
-        onFocusSearch?.()
-      }
     }
 
     window.addEventListener('keydown', handleKeyDown)
