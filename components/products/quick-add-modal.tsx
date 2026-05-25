@@ -26,16 +26,31 @@ export function QuickAddModal({ open, onClose, orgId, onDone }: Props) {
   const [category, setCategory] = useState(CATALOGO_CATEGORIES[0] ?? 'General')
   const [submitting, setSubmitting] = useState(false)
 
-  const lines = text.split('\n').map(l => l.trim()).filter(Boolean)
+  const parsed = text
+    .split('\n')
+    .map(l => l.trim())
+    .filter(Boolean)
+    .map(l => {
+      const lastComma = l.lastIndexOf(',')
+      if (lastComma !== -1) {
+        const maybePrice = l.slice(lastComma + 1).trim()
+        const num = parseFloat(maybePrice.replace(/\s/g, ''))
+        if (!isNaN(num) && num >= 0) {
+          return { name: l.slice(0, lastComma).trim(), price: num }
+        }
+      }
+      return { name: l, price: parseFloat(price) || 0 }
+    })
+    .filter(r => r.name)
 
   async function handleSubmit() {
-    if (lines.length === 0) return
+    if (parsed.length === 0) return
     setSubmitting(true)
     try {
-      const rows = lines.map(name => ({
-        name,
+      const rows = parsed.map(r => ({
+        name: r.name,
         category,
-        price_sell: parseFloat(price) || 0,
+        price_sell: r.price,
         unit: 'un',
         track_stock: true,
       }))
@@ -71,7 +86,7 @@ export function QuickAddModal({ open, onClose, orgId, onDone }: Props) {
             Carga express
           </DialogTitle>
           <DialogDescription>
-            Escribí un producto por línea y los creamos todos de una.
+            Escribí un producto por línea. Podés poner el precio después de una coma.
           </DialogDescription>
         </DialogHeader>
 
@@ -79,7 +94,7 @@ export function QuickAddModal({ open, onClose, orgId, onDone }: Props) {
           <textarea
             className="w-full rounded-xl border border-border bg-background px-3 py-2.5 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 placeholder:text-muted-foreground"
             rows={8}
-            placeholder={"Coca Cola 500ml\nAlfajor Jorgito\nLeche La Serenísima 1L\nYerba Rosamonte 1kg\n..."}
+            placeholder={"Coca Cola 2.5L, 1800\nAlfajor Jorgito, 450\nJabón líquido suelto, 760\nYerba Rosamonte 1kg\n..."}
             value={text}
             onChange={e => setText(e.target.value)}
             autoFocus
@@ -87,7 +102,7 @@ export function QuickAddModal({ open, onClose, orgId, onDone }: Props) {
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <p className="text-xs text-muted-foreground mb-1.5">Precio de venta (para todos)</p>
+              <p className="text-xs text-muted-foreground mb-1.5">Precio por defecto (sin no pusiste coma)</p>
               <div className="flex items-center gap-1 border border-border rounded-lg px-2 bg-background h-9">
                 <span className="text-sm text-muted-foreground">$</span>
                 <Input
@@ -110,10 +125,10 @@ export function QuickAddModal({ open, onClose, orgId, onDone }: Props) {
             </div>
           </div>
 
-          {lines.length > 0 && (
+          {parsed.length > 0 && (
             <p className="text-xs text-muted-foreground">
-              Se crearán <span className="font-semibold text-foreground">{lines.length}</span> producto{lines.length !== 1 ? 's' : ''}.
-              {!price && ' Sin precio (podés editarlo después).'}
+              Se crearán <span className="font-semibold text-foreground">{parsed.length}</span> producto{parsed.length !== 1 ? 's' : ''}.
+              {parsed.some(r => r.price === 0) && ' Algunos sin precio — podés editarlos después.'}
             </p>
           )}
 
@@ -121,11 +136,11 @@ export function QuickAddModal({ open, onClose, orgId, onDone }: Props) {
             <Button variant="outline" onClick={handleClose}>Cancelar</Button>
             <Button
               onClick={handleSubmit}
-              disabled={lines.length === 0 || submitting}
+              disabled={parsed.length === 0 || submitting}
               className="bg-emerald-600 hover:bg-emerald-500 text-white gap-1.5"
             >
               {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
-              Crear {lines.length > 0 ? lines.length : ''} producto{lines.length !== 1 ? 's' : ''}
+              Crear {parsed.length > 0 ? parsed.length : ''} producto{parsed.length !== 1 ? 's' : ''}
             </Button>
           </div>
         </div>
