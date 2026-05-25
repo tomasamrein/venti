@@ -191,7 +191,7 @@ export function CatalogImport({ open, onClose, orgId, existingKeys, onDone }: Pr
 
   return (
     <Dialog open={open} onOpenChange={v => { if (!v) onClose() }}>
-      <DialogContent className="flex flex-col gap-0 p-0 overflow-hidden rounded-2xl w-[calc(100%-1rem)] sm:max-w-5xl h-[92dvh] sm:h-[85vh]">
+      <DialogContent className="flex flex-col gap-0 p-0 overflow-hidden rounded-2xl w-[calc(100%-1rem)] max-w-5xl h-[88dvh]">
         <DialogHeader className="px-4 sm:px-5 pt-4 pb-3 border-b border-border shrink-0 pr-12">
           <DialogTitle className="font-poppins">Catálogo de productos</DialogTitle>
           <DialogDescription>
