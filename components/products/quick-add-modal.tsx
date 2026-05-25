@@ -31,15 +31,15 @@ export function QuickAddModal({ open, onClose, orgId, onDone }: Props) {
     .map(l => l.trim())
     .filter(Boolean)
     .map(l => {
-      const lastComma = l.lastIndexOf(',')
-      if (lastComma !== -1) {
-        const maybePrice = l.slice(lastComma + 1).trim()
-        const num = parseFloat(maybePrice.replace(/\s/g, ''))
-        if (!isNaN(num) && num >= 0) {
-          return { name: l.slice(0, lastComma).trim(), price: num }
-        }
+      const parts = l.split(',').map(p => p.trim())
+      const name = parts[0]
+      const priceVal = parts[1] !== undefined ? parseFloat(parts[1].replace(/\s/g, '')) : NaN
+      const stockVal = parts[2] !== undefined ? parseFloat(parts[2].replace(/\s/g, '')) : NaN
+      return {
+        name,
+        price: !isNaN(priceVal) && priceVal >= 0 ? priceVal : parseFloat(price) || 0,
+        stock: !isNaN(stockVal) && stockVal >= 0 ? stockVal : null,
       }
-      return { name: l, price: parseFloat(price) || 0 }
     })
     .filter(r => r.name)
 
@@ -51,6 +51,7 @@ export function QuickAddModal({ open, onClose, orgId, onDone }: Props) {
         name: r.name,
         category,
         price_sell: r.price,
+        stock_current: r.stock ?? undefined,
         unit: 'un',
         track_stock: true,
       }))
@@ -86,7 +87,7 @@ export function QuickAddModal({ open, onClose, orgId, onDone }: Props) {
             Carga express
           </DialogTitle>
           <DialogDescription>
-            Escribí un producto por línea. Podés poner el precio después de una coma.
+            Un producto por línea: <span className="font-medium text-foreground">Nombre, Precio, Stock</span> — precio y stock son opcionales.
           </DialogDescription>
         </DialogHeader>
 
@@ -94,7 +95,7 @@ export function QuickAddModal({ open, onClose, orgId, onDone }: Props) {
           <textarea
             className="w-full rounded-xl border border-border bg-background px-3 py-2.5 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 placeholder:text-muted-foreground"
             rows={8}
-            placeholder={"Coca Cola 2.5L, 1800\nAlfajor Jorgito, 450\nJabón líquido suelto, 760\nYerba Rosamonte 1kg\n..."}
+            placeholder={"Coca Cola 2.5L, 1800, 12\nAlfajor Jorgito, 450, 24\nJabón líquido suelto, 760\nYerba Rosamonte 1kg\n..."}
             value={text}
             onChange={e => setText(e.target.value)}
             autoFocus
