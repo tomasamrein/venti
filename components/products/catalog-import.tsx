@@ -55,7 +55,26 @@ export function CatalogImport({ open, onClose, orgId, existingKeys, onDone }: Pr
   const [submitting, setSubmitting] = useState(false)
 
   useEffect(() => {
-    if (open) { setQuery(''); setOffResults([]); setSelected({}) }
+    if (!open) return
+    setQuery(''); setOffResults([]); setSelected({})
+    // Carga popular OFF al abrir (sin query)
+    fetch('/api/products/catalog-search?q=')
+      .then(r => r.json())
+      .then(json => {
+        const mapped: CatalogResult[] = (json.results ?? []).map((r: {
+          barcode: string; name: string; brand: string | null; image_url: string | null
+        }) => ({
+          key: `o:${r.barcode}`,
+          name: r.name,
+          brand: r.brand,
+          barcode: r.barcode,
+          category: null,
+          unit: 'un',
+          image_url: r.image_url,
+        }))
+        setOffResults(mapped)
+      })
+      .catch(() => {})
   }, [open])
 
   const isExisting = useCallback(
