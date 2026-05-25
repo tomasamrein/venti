@@ -63,6 +63,7 @@ export function ProductForm({ orgSlug, orgId, product, initialBarcode }: Product
   const [isActive, setIsActive] = useState(product?.is_active ?? true)
 
   const [scannerOpen, setScannerOpen] = useState(false)
+  const [lookingUp, setLookingUp] = useState(false)
   const [uploadingImage, setUploadingImage] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const cameraInputRef = useRef<HTMLInputElement>(null)
@@ -187,6 +188,25 @@ export function ProductForm({ orgSlug, orgId, product, initialBarcode }: Product
       return
     }
     setPriceSell((costNum * mult).toFixed(2))
+  }
+
+  async function autocompleteFromBarcode() {
+    const code = barcode.trim()
+    if (!code) return
+    setLookingUp(true)
+    try {
+      const res = await fetch(`/api/products/lookup?barcode=${encodeURIComponent(code)}`)
+      if (!res.ok) { toast.error('No encontrado en Open Food Facts'); return }
+      const data = await res.json()
+      if (data?.name && !name.trim()) setName(data.name)
+      if (data?.brand && !brand.trim()) setBrand(data.brand)
+      if (data?.image_url && !imageUrl.trim()) setImageUrl(data.image_url)
+      toast.success('Datos autocompletados')
+    } catch {
+      toast.error('No se pudo consultar')
+    } finally {
+      setLookingUp(false)
+    }
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -553,7 +573,7 @@ export function ProductForm({ orgSlug, orgId, product, initialBarcode }: Product
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <Label htmlFor="barcode" className="text-xs">Código de barras</Label>
-                  {!barcode && (
+                  {!barcode ? (
                     <button
                       type="button"
                       onClick={() => setBarcode(generateEAN13())}
@@ -561,6 +581,16 @@ export function ProductForm({ orgSlug, orgId, product, initialBarcode }: Product
                     >
                       <Wand2 className="h-3 w-3" />
                       Generar automático
+                    </button>
+                  ) : isNew && (
+                    <button
+                      type="button"
+                      onClick={autocompleteFromBarcode}
+                      disabled={lookingUp}
+                      className="flex items-center gap-1 text-[11px] text-emerald-600 hover:text-emerald-700 font-semibold transition-colors disabled:opacity-50"
+                    >
+                      {lookingUp ? <Loader2 className="h-3 w-3 animate-spin" /> : <Sparkles className="h-3 w-3" />}
+                      Autocompletar
                     </button>
                   )}
                 </div>

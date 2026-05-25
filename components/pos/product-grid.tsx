@@ -14,10 +14,11 @@ interface ProductGridProps {
   products: Product[]
   loading?: boolean
   weightSalesEnabled?: boolean
+  noInventory?: boolean
   onWeightProduct?: (product: Product) => void
 }
 
-export function ProductGrid({ products, loading, weightSalesEnabled, onWeightProduct }: ProductGridProps) {
+export function ProductGrid({ products, loading, weightSalesEnabled, noInventory, onWeightProduct }: ProductGridProps) {
   const [search, setSearch] = useState('')
   const addItem = useCartStore(s => s.addItem)
 
@@ -68,9 +69,15 @@ export function ProductGrid({ products, loading, weightSalesEnabled, onWeightPro
             <div className="w-14 h-14 rounded-2xl bg-muted/50 flex items-center justify-center mb-3">
               <Package2 className="h-6 w-6 text-muted-foreground" />
             </div>
-            <p className="text-sm font-medium text-foreground">Sin resultados</p>
+            <p className="text-sm font-medium text-foreground">
+              {noInventory && !search ? 'Modo venta rápida' : 'Sin resultados'}
+            </p>
             <p className="text-xs text-muted-foreground mt-1">
-              {search ? `No encontramos productos para "${search}"` : 'Cargá productos para empezar a vender'}
+              {search
+                ? `No encontramos productos para "${search}"`
+                : noInventory
+                  ? 'Usá el botón "+" para agregar un artículo manual con nombre y precio.'
+                  : 'Cargá productos para empezar a vender'}
             </p>
           </div>
         ) : (

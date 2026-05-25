@@ -3,13 +3,15 @@
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { toast } from 'sonner'
-import { Loader2, Building2, User, FileText, CreditCard, Users, GitBranch, ChevronRight, Download } from 'lucide-react'
+import { Loader2, Building2, User, FileText, CreditCard, Users, GitBranch, ChevronRight, Download, Boxes } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Switch } from '@/components/ui/switch'
 import { useOrg } from '@/hooks/use-org'
 import { hasMultiBranch, hasInvoicing } from '@/lib/utils/plan'
+import { isInventoryDisabled } from '@/lib/utils/org-settings'
 
 interface OrgForm {
   name: string; cuit: string; address: string; phone: string; email: string
@@ -24,7 +26,7 @@ export default function ConfiguracionPage() {
   const params = useParams()
   const router = useRouter()
   const orgSlug = params.orgSlug as string
-  const { planType } = useOrg()
+  const { planType, role } = useOrg()
 
   const [orgId, setOrgId] = useState('')
   const [userId, setUserId] = useState('')
@@ -32,6 +34,8 @@ export default function ConfiguracionPage() {
   const [loadingOrg, setLoadingOrg] = useState(false)
   const [loadingProfile, setLoadingProfile] = useState(false)
   const [exportingData, setExportingData] = useState(false)
+  const [manageInventory, setManageInventory] = useState(true)
+  const [savingMode, setSavingMode] = useState(false)
   const [orgForm, setOrgForm] = useState<OrgForm>({ name: '', cuit: '', address: '', phone: '', email: '' })
   const [profileForm, setProfileForm] = useState<ProfileForm>({ full_name: '', phone: '' })
 
@@ -52,6 +56,7 @@ export default function ConfiguracionPage() {
         name: org.name ?? '', cuit: org.cuit ?? '',
         address: org.address ?? '', phone: org.phone ?? '', email: org.email ?? '',
       })
+      setManageInventory(!isInventoryDisabled(org.settings))
 
       const { data: profile } = await supabase.from('profiles').select('*').eq('id', user.id).single()
       if (profile) {
@@ -98,6 +103,25 @@ export default function ConfiguracionPage() {
     if (error) toast.error('Error al guardar')
     else toast.success('Configuración guardada')
     setLoadingOrg(false)
+  }
+
+  async function toggleManageInventory(next: boolean) {
+    setManageInventory(next)
+    setSavingMode(true)
+    try {
+      const res = await fetch('/api/org/settings', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orgId, settings: { inventory_disabled: !next } }),
+      })
+      if (!res.ok) throw new Error()
+      toast.success(next ? 'Inventario activado' : 'Modo venta rápida activado')
+    } catch {
+      setManageInventory(!next)
+      toast.error('No se pudo guardar el cambio')
+    } finally {
+      setSavingMode(false)
+    }
   }
 
   async function saveProfile(e: React.FormEvent) {
@@ -162,6 +186,30 @@ export default function ConfiguracionPage() {
           )
         })}
       </div>
+
+      {role === 'owner' && (
+        <div className="rounded-xl border border-border bg-card overflow-hidden">
+          <div className="px-6 py-4 border-b border-border flex items-center gap-2">
+            <Boxes className="h-4 w-4 text-emerald-600" />
+            <h2 className="text-[14px] font-semibold">Modo del negocio</h2>
+          </div>
+          <div className="p-6 flex items-center justify-between gap-4">
+            <div>
+              <p className="text-[13px] font-medium text-foreground">Gestionar inventario</p>
+              <p className="text-[12px] text-muted-foreground mt-1">
+                Activado: catálogo de productos, stock y proveedores. Desactivado: modo venta rápida
+                (solo artículos manuales y servicios), ideal para librerías, imprentas y servicios.
+              </p>
+            </div>
+            <Switch
+              checked={manageInventory}
+              disabled={savingMode}
+              onCheckedChange={toggleManageInventory}
+              className="shrink-0"
+            />
+          </div>
+        </div>
+      )}
 
       <form onSubmit={saveOrg} className="rounded-xl border border-border bg-card overflow-hidden">
         <div className="px-6 py-4 border-b border-border flex items-center gap-2">

@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { toast } from 'sonner'
 import { playSound } from '@/lib/utils/sounds'
-import { Clock, ShoppingCart, Grid3X3, Printer, ScanBarcode, Smartphone } from 'lucide-react'
+import { Clock, ShoppingCart, Grid3X3, Printer, ScanBarcode, Smartphone, PackagePlus } from 'lucide-react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { ProductGrid } from '@/components/pos/product-grid'
@@ -15,6 +15,8 @@ import { EmployeeSwitcher } from '@/components/pos/employee-switcher'
 import { WeightInputModal, isWeightUnit } from '@/components/pos/weight-input-modal'
 import { UsbScannerInput } from '@/components/pos/usb-scanner-input'
 import { RemoteScannerModal } from '@/components/pos/remote-scanner-modal'
+import { ManualItemModal } from '@/components/pos/manual-item-modal'
+import { QuickCreateProductModal } from '@/components/pos/quick-create-product-modal'
 import { OfflineBanner } from '@/components/shared/offline-banner'
 import { PosStatusBar } from '@/components/pos/pos-status-bar'
 import { Button } from '@/components/ui/button'
@@ -24,6 +26,7 @@ import { useBarcodeScanner } from '@/hooks/use-barcode-scanner'
 import { useOffline } from '@/hooks/use-offline'
 import { useOrg } from '@/hooks/use-org'
 import { hasInvoicing } from '@/lib/utils/plan'
+import { isInventoryDisabled } from '@/lib/utils/org-settings'
 import { useCashSession } from '@/hooks/use-cash-session'
 import { useRealtime } from '@/hooks/use-realtime'
 import { usePosShortcuts } from '@/hooks/use-pos-shortcuts'
@@ -59,6 +62,7 @@ export default function POSPage() {
   const businessType = org.business_type
   const settings = (org.settings as any) ?? {}
   const isFotocopiadora = !!settings.copy_service_enabled
+  const noInventory = isInventoryDisabled(settings)
   const isDrugstore = businessType === 'drugstore' || !!settings.employee_switcher_enabled
   const weightSalesEnabled = businessType === 'almacen' || !!settings.weight_sales_enabled
   const hasArcaEnabled = !!settings.arca?.vault_cert_id
@@ -72,6 +76,8 @@ export default function POSPage() {
   const [mobileTab, setMobileTab] = useState<MobileTab>('products')
   const [usbInputOpen, setUsbInputOpen] = useState(false)
   const [remoteScannerOpen, setRemoteScannerOpen] = useState(false)
+  const [manualItemOpen, setManualItemOpen] = useState(false)
+  const [quickCreateBarcode, setQuickCreateBarcode] = useState<string | null>(null)
   const [remoteScanSessionId] = useState(() => {
     const key = 'remote_scan_session_pos'
     const stored = sessionStorage.getItem(key)
@@ -135,7 +141,12 @@ export default function POSPage() {
   const handleBarcodeFound = useCallback((barcode: string) => {
     const product = products.find(p => p.barcode === barcode)
     if (!product) {
-      toast.error(`Código ${barcode} no encontrado`)
+      if (noInventory) {
+        toast.error(`Código ${barcode} no encontrado`)
+      } else {
+        // Kiosco/drugstore: alta rápida prellenada con Open Food Facts
+        setQuickCreateBarcode(barcode)
+      }
       return
     }
     if (weightSalesEnabled && isWeightUnit(product.unit)) {
@@ -144,7 +155,7 @@ export default function POSPage() {
     }
     addItem(product, 1)
     toast.success(`${product.name} agregado`)
-  }, [products, addItem, weightSalesEnabled])
+  }, [products, addItem, weightSalesEnabled, noInventory])
 
   useBarcodeScanner(handleBarcodeFound)
 
@@ -433,10 +444,20 @@ export default function POSPage() {
             products={products}
             loading={loading}
             weightSalesEnabled={weightSalesEnabled}
+            noInventory={noInventory}
             onWeightProduct={setWeightProduct}
           />
           {/* Camera scanner button — mobile: above tab bar; desktop: bottom-left */}
           <div className="absolute bottom-16 md:bottom-3 left-3 flex flex-col gap-2 z-10">
+            <Button
+              size="icon"
+              variant="secondary"
+              className="h-10 w-10 rounded-full shadow-md"
+              onClick={() => setManualItemOpen(true)}
+              title="Agregar artículo manual (nombre y precio libres)"
+            >
+              <PackagePlus className="h-4 w-4" />
+            </Button>
             <Button
               size="icon"
               variant="secondary"
@@ -530,6 +551,19 @@ export default function POSPage() {
         open={usbInputOpen}
         onScan={handleBarcodeFound}
         onClose={() => setUsbInputOpen(false)}
+      />
+
+      <ManualItemModal
+        open={manualItemOpen}
+        orgId={org.id}
+        onClose={() => setManualItemOpen(false)}
+      />
+
+      <QuickCreateProductModal
+        barcode={quickCreateBarcode}
+        orgId={org.id}
+        onClose={() => setQuickCreateBarcode(null)}
+        onCreated={(p) => setProducts(prev => [...prev, p].sort((a, b) => a.name.localeCompare(b.name)))}
       />
 
       <WeightInputModal

@@ -19,8 +19,8 @@ interface Props {
   onDone: () => void
 }
 
-const TEMPLATE_HEADERS = 'name,barcode,sku,brand,unit,price_cost,price_sell,stock_current,stock_min,category'
-const TEMPLATE_EXAMPLE = 'Coca Cola 500ml,7790895000061,CC500,Coca-Cola,un,350,500,24,6,Bebidas\nAlfajor Jorgito,7790987654321,AJ001,Jorgito,un,120,180,12,4,Golosinas'
+const TEMPLATE_HEADERS = 'name,description,barcode,sku,brand,unit,price_cost,price_sell,price_sell_b,tax_rate,stock_current,stock_min,category'
+const TEMPLATE_EXAMPLE = 'Coca Cola 500ml,Gaseosa cola,7790895000061,CC500,Coca-Cola,un,350,500,470,21,24,6,Bebidas\nAlfajor Jorgito,Alfajor simple,7790987654321,AJ001,Jorgito,un,120,180,170,21,12,4,Golosinas'
 
 export function CsvProductImport({ open, onClose, orgId, onDone }: Props) {
   const [file, setFile] = useState<File | null>(null)
@@ -112,7 +112,7 @@ export function CsvProductImport({ open, onClose, orgId, onDone }: Props) {
           {/* Columns reference */}
           <div className="text-xs text-muted-foreground space-y-1 px-1">
             <p className="font-medium text-foreground">Columnas soportadas:</p>
-            <p><span className="font-mono bg-muted px-1 rounded">name</span> (requerido), <span className="font-mono bg-muted px-1 rounded">barcode</span>, <span className="font-mono bg-muted px-1 rounded">sku</span>, <span className="font-mono bg-muted px-1 rounded">brand</span>, <span className="font-mono bg-muted px-1 rounded">unit</span>, <span className="font-mono bg-muted px-1 rounded">price_cost</span>, <span className="font-mono bg-muted px-1 rounded">price_sell</span>, <span className="font-mono bg-muted px-1 rounded">stock_current</span>, <span className="font-mono bg-muted px-1 rounded">stock_min</span>, <span className="font-mono bg-muted px-1 rounded">category</span></p>
+            <p><span className="font-mono bg-muted px-1 rounded">name</span> (requerido), <span className="font-mono bg-muted px-1 rounded">description</span>, <span className="font-mono bg-muted px-1 rounded">barcode</span>, <span className="font-mono bg-muted px-1 rounded">sku</span>, <span className="font-mono bg-muted px-1 rounded">brand</span>, <span className="font-mono bg-muted px-1 rounded">unit</span>, <span className="font-mono bg-muted px-1 rounded">price_cost</span>, <span className="font-mono bg-muted px-1 rounded">price_sell</span>, <span className="font-mono bg-muted px-1 rounded">price_sell_b</span>, <span className="font-mono bg-muted px-1 rounded">tax_rate</span>, <span className="font-mono bg-muted px-1 rounded">stock_current</span>, <span className="font-mono bg-muted px-1 rounded">stock_min</span>, <span className="font-mono bg-muted px-1 rounded">category</span></p>
             <p className="text-muted-foreground">Si el producto tiene código de barras y ya existe, se actualiza. Sin código, siempre se crea nuevo.</p>
           </div>
 
@@ -195,9 +195,12 @@ export function CsvProductImport({ open, onClose, orgId, onDone }: Props) {
                     <AlertTriangle className="h-3.5 w-3.5" />
                     {result.skipped_errors.length} fila{result.skipped_errors.length !== 1 ? 's' : ''} con errores (ignoradas)
                   </div>
-                  {result.skipped_errors.slice(0, 3).map((e, i) => (
+                  {result.skipped_errors.slice(0, 5).map((e, i) => (
                     <p key={i} className="text-xs text-yellow-700 dark:text-yellow-400 pl-5">{e}</p>
                   ))}
+                  {result.skipped_errors.length > 5 && (
+                    <p className="text-xs text-yellow-700 dark:text-yellow-400 pl-5">…y {result.skipped_errors.length - 5} más</p>
+                  )}
                 </div>
               )}
             </div>

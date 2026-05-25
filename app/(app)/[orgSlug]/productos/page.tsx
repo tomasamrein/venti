@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import {
   Plus, Search, Package, TrendingUp, TrendingDown,
-  MoreHorizontal, Pencil, Trash2, AlertTriangle, Upload, Tag, Send, Smartphone,
+  MoreHorizontal, Pencil, Trash2, AlertTriangle, Upload, Tag, Send, Smartphone, Sparkles,
 } from 'lucide-react'
 import { EmptyState } from '@/components/shared/empty-state'
 import { Button } from '@/components/ui/button'
@@ -42,6 +42,7 @@ import { BulkPriceUpdate } from '@/components/products/bulk-price-update'
 import { RemoteScannerModal } from '@/components/pos/remote-scanner-modal'
 import { ExcelPriceImport } from '@/components/products/excel-price-import'
 import { CsvProductImport } from '@/components/products/csv-product-import'
+import { CatalogImport } from '@/components/products/catalog-import'
 import { createClient } from '@/lib/supabase/client'
 import { formatARS, waEncode } from '@/lib/utils/currency'
 import { useOrg } from '@/hooks/use-org'
@@ -79,6 +80,7 @@ export default function ProductosPage() {
   const [bulkOpen, setBulkOpen] = useState(false)
   const [excelOpen, setExcelOpen] = useState(false)
   const [csvOpen, setCsvOpen] = useState(false)
+  const [catalogOpen, setCatalogOpen] = useState(false)
   const [remoteScannerOpen, setRemoteScannerOpen] = useState(false)
   const [remoteScanSessionId] = useState(() => {
     const key = 'remote_scan_session_productos'
@@ -136,6 +138,15 @@ export default function ProductosPage() {
   const suppliers = data?.suppliers ?? []
   const supplierProductMap = data?.supplierProductMap ?? {}
   const loadData = () => queryClient.invalidateQueries({ queryKey: ['productos-page', orgId] })
+
+  const existingKeys = useMemo(() => {
+    const s = new Set<string>()
+    for (const p of products) {
+      s.add(p.name.trim().toLowerCase())
+      if (p.barcode) s.add(p.barcode)
+    }
+    return s
+  }, [products])
 
   // Realtime: refrescar el listado si cambia el stock/precio desde otra caja
   useRealtime('products', orgId, loadData)
@@ -244,6 +255,10 @@ export default function ProductosPage() {
                 Categorías
               </Button>
             </Link>
+            <Button variant="outline" size="sm" className="gap-2 border-emerald-300 text-emerald-700 hover:bg-emerald-50 dark:border-emerald-800 dark:text-emerald-400" onClick={() => setCatalogOpen(true)}>
+              <Sparkles className="h-4 w-4" />
+              Catálogo
+            </Button>
             <Button variant="outline" size="sm" className="gap-2" onClick={() => setCsvOpen(true)}>
               <Upload className="h-4 w-4" />
               Importar CSV
@@ -272,6 +287,10 @@ export default function ProductosPage() {
                 <DropdownMenuItem onClick={() => router.push(`/${orgSlug}/productos/categorias`)} className="gap-2 cursor-pointer">
                   <Tag className="h-4 w-4" />
                   Categorías
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setCatalogOpen(true)} className="gap-2 cursor-pointer">
+                  <Sparkles className="h-4 w-4" />
+                  Catálogo
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => setCsvOpen(true)} className="gap-2 cursor-pointer">
                   <Upload className="h-4 w-4" />
@@ -408,11 +427,16 @@ export default function ProductosPage() {
                 ? 'Cargá tu primer producto para empezar a vender'
                 : 'No hay productos que coincidan con los filtros'}
               action={products.length === 0 ? (
-                <Link href={`/${orgSlug}/productos/nuevo`}>
-                  <Button className="bg-emerald-600 hover:bg-emerald-700">
-                    <Plus className="h-4 w-4 mr-1.5" /> Crear primer producto
+                <div className="flex flex-col sm:flex-row items-center gap-2">
+                  <Button className="bg-emerald-600 hover:bg-emerald-700" onClick={() => setCatalogOpen(true)}>
+                    <Sparkles className="h-4 w-4 mr-1.5" /> Cargar del catálogo
                   </Button>
-                </Link>
+                  <Link href={`/${orgSlug}/productos/nuevo`}>
+                    <Button variant="outline">
+                      <Plus className="h-4 w-4 mr-1.5" /> Crear uno manual
+                    </Button>
+                  </Link>
+                </div>
               ) : undefined}
             />
           ) : (
@@ -583,6 +607,15 @@ export default function ProductosPage() {
         open={csvOpen}
         onClose={() => setCsvOpen(false)}
         orgId={orgId}
+        onDone={loadData}
+      />
+
+      {/* Catálogo base + Open Food Facts */}
+      <CatalogImport
+        open={catalogOpen}
+        onClose={() => setCatalogOpen(false)}
+        orgId={orgId}
+        existingKeys={existingKeys}
         onDone={loadData}
       />
 

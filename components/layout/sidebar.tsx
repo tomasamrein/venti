@@ -11,6 +11,7 @@ import {
 import { cn } from '@/lib/utils'
 import { useOrg } from '@/hooks/use-org'
 import { hasInvoicing, isBusinessTier } from '@/lib/utils/plan'
+import { isInventoryDisabled } from '@/lib/utils/org-settings'
 
 interface SidebarProps {
   orgSlug: string
@@ -38,6 +39,7 @@ export function Sidebar({ orgSlug, className }: SidebarProps) {
   const base = `/${orgSlug}`
   const { role, org, planType } = useOrg()
   const isCashier = role === 'cashier'
+  const noInventory = isInventoryDisabled(org.settings)
 
   const daysLeft = (() => {
     if (!org.trial_ends_at) return null
@@ -50,7 +52,7 @@ export function Sidebar({ orgSlug, className }: SidebarProps) {
         items: [
           navItem('Punto de Venta', `${base}/pos`, <ShoppingCart className="h-4 w-4" />),
           navItem('Caja', `${base}/caja`, <DollarSign className="h-4 w-4" />),
-          navItem('Productos', `${base}/productos`, <Package className="h-4 w-4" />),
+          ...(noInventory ? [] : [navItem('Productos', `${base}/productos`, <Package className="h-4 w-4" />)]),
           navItem('Clientes', `${base}/clientes`, <Users className="h-4 w-4" />),
           navItem('Cuentas Corrientes', `${base}/cuentas-corrientes`, <CreditCard className="h-4 w-4" />),
         ],
@@ -63,7 +65,7 @@ export function Sidebar({ orgSlug, className }: SidebarProps) {
             navItem('Caja', `${base}/caja`, <DollarSign className="h-4 w-4" />),
           ],
         },
-        {
+        ...(noInventory ? [] : [{
           title: 'Inventario',
           items: [
             navItem('Productos', `${base}/productos`, <Package className="h-4 w-4" />),
@@ -73,7 +75,7 @@ export function Sidebar({ orgSlug, className }: SidebarProps) {
               : []),
             navItem('Proveedores', `${base}/proveedores`, <Briefcase className="h-4 w-4" />),
           ],
-        },
+        }]),
         {
           title: 'Finanzas',
           items: [
