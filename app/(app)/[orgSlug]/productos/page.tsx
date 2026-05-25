@@ -3,11 +3,11 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { toast } from 'sonner'
 import {
   Plus, Search, Package, TrendingUp, TrendingDown,
-  MoreHorizontal, Pencil, Trash2, AlertTriangle, Upload, Tag, Send, Smartphone, Sparkles,
+  MoreHorizontal, Pencil, Trash2, AlertTriangle, Upload, Tag, Send, Smartphone, Sparkles, Zap,
 } from 'lucide-react'
 import { EmptyState } from '@/components/shared/empty-state'
 import { Button } from '@/components/ui/button'
@@ -43,6 +43,7 @@ import { RemoteScannerModal } from '@/components/pos/remote-scanner-modal'
 import { ExcelPriceImport } from '@/components/products/excel-price-import'
 import { CsvProductImport } from '@/components/products/csv-product-import'
 import { CatalogImport } from '@/components/products/catalog-import'
+import { QuickAddModal } from '@/components/products/quick-add-modal'
 import { createClient } from '@/lib/supabase/client'
 import { formatARS, waEncode } from '@/lib/utils/currency'
 import { useOrg } from '@/hooks/use-org'
@@ -67,6 +68,7 @@ interface Supplier {
 
 export default function ProductosPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const { org } = useOrg()
   const orgSlug = org.slug
   const orgId = org.id
@@ -81,6 +83,7 @@ export default function ProductosPage() {
   const [excelOpen, setExcelOpen] = useState(false)
   const [csvOpen, setCsvOpen] = useState(false)
   const [catalogOpen, setCatalogOpen] = useState(false)
+  const [quickAddOpen, setQuickAddOpen] = useState(false)
   const [remoteScannerOpen, setRemoteScannerOpen] = useState(false)
   const [remoteScanSessionId] = useState(() => {
     const key = 'remote_scan_session_productos'
@@ -150,6 +153,11 @@ export default function ProductosPage() {
 
   // Realtime: refrescar el listado si cambia el stock/precio desde otra caja
   useRealtime('products', orgId, loadData)
+
+  // Abrir catálogo automáticamente si viene ?catalogo=1 (desde onboarding)
+  useEffect(() => {
+    if (searchParams.get('catalogo') === '1') setCatalogOpen(true)
+  }, [searchParams])
 
   async function handleDelete(id: string) {
     const supabase = createClient()
@@ -259,6 +267,10 @@ export default function ProductosPage() {
               <Sparkles className="h-4 w-4" />
               Catálogo
             </Button>
+            <Button variant="outline" size="sm" className="gap-2" onClick={() => setQuickAddOpen(true)}>
+              <Zap className="h-4 w-4" />
+              Carga express
+            </Button>
             <Button variant="outline" size="sm" className="gap-2" onClick={() => setCsvOpen(true)}>
               <Upload className="h-4 w-4" />
               Importar CSV
@@ -291,6 +303,10 @@ export default function ProductosPage() {
                 <DropdownMenuItem onClick={() => setCatalogOpen(true)} className="gap-2 cursor-pointer">
                   <Sparkles className="h-4 w-4" />
                   Catálogo
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setQuickAddOpen(true)} className="gap-2 cursor-pointer">
+                  <Zap className="h-4 w-4" />
+                  Carga express
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => setCsvOpen(true)} className="gap-2 cursor-pointer">
                   <Upload className="h-4 w-4" />
@@ -616,6 +632,14 @@ export default function ProductosPage() {
         onClose={() => setCatalogOpen(false)}
         orgId={orgId}
         existingKeys={existingKeys}
+        onDone={loadData}
+      />
+
+      {/* Carga express por texto libre */}
+      <QuickAddModal
+        open={quickAddOpen}
+        onClose={() => setQuickAddOpen(false)}
+        orgId={orgId}
         onDone={loadData}
       />
 

@@ -49,8 +49,8 @@ export function OnboardingBanner({
   const steps = [
     {
       label: 'Cargá tu primer producto',
-      hint: 'Para arrancar a vender. Después subís todo con Excel.',
-      href: `/${orgSlug}/productos/nuevo`,
+      hint: 'Usá el catálogo para agregar varios de una — es más rápido.',
+      href: `/${orgSlug}/productos?catalogo=1`,
       done: hasProducts,
     },
     {

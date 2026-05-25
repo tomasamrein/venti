@@ -30,10 +30,10 @@ export function WelcomeDialog({ orgSlug, orgName }: Props) {
 
   const quickActions = [
     {
-      href: `/${orgSlug}/productos/nuevo`,
+      href: `/${orgSlug}/productos?catalogo=1`,
       icon: Package,
-      title: 'Cargar mi primer producto',
-      desc: 'O importá todo tu catálogo desde Excel',
+      title: 'Cargar mis productos',
+      desc: 'Desde el catálogo o importando un Excel',
     },
     {
       href: `/${orgSlug}/caja`,

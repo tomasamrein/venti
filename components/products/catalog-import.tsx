@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo, useCallback } from 'react'
 import { toast } from 'sonner'
-import { Search, Loader2, Check, X, Package2, ShoppingCart } from 'lucide-react'
+import { Search, Loader2, Check, X, Package2, ShoppingCart, ChevronsRight } from 'lucide-react'
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
 } from '@/components/ui/dialog'
@@ -31,7 +31,7 @@ interface Props {
   open: boolean
   onClose: () => void
   orgId: string
-  existingKeys: Set<string>   // nombres (lowercase) y barcodes ya cargados
+  existingKeys: Set<string>
   onDone: () => void
 }
 
@@ -53,11 +53,11 @@ export function CatalogImport({ open, onClose, orgId, existingKeys, onDone }: Pr
   const [selected, setSelected] = useState<Record<string, Selected>>({})
   const [fallbackCategory, setFallbackCategory] = useState<string>(CATALOGO_CATEGORIES[0] ?? 'General')
   const [submitting, setSubmitting] = useState(false)
+  const [bulkPrice, setBulkPrice] = useState('')
 
   useEffect(() => {
     if (!open) return
-    setQuery(''); setOffResults([]); setSelected({})
-    // Carga popular OFF al abrir (sin query)
+    setQuery(''); setOffResults([]); setSelected({}); setBulkPrice('')
     fetch('/api/products/catalog-search?q=')
       .then(r => r.json())
       .then(json => {
@@ -115,7 +115,6 @@ export function CatalogImport({ open, onClose, orgId, existingKeys, onDone }: Pr
 
   const curatedResults = useMemo(() => CATALOGO_BASE.map(curatedToResult), [])
 
-  // Resultados a mostrar: con query mezcla curado + OFF; sin query, curado agrupado.
   const filteredCurated = useMemo(() => {
     const q = norm(query)
     if (!q) return curatedResults
@@ -150,8 +149,27 @@ export function CatalogImport({ open, onClose, orgId, existingKeys, onDone }: Pr
     })
   }
 
+  function selectCategory(items: CatalogResult[]) {
+    setSelected(prev => {
+      const next = { ...prev }
+      items.forEach(r => {
+        if (!next[r.key]) next[r.key] = { ...r, price: '' }
+      })
+      return next
+    })
+  }
+
   function setPrice(key: string, price: string) {
     setSelected(prev => ({ ...prev, [key]: { ...prev[key], price } }))
+  }
+
+  function applyBulkPrice() {
+    if (!bulkPrice) return
+    setSelected(prev => {
+      const next = { ...prev }
+      Object.keys(next).forEach(k => { next[k] = { ...next[k], price: bulkPrice } })
+      return next
+    })
   }
 
   const selectedList = Object.values(selected)
@@ -244,7 +262,19 @@ export function CatalogImport({ open, onClose, orgId, existingKeys, onDone }: Pr
               ) : grouped ? (
                 grouped.map(([cat, items]) => (
                   <div key={cat}>
-                    <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide mb-1.5 px-1">{cat}</p>
+                    <div className="flex items-center justify-between mb-1.5 px-1">
+                      <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">
+                        {cat} <span className="font-normal opacity-60">({items.length})</span>
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => selectCategory(items)}
+                        className="flex items-center gap-1 text-[10px] font-medium text-emerald-600 hover:text-emerald-500 transition-colors"
+                      >
+                        <ChevronsRight className="h-3 w-3" />
+                        Seleccionar todo
+                      </button>
+                    </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                       {items.map(r => <ResultCard key={r.key} r={r} />)}
                     </div>
@@ -267,31 +297,61 @@ export function CatalogImport({ open, onClose, orgId, existingKeys, onDone }: Pr
 
             {selectedList.length === 0 ? (
               <div className="hidden md:flex flex-1 items-center justify-center text-center text-xs text-muted-foreground px-6">
-                Tocá un producto de la izquierda para agregarlo y ponerle precio.
+                Tocá un producto o "Seleccionar todo" de una categoría para agregarlo.
               </div>
             ) : (
-              <div className="flex-1 overflow-auto p-3 space-y-2 min-h-0">
-                {selectedList.map(s => (
-                  <div key={s.key} className="rounded-lg border border-border bg-card p-2">
-                    <div className="flex items-start gap-2">
-                      <p className="text-[12px] font-medium leading-tight flex-1 line-clamp-2">{s.name}</p>
-                      <button onClick={() => toggle(s)} className="text-muted-foreground hover:text-foreground shrink-0">
-                        <X className="h-3.5 w-3.5" />
-                      </button>
-                    </div>
-                    <div className="mt-1.5 flex items-center gap-1.5">
+              <>
+                {/* Precio en bloque */}
+                <div className="px-3 pt-2.5 pb-2 border-b border-border/60 shrink-0">
+                  <p className="text-[10px] text-muted-foreground mb-1.5">Aplicar mismo precio a todos</p>
+                  <div className="flex gap-1.5">
+                    <div className="flex items-center gap-1 flex-1 border border-border rounded-lg px-2 bg-background">
                       <span className="text-xs text-muted-foreground">$</span>
-                      <Input
+                      <input
                         type="number" min="0" step="0.01" inputMode="decimal"
                         placeholder="Precio"
-                        value={s.price}
-                        onChange={e => setPrice(s.key, e.target.value)}
-                        className="h-8 text-sm"
+                        value={bulkPrice}
+                        onChange={e => setBulkPrice(e.target.value)}
+                        onKeyDown={e => e.key === 'Enter' && applyBulkPrice()}
+                        className="flex-1 h-7 text-sm bg-transparent outline-none"
                       />
                     </div>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      onClick={applyBulkPrice}
+                      disabled={!bulkPrice}
+                      className="h-7 px-2 text-xs"
+                    >
+                      Aplicar
+                    </Button>
                   </div>
-                ))}
-              </div>
+                </div>
+
+                <div className="flex-1 overflow-auto p-3 space-y-2 min-h-0">
+                  {selectedList.map(s => (
+                    <div key={s.key} className="rounded-lg border border-border bg-card p-2">
+                      <div className="flex items-start gap-2">
+                        <p className="text-[12px] font-medium leading-tight flex-1 line-clamp-2">{s.name}</p>
+                        <button onClick={() => toggle(s)} className="text-muted-foreground hover:text-foreground shrink-0">
+                          <X className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
+                      <div className="mt-1.5 flex items-center gap-1.5">
+                        <span className="text-xs text-muted-foreground">$</span>
+                        <Input
+                          type="number" min="0" step="0.01" inputMode="decimal"
+                          placeholder="Precio"
+                          value={s.price}
+                          onChange={e => setPrice(s.key, e.target.value)}
+                          className="h-8 text-sm"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </>
             )}
 
             <div className="border-t border-border p-3 space-y-2 shrink-0">

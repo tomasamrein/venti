@@ -12,7 +12,7 @@ interface Props {
 
 export function OnboardingChecklist({ orgSlug, hasProducts, hasOpenSession, hasSales }: Props) {
   const steps = [
-    { done: hasProducts,     label: 'Cargá tu primer producto', cta: 'Ir a productos', href: `/${orgSlug}/productos/nuevo`, icon: Package },
+    { done: hasProducts,     label: 'Cargá tu primer producto', cta: 'Ir a productos', href: `/${orgSlug}/productos?catalogo=1`, icon: Package },
     { done: hasOpenSession,  label: 'Abrí la caja',              cta: 'Abrir caja',     href: `/${orgSlug}/caja`,            icon: Wallet },
     { done: hasSales,        label: 'Hacé tu primera venta',     cta: 'Ir al POS',      href: `/${orgSlug}/pos`,             icon: ShoppingCart },
   ]
