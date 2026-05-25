@@ -191,17 +191,17 @@ export function CatalogImport({ open, onClose, orgId, existingKeys, onDone }: Pr
 
   return (
     <Dialog open={open} onOpenChange={v => { if (!v) onClose() }}>
-      <DialogContent className="max-w-4xl rounded-2xl p-0 overflow-hidden">
-        <DialogHeader className="px-5 pt-5 pb-3 border-b border-border">
+      <DialogContent className="flex flex-col gap-0 p-0 overflow-hidden rounded-2xl w-[calc(100%-1rem)] sm:max-w-5xl h-[92dvh] sm:h-[85vh]">
+        <DialogHeader className="px-4 sm:px-5 pt-4 pb-3 border-b border-border shrink-0 pr-12">
           <DialogTitle className="font-poppins">Catálogo de productos</DialogTitle>
           <DialogDescription>
             Buscá y tildá los productos que vendés. Poné el precio y agregalos todos juntos.
           </DialogDescription>
         </DialogHeader>
 
-        <div className="flex flex-col md:flex-row h-[70vh] md:h-[65vh]">
+        <div className="flex-1 flex flex-col md:flex-row min-h-0 overflow-hidden">
           {/* Izquierda: buscador + resultados */}
-          <div className="flex-1 flex flex-col border-r border-border min-h-0">
+          <div className="flex-1 flex flex-col min-h-0 md:border-r border-border">
             <div className="p-3 border-b border-border/60">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -240,18 +240,18 @@ export function CatalogImport({ open, onClose, orgId, existingKeys, onDone }: Pr
           </div>
 
           {/* Derecha: seleccionados + precios */}
-          <div className="w-full md:w-80 shrink-0 flex flex-col min-h-0 bg-muted/20">
-            <div className="px-4 py-3 border-b border-border/60 flex items-center gap-2">
+          <div className="shrink-0 flex flex-col min-h-0 bg-muted/20 border-t md:border-t-0 border-border w-full md:w-80 max-h-[45dvh] md:max-h-none">
+            <div className="px-4 py-2.5 border-b border-border/60 flex items-center gap-2 shrink-0">
               <ShoppingCart className="h-4 w-4 text-emerald-600" />
               <span className="text-sm font-semibold">Seleccionados ({selectedList.length})</span>
             </div>
 
             {selectedList.length === 0 ? (
-              <div className="flex-1 flex items-center justify-center text-center text-xs text-muted-foreground px-6">
+              <div className="hidden md:flex flex-1 items-center justify-center text-center text-xs text-muted-foreground px-6">
                 Tocá un producto de la izquierda para agregarlo y ponerle precio.
               </div>
             ) : (
-              <div className="flex-1 overflow-auto p-3 space-y-2">
+              <div className="flex-1 overflow-auto p-3 space-y-2 min-h-0">
                 {selectedList.map(s => (
                   <div key={s.key} className="rounded-lg border border-border bg-card p-2">
                     <div className="flex items-start gap-2">
@@ -275,7 +275,7 @@ export function CatalogImport({ open, onClose, orgId, existingKeys, onDone }: Pr
               </div>
             )}
 
-            <div className="border-t border-border p-3 space-y-2">
+            <div className="border-t border-border p-3 space-y-2 shrink-0">
               <div>
                 <p className="text-[11px] text-muted-foreground mb-1">Categoría para los que no tengan</p>
                 <Select value={fallbackCategory} onValueChange={v => v && setFallbackCategory(v)}>
