@@ -1,12 +1,12 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import {
   ArrowLeft, Save, Package2, ScanBarcode, ImagePlus, X,
   TrendingUp, AlertCircle, Sparkles, Tag, Boxes, DollarSign, CircleCheck,
-  Upload, Camera, Loader2,
+  Upload, Camera, Loader2, Wand2,
 } from 'lucide-react'
 import { UsbScannerInput } from '@/components/pos/usb-scanner-input'
 import { Button } from '@/components/ui/button'
@@ -66,7 +66,42 @@ export function ProductForm({ orgSlug, orgId, product, initialBarcode }: Product
   const [uploadingImage, setUploadingImage] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const cameraInputRef = useRef<HTMLInputElement>(null)
+  const barcodeSvgRef = useRef<SVGSVGElement>(null)
   const isNew = !product
+
+  function generateEAN13(): string {
+    // Prefix 200-299 reserved for internal store use (GS1 Argentina)
+    const prefix = '200'
+    const body = Array.from({ length: 9 }, () => Math.floor(Math.random() * 10)).join('')
+    const raw = prefix + body
+    let sum = 0
+    for (let i = 0; i < 12; i++) {
+      sum += parseInt(raw[i]) * (i % 2 === 0 ? 1 : 3)
+    }
+    const check = (10 - (sum % 10)) % 10
+    return raw + check
+  }
+
+  const renderBarcode = useCallback(async (code: string) => {
+    if (!barcodeSvgRef.current || !code) return
+    try {
+      const JsBarcode = (await import('jsbarcode')).default
+      JsBarcode(barcodeSvgRef.current, code, {
+        format: 'EAN13',
+        width: 1.5,
+        height: 40,
+        displayValue: true,
+        fontSize: 10,
+        margin: 4,
+        background: 'transparent',
+        lineColor: 'currentColor',
+      })
+    } catch { /* not a valid barcode format */ }
+  }, [])
+
+  useEffect(() => {
+    renderBarcode(barcode)
+  }, [barcode, renderBarcode])
 
   async function compressImage(file: File, maxSize = 800, quality = 0.82): Promise<Blob> {
     const bitmap = await createImageBitmap(file)
@@ -515,12 +550,24 @@ export function ProductForm({ orgSlug, orgId, product, initialBarcode }: Product
               </CardTitle>
             </CardHeader>
             <CardContent className="grid grid-cols-2 gap-3">
-              <div>
-                <Label htmlFor="barcode" className="mb-1.5 block text-xs">Código de barras</Label>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="barcode" className="text-xs">Código de barras</Label>
+                  {!barcode && (
+                    <button
+                      type="button"
+                      onClick={() => setBarcode(generateEAN13())}
+                      className="flex items-center gap-1 text-[11px] text-emerald-600 hover:text-emerald-700 font-semibold transition-colors"
+                    >
+                      <Wand2 className="h-3 w-3" />
+                      Generar automático
+                    </button>
+                  )}
+                </div>
                 <div className="flex gap-1.5">
                   <Input
                     id="barcode" value={barcode} onChange={e => setBarcode(e.target.value)}
-                    placeholder="EAN13, QR…" className="rounded-lg font-mono flex-1"
+                    placeholder="EAN13, QR… o generá uno" className="rounded-lg font-mono flex-1"
                   />
                   <Button
                     type="button" variant="outline" size="icon"
@@ -530,6 +577,11 @@ export function ProductForm({ orgSlug, orgId, product, initialBarcode }: Product
                     <ScanBarcode className="h-4 w-4" />
                   </Button>
                 </div>
+                {barcode && (
+                  <div className="flex items-center justify-center py-2 rounded-lg bg-muted/40 border border-border/40 overflow-hidden">
+                    <svg ref={barcodeSvgRef} className="text-foreground max-w-full" />
+                  </div>
+                )}
                 <UsbScannerInput
                   open={scannerOpen}
                   onScan={code => { setBarcode(code); setScannerOpen(false) }}

@@ -1,7 +1,7 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { DollarSign, CreditCard, Banknote, BookOpen, Ticket, FileText, ChevronLeft } from 'lucide-react'
+import { useState, useEffect, useRef } from 'react'
+import { DollarSign, CreditCard, Banknote, BookOpen, Ticket, FileText, ChevronLeft, Keyboard } from 'lucide-react'
 import {
   Dialog,
   DialogContent,
@@ -49,6 +49,7 @@ export function PaymentModal({
   const [method, setMethod] = useState<string>('cash')
   const [amount, setAmount] = useState(total)
   const [pendingAmount, setPendingAmount] = useState(0)
+  const amountInputRef = useRef<HTMLInputElement>(null)
 
   // Invoice step state
   const [fiscalType, setFiscalType] = useState<FiscalType>('B')
@@ -67,6 +68,50 @@ export function PaymentModal({
       setFiscalType('B')
     }
   }, [open, total, prefillCuit, prefillName])
+
+  useEffect(() => {
+    if (!open || step !== 'payment') return
+
+    function onKey(e: KeyboardEvent) {
+      const active = document.activeElement?.tagName?.toLowerCase()
+      const isTyping = active === 'input' || active === 'textarea'
+      if (e.ctrlKey || e.metaKey || e.altKey) return
+
+      switch (e.key.toLowerCase()) {
+        case 'e':
+          if (isTyping) return
+          e.preventDefault()
+          handleMethodChange('cash')
+          amountInputRef.current?.focus()
+          break
+        case 'd':
+          if (isTyping) return
+          e.preventDefault()
+          handleMethodChange('debit')
+          break
+        case 'c':
+          if (isTyping) return
+          e.preventDefault()
+          handleMethodChange('credit')
+          break
+        case 't':
+          if (isTyping) return
+          e.preventDefault()
+          handleMethodChange('transfer')
+          break
+        case 'enter':
+          if (isTyping) return
+          if (method !== 'cash' || amount >= total) advanceToInvoice()
+          break
+        case 'escape':
+          onClose()
+          break
+      }
+    }
+
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [open, step, method, amount, total])
 
   function handleMethodChange(val: string | null) {
     setMethod(val || 'cash')
@@ -114,8 +159,8 @@ export function PaymentModal({
             </DialogHeader>
 
             <div className="space-y-6">
-              <div>
-                <Label className="text-sm font-medium mb-3 block">Seleccionar método</Label>
+              <div className="space-y-2">
+                <Label className="text-sm font-medium block">Seleccionar método</Label>
                 <Select value={method} onValueChange={handleMethodChange}>
                   <SelectTrigger className="rounded-xl h-11">
                     <SelectValue />
@@ -140,6 +185,22 @@ export function PaymentModal({
                     )}
                   </SelectContent>
                 </Select>
+                {/* Keyboard hints */}
+                <div className="flex items-center gap-3 flex-wrap">
+                  <Keyboard className="h-3 w-3 text-muted-foreground/50 shrink-0" />
+                  {[
+                    { key: 'E', label: 'Efectivo' },
+                    { key: 'D', label: 'Débito' },
+                    { key: 'C', label: 'Crédito' },
+                    { key: 'T', label: 'Transfer.' },
+                    { key: '↵', label: 'Confirmar' },
+                  ].map(({ key, label }) => (
+                    <span key={key} className="flex items-center gap-1 text-[10px] text-muted-foreground/60">
+                      <kbd className="px-1 py-0 rounded bg-muted border border-border/60 font-mono text-[10px] leading-4">{key}</kbd>
+                      {label}
+                    </span>
+                  ))}
+                </div>
               </div>
 
               {method === 'cash' && (
@@ -147,6 +208,7 @@ export function PaymentModal({
                   <Label htmlFor="amount" className="text-sm font-medium mb-2 block">Monto recibido</Label>
                   <Input
                     id="amount"
+                    ref={amountInputRef}
                     type="number"
                     value={amount}
                     onChange={e => setAmount(parseFloat(e.target.value) || 0)}

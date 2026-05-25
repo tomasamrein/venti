@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { Moon, Sun, LogOut, Settings, Menu, BookOpen } from 'lucide-react'
+import { Moon, Sun, LogOut, Settings, Menu, BookOpen, Plus, ShoppingCart, Package, DollarSign } from 'lucide-react'
 import { useTheme } from 'next-themes'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
@@ -80,6 +80,33 @@ export function TopNav({ orgSlug, organizationId, userName, userAvatar, orgName,
       <div className="flex-1" />
 
       <div className="flex items-center gap-1">
+        {/* Quick actions */}
+        <DropdownMenu>
+          <DropdownMenuTrigger render={
+            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg" title="Acciones rápidas">
+              <Plus className="h-4 w-4" />
+            </Button>
+          } />
+          <DropdownMenuContent align="end" className="w-48">
+            <div className="px-2 py-1.5">
+              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Acciones rápidas</p>
+            </div>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={() => router.push(`/${orgSlug}/pos`)} className="cursor-pointer gap-2">
+              <ShoppingCart className="h-3.5 w-3.5 text-emerald-600" />
+              Nueva venta
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => router.push(`/${orgSlug}/productos/nuevo`)} className="cursor-pointer gap-2">
+              <Package className="h-3.5 w-3.5 text-blue-600" />
+              Nuevo producto
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => router.push(`/${orgSlug}/caja`)} className="cursor-pointer gap-2">
+              <DollarSign className="h-3.5 w-3.5 text-amber-600" />
+              Ir a la caja
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
         <Link
           href={`/${orgSlug}/docs`}
           aria-label="Documentación"

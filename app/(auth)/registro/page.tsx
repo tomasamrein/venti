@@ -299,6 +299,12 @@ function RegistroContent() {
                     Ingresá
                   </Link>
                 </p>
+                <p className="text-center text-xs text-muted-foreground/60">
+                  Al registrarte aceptás los{' '}
+                  <Link href="/terminos" target="_blank" className="hover:text-muted-foreground transition-colors underline underline-offset-2">Términos y condiciones</Link>
+                  {' y la '}
+                  <Link href="/privacidad" target="_blank" className="hover:text-muted-foreground transition-colors underline underline-offset-2">Política de privacidad</Link>
+                </p>
               </div>
             </form>
           )}

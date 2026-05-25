@@ -261,7 +261,7 @@ export function CartSummary({ onCheckout, onHold, orgSlug, orgId, checkoutDisabl
               >
                 <Receipt className="h-4 w-4 mr-2" />
                 Cobrar {formatARS(total)}
-                <span className="ml-auto text-[10px] font-mono bg-emerald-700/60 px-1.5 py-0.5 rounded opacity-70">F2</span>
+                <span className="ml-auto text-[10px] font-mono bg-emerald-700/60 px-1.5 py-0.5 rounded opacity-70">P</span>
               </Button>
               <div className="flex gap-2">
                 <Button

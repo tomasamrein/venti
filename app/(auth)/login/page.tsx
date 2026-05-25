@@ -12,6 +12,7 @@ import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Logo } from '@/components/ui/logo'
 
 const schema = z.object({
   email: z.string().email('Email inválido'),
@@ -26,6 +27,7 @@ function LoginForm() {
   const redirectTo = searchParams.get('redirect') || '/'
   const checkout = searchParams.get('checkout')
   const [loading, setLoading] = useState(false)
+  const [redirecting, setRedirecting] = useState(false)
   const [remember, setRemember] = useState(true)
 
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
@@ -47,6 +49,8 @@ function LoginForm() {
       localStorage.setItem('ventix-remember-me', remember ? '1' : '0')
       sessionStorage.setItem('ventix-session-alive', '1')
     }
+
+    setRedirecting(true)
 
     if (checkout === 'basic') {
       try {
@@ -96,6 +100,32 @@ function LoginForm() {
 
     const slug = (member?.organizations as { slug: string } | null)?.slug
     router.push(slug ? `/${slug}/dashboard` : '/registro')
+  }
+
+  if (redirecting) {
+    return (
+      <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-background gap-6">
+        <div className="flex flex-col items-center gap-4 animate-in fade-in zoom-in-95 duration-300">
+          <Logo className="text-2xl font-extrabold text-slate-900 dark:text-slate-100 tracking-tight" iconSize={48} />
+          <div className="flex items-center gap-1.5">
+            {[0, 1, 2].map(i => (
+              <span
+                key={i}
+                className="w-2 h-2 rounded-full bg-emerald-500"
+                style={{ animation: `bounce 1.2s ease-in-out ${i * 0.2}s infinite` }}
+              />
+            ))}
+          </div>
+          <p className="text-sm text-muted-foreground font-medium">Ingresando a tu cuenta…</p>
+        </div>
+        <style>{`
+          @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+            40% { transform: scale(1); opacity: 1; }
+          }
+        `}</style>
+      </div>
+    )
   }
 
   return (
@@ -172,6 +202,11 @@ function LoginForm() {
               <Link href="/registro" className="text-emerald-600 hover:text-emerald-700 font-semibold transition-colors">
                 Registrate gratis
               </Link>
+            </p>
+            <p className="text-center text-xs text-muted-foreground/60">
+              <Link href="/terminos" className="hover:text-muted-foreground transition-colors">Términos</Link>
+              {' · '}
+              <Link href="/privacidad" className="hover:text-muted-foreground transition-colors">Privacidad</Link>
             </p>
           </div>
         </form>
